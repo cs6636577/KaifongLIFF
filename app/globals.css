@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+:root{
+  --nt: #F5C800;
+}
+
+@theme {
+  --color-nt: var(--nt);
+}
+
 html,
 body {
   padding: 0;
@@ -8,8 +16,8 @@ body {
 }
 
 nav{
-  background-color: #F5C800;
-  height: 60px;
+  background-color: var(--color-nt);
+  height: 70px;
   display: flex;
   align-items: center;
   padding: 0 20px;
@@ -21,6 +29,6 @@ a {
   text-decoration: none;
 }
 
-* {
+/* * {
   box-sizing: border-box;
-}
+} */

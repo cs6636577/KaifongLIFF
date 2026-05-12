@@ -1,11 +1,12 @@
 import React from 'react'
+import Stepprogress from '../../components/userform/step_progress'
+import "../globals.css";
+
 
 const Navbar = () => {
   return (
-    <div>
-      <nav>
-          <h5 className="text-[#1A1A2E] font-bold">KaiFong AI</h5>
-      </nav>
+    <div className=' w-full h-screen flex items-center justify-center'>
+      <Stepprogress />
     </div>
   )
 }
