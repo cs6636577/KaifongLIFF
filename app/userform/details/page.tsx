@@ -7,7 +7,7 @@ import { Sarabun } from 'next/font/google';
 //font sarabun
 const sarabun = Sarabun({
   subsets: ['thai'],
-  weight: ['400', '700'],});
+  weight: ['100', '200', '300', '400', '500', '600', '700'],});
 
 
 const page = () => {

@@ -1,14 +1,22 @@
 import React from 'react'
-import Stepprogress from '../../components/userform/step_progress'
-import "../globals.css";
+import Navbar from '../../components/navbar'
+import StepProgress from '../../components/userform/step_progress'
+
+import { Sarabun } from 'next/font/google';
+
+//font sarabun
+const sarabun = Sarabun({
+  subsets: ['thai'],
+  weight: ['100', '200', '300', '400', '500', '600', '700'],});
 
 
-const Navbar = () => {
+const page = () => {
   return (
-    <div className=' w-full h-screen flex items-center justify-center'>
-      <Stepprogress />
+    <div className={`${sarabun.className}`}>
+      <Navbar />
+      <StepProgress />
     </div>
   )
 }
 
-export default Navbar
+export default page
