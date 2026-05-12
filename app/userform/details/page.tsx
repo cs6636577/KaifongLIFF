@@ -1,20 +1,77 @@
 "use client"
 import Navbar from "../../../components/navbar";
 import UserCard from "../../../components/userform/UserCard"
+import { Sarabun } from 'next/font/google';
+import { useState,useEffect } from "react";
+import ComplaintCard from "../../../components/userform/ComplaintDetailsCard";
+import EvidenceCard from "@/components/userform/EvidenceCard";
+import { MdSend } from "react-icons/md";
+import { FaArrowLeft } from "react-icons/fa";
+  //font sarabun
+const sarabun = Sarabun({
+  subsets: ['thai'],
+  weight: ['100', '200', '300', '400', '500', '600', '700'],});
+
 function Details(){
+    
+type User = {
+  name: string;
+  lastname: string;
+  phone: string;
+};
+
+const [user, setUser] = useState<User | null>(null);
+
+useEffect(() => {
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data);
+      });
+}, []);
+
+if (!user) return <p>Loading...</p>;
+  
     return (
-       <div className="w-full max-w-sm mx-auto">
+       <div className={`${sarabun.className} w-full max-w-sm mx-auto mb-3`}>
         <Navbar/>
-        <div className="mx-10">
-            <div className="mt-4 mb-4">
+        <div className="flex flex-col mx-10 gap-6">
+            <div className="mt-4">
                 <h1 className="text-2xl font-bold text-[#1A1A2E]">ยืนยันรายละเอียด</h1>
-                <p className="text-md text-[#4D4632]">Confirmation</p>
-                <p className="text-sm text-[#4D4632]">กรุณาใส่รายละเอียดให้ถูกต้องและครบถ้วน</p>
+                <p className="text-md font-medium text-[#4D4632]/80">Confirmation</p>
+                <p className="text-sm font-medium text-[#4D4632]/80">กรุณาใส่รายละเอียดให้ถูกต้องและครบถ้วน</p>
             </div>
-        <UserCard/>
+        <UserCard
+        name={user.name}
+        lastname={user.lastname}
+         phone={user.phone.replace(
+            /(\d{3})(\d{3})(\d{4})/,
+            "$1-$2-$3"
+        )}
+        />
+        <ComplaintCard/>
+        <EvidenceCard/>
+        {/* ปุ่มยืนยัน*/}
+        <div className='flex items-center justify-center w-full mb-10'>
+          <button className='bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-lg hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'> 
+            <div className='flex items-center justify-center text-xl'>
+              <span className='mr-2'>ยืนยันการแจ้งเหตุ</span>
+              <span className='text-xl'>
+                <MdSend />
+              </span>
+            </div>
+          </button>
         </div>
+        <div className="flex gap-2 justify-center mr-3">
+         <div className="mt-1"><FaArrowLeft/></div>
+          <span className="mb-5">ย้อนกลับแก้ไข (Back)</span>
+        </div>
+        </div>
+
+        
+
        </div>
 
     )
 }
-export default Details;
+export default Details
