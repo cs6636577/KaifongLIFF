@@ -1,6 +1,7 @@
 "use client";
 import { useLIFF } from "../providers/liff-providers";
 import styles from "./page.module.css";
+import Navbar from "./userform/page";
 
 export default function Home() {
   const { liff, liffError } = useLIFF();
@@ -25,6 +26,7 @@ export default function Home() {
         >
           LIFF Documentation
         </a>
+        <Navbar />
       </main>
     </div>
   );

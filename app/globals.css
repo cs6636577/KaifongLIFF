@@ -1,7 +1,19 @@
+@import "tailwindcss";
+
 html,
 body {
   padding: 0;
   margin: 0;
+  background-color: #F9F9F6;
+}
+
+nav{
+  background-color: #F5C800;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  top: 0; 
 }
 
 a {
