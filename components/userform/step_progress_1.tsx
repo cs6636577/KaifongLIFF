@@ -17,7 +17,7 @@ const step_progress = () => {
       </div>
 
       {/* line between step1 and step2 */}
-      <hr className="border-[#D1C6AB] border-t-2 mx-2 w-25 mb-3"/>
+      <hr className="border-[#D1C6AB] border-t-3 mx-1 w-25 mb-3"/>
 
       {/* inactive step2 */}
       <div className="flex flex-col items-center">
@@ -28,7 +28,7 @@ const step_progress = () => {
       </div>
 
         {/* line between step2 and step3 */}
-      <hr className="border-[#D1C6AB] border-t-2 mx-2 w-25 mb-3"/>
+      <hr className="border-[#D1C6AB] border-t-3 mx-1 w-25 mb-3"/>
 
       {/* inactive step3 */}
       <div className="flex flex-col items-center">
