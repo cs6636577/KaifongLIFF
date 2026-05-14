@@ -14,14 +14,11 @@ function EvidenceCard(){
               </div>
            </div>
 
-           <div className="flex m-3">
-            {/*ไว้ใส่ภาพ ต้องดึงมาจาก form และ backend เก็บเปน? url?*/}
-                 <img src={""} className="" alt="คำอธิบายรูปภาพ" ></img>
-                 {/*กดปุ่มแล้วจะมีเพิ่มไฟล์รูป สร้างอีกcomponentsแล้ว import มา*/}
-                <button className="">
-                    
-
-                </button>
+           <div className="flex m-3 gap-3">
+            {/*ไว้ใส่ภาพ ทำเปน static ไปก่อน*/}
+                 <img src={"/evidence/Evidence_test_2.svg"} className="rounded-full w-18 h-18" alt="คำอธิบายรูปภาพ" ></img>
+                 <img src={"/evidence/Evidence_test.svg"} className="rounded-full w-18 h-18" alt="คำอธิบายรูปภาพ" ></img>
+                 <img src={"/evidence/add_photo.png"} className="rounded-full w-18 h-18" alt="คำอธิบายรูปภาพ" ></img>
            </div>
        </div>
 

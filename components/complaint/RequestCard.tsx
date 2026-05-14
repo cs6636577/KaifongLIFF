@@ -24,6 +24,8 @@ import {
 
 import { ProgressSteps } from "./ProgressSteps";
 
+import { useRouter } from "next/navigation";
+
 const ICONS: Record<string, ElementType> = {
   build: FaBuildingCircleArrowRight,
   bolt: MdElectricBolt,
@@ -43,8 +45,11 @@ export function RequestCard({
   const Icon = ICONS[request.icon];
   const accent = STATUS_ACCENT[request.status];
 
+  const router = useRouter();
+
   return (
-    <article className="bg-card relative overflow-hidden rounded-2xl border border-border shadow-sm transition-shadow hover:shadow-md">
+    <article  onClick={() => router.push("/track-complaint/details")}
+    className="bg-card relative overflow-hidden rounded-2xl border border-border shadow-sm transition-shadow hover:shadow-md">
       {/* left accent bar */}
       <div
         className={`absolute top-0 left-0 h-full w-1.5 ${accent}`}
@@ -163,7 +168,11 @@ function DetailStrip({
   request.rating == null && (
     <button
       type="button"
-      onClick={() => onRate?.(request.id)}
+       onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onRate?.(request.id);
+      }}
       className="bg-brand text-brand-foreground inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold shadow-sm hover:brightness-95"
     >
       ให้คะแนน

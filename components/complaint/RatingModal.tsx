@@ -79,6 +79,7 @@ export function RatingModal({
           })}
         </div>
          {/*ใส่รูป รูปไร*/}
+         {/*
          <div className="pb-3 text-sm">
           <p>หมายเหตุ</p>
           <div className="text-muted-foreground ">
@@ -86,6 +87,7 @@ export function RatingModal({
            <span>2 ดาว = พอใช้, 1 ดาว = ปรับปรุง</span>
            </div>
          </div>
+         */}
 
          <div className="pb-2">
          <p className="pb-3 text-md">ข้อเสนอแนะ</p>

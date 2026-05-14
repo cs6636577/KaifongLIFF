@@ -33,9 +33,9 @@ useEffect(() => {
 if (!user) return <p>Loading...</p>;
   
     return (
-       <div className={`${sarabun.className} w-full max-w-sm mx-auto mb-3`}>
+       <div className={`${sarabun.className} min-h-screen`}>
         <Navbar/>
-        <div className="flex flex-col mx-10 gap-6">
+        <div className="flex flex-col mx-auto gap-6 max-w-3xl px-5 sm:px-8 ">
             <div className="mt-4">
                 <h1 className="text-2xl font-bold text-[#1A1A2E]">ยืนยันรายละเอียด</h1>
                 <p className="text-md font-medium text-[#4D4632]/80">Confirmation</p>

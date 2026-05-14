@@ -235,13 +235,17 @@ function RequestSection({
 
       <div className="grid gap-4 sm:grid-cols-2">
         {requests.map((r) => (
+           //static link เพื่อส่งงานโชไปก่อน
+           <a href="/track-complaint/details" key={r.id}>
           <RequestCard
             key={r.id}
             request={r}
             onRate={handleOpenRating}
           />
+          </a>
         ))}
       </div>
+
 
       <RatingModal
         open={openRating}
