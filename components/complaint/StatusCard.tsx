@@ -16,7 +16,7 @@ import {
   STATUS_PILL,
 } from "./status";
 
-import {DetailStrip} from "@/components/complaint/RequestCard";
+
 import type { ServiceRequest } from "@/lib/requests.types";
 
 type StatusCardProps = {
@@ -74,4 +74,41 @@ function StatusPill({
   );
 }
 
+ function DetailStrip({
+  request,
+  onRate,
+}: {
+  request: ServiceRequest;
+  onRate?: (id: string) => void;
+}) {
+  const tone = STATUS_ICON_TILE[request.status];
 
+  return (
+    <div
+      className={`flex flex-wrap items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-sm ${
+        request.status === "paused"
+          ? "bg-muted/60"
+          : tone
+      }`}
+    >
+      <div className="flex min-w-0 items-start gap-2">
+        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+
+        <div className="min-w-0">
+          <p className="font-medium leading-snug">
+            {request.detail}
+          </p>
+
+          {request.detailMeta && (
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              {request.detailMeta}
+            </p>
+          )}
+        </div>
+      </div>
+
+    
+
+    </div>
+  )
+}

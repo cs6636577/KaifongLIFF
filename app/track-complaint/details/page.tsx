@@ -14,10 +14,6 @@ const sarabun = Sarabun({
   subsets: ['thai'],
   weight: ['100', '200', '300', '400', '500', '600', '700'],});
 
-interface request {
-  request: ServiceRequest;
-}
-
 function Details(){
     
 type User = {

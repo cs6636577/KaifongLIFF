@@ -14,6 +14,7 @@ import { RequestCard } from "@/components/complaint/RequestCard";
 import Navbar from "@/components/navbar";
 import type { ServiceRequest } from "@/lib/requests.types";
 import { RatingModal } from "@/components/complaint/RatingModal";
+import { Pagination } from "@/components/Pagination"
 
  //font sarabun
 const sarabun = Sarabun({
@@ -61,6 +62,9 @@ export default function HomeClient() {
 
   const [search, setSearch] =
     useState("");
+  
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     async function loadData() {
@@ -129,13 +133,14 @@ export default function HomeClient() {
       });
     }, [data, tab, search]);
 
-  const thisWeek = filtered.filter(
-    (r) => r.group === "this_week"
-  );
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginated = useMemo<ServiceRequest[]>(() => {
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [filtered, page]);
+  const thisWeek = paginated.filter((r) => r.group === "this_week");
+  const earlier = paginated.filter((r) => r.group === "earlier");
 
-  const earlier = filtered.filter(
-    (r) => r.group === "earlier"
-  );
 
  
   return (
@@ -150,7 +155,10 @@ export default function HomeClient() {
         <div className="relative z-20">
         <StatusTabs
           active={tab}
-          onChange={setTab}
+          onChange={(t) => {
+            setTab(t);
+            setPage(1);
+          }}
           counts={{
           all: 0,
           in_progress: 0,
@@ -163,10 +171,7 @@ export default function HomeClient() {
         </div>
         
         <div className="-mt-4">
-        <SearchBar
-          value={search}
-          onChange={setSearch}
-        />
+         <SearchBar value={search} onChange={(s) => { setSearch(s); setPage(1); }} />
         </div>
 
         {isLoading && (
@@ -201,6 +206,12 @@ export default function HomeClient() {
               ไม่พบรายการร้องเรียน
             </p>
           )}
+          
+          <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </main>
       </div>
     </div>
