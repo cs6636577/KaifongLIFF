@@ -22,7 +22,7 @@ const page = () => {
       {/* หัวข้อและคำอธิบายของฟอร์ม */}
       <div className='flex flex-col items-start px-8'>
         <p className='text-[#231B00] text-3xl font-bold mt-10'>ข้อมูลผู้แจ้ง</p>
-        <p className='text-[#5D5C74] text-xl mt-1 font-semibold'>Reporter Info</p>
+        <p className='text-[#5D5C74] text-xl mt-1 font-normal'>Reporter Info</p>
         <p className='text-[#4D4632] text-lg mt-2'>กรุณากรอกข้อมูลจริงเพื่อประโยชน์ในการร้องเรียนเรื่อง</p>
 
         {/* ฟอร์ม */}
