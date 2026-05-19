@@ -3,7 +3,7 @@ import Navbar from "../../../components/navbar";
 import UserCard from "../../../components/userform/UserCard"
 import { Sarabun } from 'next/font/google';
 import { useState,useEffect } from "react";
-import ComplaintCard from "../../../components/userform/ComplaintDetailsCard";
+import ComplaintCard from "../../../components/ComplaintDetailsCard";
 import EvidenceCard from "@/components/userform/EvidenceCard";
 import StepProgress from "@/components/userform/step_progress_3";
 import { MdSend } from "react-icons/md";

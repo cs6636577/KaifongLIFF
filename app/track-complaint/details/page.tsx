@@ -4,7 +4,7 @@ import UserCard from "../../../components/userform/UserCard"
 import { Sarabun } from 'next/font/google';
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense  } from "react";
-import ComplaintCard from "../../../components/userform/ComplaintDetailsCard";
+import ComplaintCard from "../../../components/ComplaintDetailsCard";
 import EvidenceCard from "@/components/userform/EvidenceCard";
 import StatusCard from "@/components/complaint/StatusCard";
 import { FaArrowLeft } from "react-icons/fa";
