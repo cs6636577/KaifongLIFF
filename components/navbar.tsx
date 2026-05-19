@@ -13,7 +13,7 @@ const navbar = () => {
                     alt="KaifongLogo"
                     className="w-12 h-auto"
                 />
-                <h5 className="text-[#1A1A2E] font-bold">KaiFong AI</h5>
+                <h5 className="text-[#1A1A2E] font-bold text-lg">KaiFong AI</h5>
             </nav>
     </div>
   )

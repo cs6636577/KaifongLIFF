@@ -12,6 +12,7 @@ export interface ServiceRequest {
   steps: number;
   detail: string;
   detailMeta?: string;
+  description?: string;
   location: string;
   date: string;
   group: "this_week" | "earlier";

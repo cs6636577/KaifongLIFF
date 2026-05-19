@@ -48,7 +48,7 @@ export function RequestCard({
   const router = useRouter();
 
   return (
-    <article  onClick={() => router.push("/track-complaint/details")}
+    <article  onClick={() => router.push(`/track-complaint/details?id=${request.id}`)}
     className="bg-card relative overflow-hidden rounded-2xl border border-border shadow-sm transition-shadow hover:shadow-md">
       {/* left accent bar */}
       <div
@@ -66,7 +66,7 @@ export function RequestCard({
             <Icon className="h-6 w-6" />
           </div>
 
-          <StatusPill status={request.status} />
+         <StatusPill status={request.status} />
         </div>
 
         {/* title */}
@@ -131,7 +131,7 @@ function StatusPill({
   );
 }
 
-function DetailStrip({
+export function DetailStrip({
   request,
   onRate,
 }: {

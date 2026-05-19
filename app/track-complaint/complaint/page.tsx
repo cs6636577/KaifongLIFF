@@ -232,11 +232,10 @@ function RequestSection({
       <h2 className="text-muted-foreground text-sm font-medium">
         {title}
       </h2>
-
+      {/*ส่งidดึงข้อมุลไปหน้า details เพื่อดูรายละเอียด*/}
       <div className="grid gap-4 sm:grid-cols-2">
-        {requests.map((r) => (
-           //static link เพื่อส่งงานโชไปก่อน
-           <a href="/track-complaint/details" key={r.id}>
+        {requests.map((r) => ( 
+           <a href={`/track-complaint/details?id=${r.id}`} key={r.id}>
           <RequestCard
             key={r.id}
             request={r}

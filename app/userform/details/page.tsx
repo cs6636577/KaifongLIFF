@@ -5,6 +5,7 @@ import { Sarabun } from 'next/font/google';
 import { useState,useEffect } from "react";
 import ComplaintCard from "../../../components/userform/ComplaintDetailsCard";
 import EvidenceCard from "@/components/userform/EvidenceCard";
+import StepProgress from "@/components/userform/step_progress_3";
 import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
   //font sarabun
@@ -35,6 +36,7 @@ if (!user) return <p>Loading...</p>;
     return (
        <div className={`${sarabun.className} min-h-screen`}>
         <Navbar/>
+        <StepProgress/>
         <div className="flex flex-col mx-auto gap-6 max-w-3xl px-5 sm:px-8 ">
             <div className="mt-4">
                 <h1 className="text-2xl font-bold text-[#1A1A2E]">ยืนยันรายละเอียด</h1>
@@ -49,23 +51,26 @@ if (!user) return <p>Loading...</p>;
             "$1-$2-$3"
         )}
         />
-        <ComplaintCard/>
+        <ComplaintCard />
         <EvidenceCard/>
         {/* ปุ่มยืนยัน*/}
-        <div className='flex items-center justify-center w-full mb-10'>
-          <button className='bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-lg hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'> 
+        <div className='flex items-center justify-center w-full mb-4'>
+          <button className='bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-xl shadow-[#FF8A65]/35 hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'> 
             <div className='flex items-center justify-center text-xl'>
-              <span className='mr-2'>ยืนยันการแจ้งเหตุ</span>
+              <span className='mr-2 px-3
+              '>ยืนยันการแจ้งเหตุ</span>
               <span className='text-xl'>
                 <MdSend />
               </span>
             </div>
           </button>
         </div>
-        <div className="flex gap-2 justify-center mr-3">
-         <div className="mt-1"><FaArrowLeft/></div>
-          <span className="mb-5">ย้อนกลับแก้ไข (Back)</span>
-        </div>
+        <a href="/userform/Complaint_Details">
+          <div className="flex gap-2 justify-center mr-3 text-link-text font-bold">
+          <div className="mt-1"><FaArrowLeft/></div>
+            <span className="mb-5">ย้อนกลับแก้ไข (Back)</span>
+          </div>
+        </a>
         </div>
 
         

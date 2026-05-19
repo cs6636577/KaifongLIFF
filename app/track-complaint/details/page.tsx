@@ -2,15 +2,21 @@
 import Navbar from "../../../components/navbar";
 import UserCard from "../../../components/userform/UserCard"
 import { Sarabun } from 'next/font/google';
-import { useState,useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense  } from "react";
 import ComplaintCard from "../../../components/userform/ComplaintDetailsCard";
 import EvidenceCard from "@/components/userform/EvidenceCard";
 import StatusCard from "@/components/complaint/StatusCard";
 import { FaArrowLeft } from "react-icons/fa";
+import type { ServiceRequest } from "@/lib/requests.types";
   //font sarabun
 const sarabun = Sarabun({
   subsets: ['thai'],
   weight: ['100', '200', '300', '400', '500', '600', '700'],});
+
+interface request {
+  request: ServiceRequest;
+}
 
 function Details(){
     
@@ -30,7 +36,19 @@ useEffect(() => {
       });
 }, []);
 
-if (!user) return <p>Loading...</p>;
+/*สำหรับหน้ารายละเอียดข้อมูลหลังกดcardเฉพาะตัว*/
+const searchParams = useSearchParams();
+const id = searchParams.get("id");
+const [request, setRequest] = useState<ServiceRequest | null>(null);
+useEffect(() => {
+    if (!id) return;
+    fetch(`/api/requests/${id}`)
+      .then(r => r.json())
+      .then(setRequest);
+}, [id]);
+
+
+if (!user || !request) return <p>Loading...</p>;
   
     return (
        <div className={`${sarabun.className} min-h-screen`}>
@@ -49,15 +67,19 @@ if (!user) return <p>Loading...</p>;
             "$1-$2-$3"
         )}
         />
-        <ComplaintCard/>
+        <ComplaintCard  request={request}/>
         <EvidenceCard/>
-        <StatusCard/>
-        <div className="flex gap-2 justify-center mr-3">
-         <div className="mt-1"><FaArrowLeft/></div>
-          <a href="/track-complaint/complaint">
-          <span className="mb-5 py-3">ย้อนกลับ (Back)</span>
-          </a>
-        </div>
+        <StatusCard
+         request={request}
+        />
+        
+         <a href="/track-complaint/complaint">
+          <div className="flex gap-6 justify-center mr-3 text-link-text font-bold">
+          <div className="mt-1"><FaArrowLeft/></div>
+            <span className="mb-5">ย้อนกลับ (Back)</span>
+          </div>
+        </a>
+
         </div>
 
         
