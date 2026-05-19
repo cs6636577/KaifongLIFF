@@ -105,6 +105,7 @@ const card_form2 = () => {
         </div>
 
         {/* ปุ่มถัดไป */}
+         <Link href='/userform/details'>
         <div className='flex items-center justify-center w-full mt-5 mb-10'>
             <button 
                 type="submit" 
@@ -119,6 +120,7 @@ const card_form2 = () => {
                 </div>
             </button>
         </div>
+        </Link>
 
         {/* ปุ่มย้อนกลับ */}
         <div className='flex items-center justify-center w-full mb-30'>
