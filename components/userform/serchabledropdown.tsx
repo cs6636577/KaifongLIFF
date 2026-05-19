@@ -42,7 +42,7 @@ const SearchableDropdown = ({ selectedValue, onSelectedChange }: { selectedValue
                 onBlur={() => setTimeout(() => setOpen(false), 100)}
                 className={`w-full bg-[#F4F4F1]/50 placeholder:text-[#7F7660]/50 rounded-xl py-4 px-4 pr-10 text-base border-2 ${isInvalid ? 'border-red-500' : 'border-transparent'}`}
                 />
-        <IoIosArrowForward className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-[#725C00]" size={18}/>
+        <IoIosArrowForward className={`pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-[#6B7280] transition-transform ${open ? 'rotate-[270deg]' : 'rotate-90'}`} size={18}/>
 
         {open && filtered.length > 0 && (
             <ul className="absolute z-10 w-full bg-white shadow-lg rounded-xl mt-1 max-h-60 overflow-y-auto">

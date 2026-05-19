@@ -94,39 +94,14 @@ const card_form = () => {
         }
     };
 
-    // const dropdown = document.getElementById("mySelect") as HTMLSelectElement;
-
-    // function getValue() {
-    // const selectedValue = dropdown.value;
-    // console.log("Selected value:", selectedValue);
-    // }
-
-    // const DropdownComponent: React.FC = () => {
-    // const [selected, setSelected] = React.useState<string>("");
-    // const dropdown = document.getElementById("GenderSelect") as HTMLSelectElement;
-    // dropdown.addEventListener("change", getValue);
-
-    // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    //     setSelected(event.target.value);
-    // };
-    // }
-
-    // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    //     setSelected(event.target.value);
-    // }
-
-    // const TextHandleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     setSelected(event.target.value);
-    // }
-
   return (
     <div className='w-full'>
       <form onSubmit={handleSubmit}>
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
-                {/* คำนำหน้าชื่อ */}
+            {/* คำนำหน้าชื่อ */}
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>คำนำหน้า</p>
-                <p className='text-[#4D4632] text-sm font-normal'>Title</p>
+                <p className='text-[#4D4632] text-base font-normal'>Title</p>
                 <div className="relative w-full mt-1 mb-1">
                     <SearchableDropdown selectedValue={selected} onSelectedChange={setSelected} />
                 </div>
@@ -137,7 +112,7 @@ const card_form = () => {
             {/* ชื่อ */}
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>ชื่อ</p>
-                <p className='text-[#4D4632] text-sm font-normal'>Name</p>
+                <p className='text-[#4D4632] text-base font-normal'>Name</p>
                 <input type="text"
                     placeholder='พิมพ์ชื่อของคุณ'
                     value={name}
@@ -150,7 +125,7 @@ const card_form = () => {
             {/* นามสกุล */}
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>นามสกุล</p>
-                <p className='text-[#4D4632] text-sm font-normal'>Surname</p>
+                <p className='text-[#4D4632] text-base font-normal'>Surname</p>
                 <input type="text"
                     placeholder='พิมพ์นามสกุลของคุณ'
                     value={surname}
@@ -163,7 +138,7 @@ const card_form = () => {
             {/* เบอร์โทรศัพท์ */}
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>เบอร์โทรศัพท์</p>
-                <p className='text-[#4D4632] text-sm font-normal'>Phone Number</p>
+                <p className='text-[#4D4632] text-base font-normal'>Phone Number</p>
                 <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-2 focus-within:border-black focus-within:ring-1 focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-red-500' : 'border-transparent'}`}>
                     <MdOutlinePhone className="text-[#725C00] text-xl shrink-0 mx-3" />
                     <input
