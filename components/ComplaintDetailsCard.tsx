@@ -7,6 +7,7 @@ type ComplaintCardProps = {
     category: string;
     location: string;
     description: string;
+    additional: string;
   };
 };
 
@@ -14,6 +15,7 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
   const category = request?.category ?? formData?.category ?? "";
   const location = request?.location ?? formData?.location ?? "";
   const description = request?.description ?? formData?.description ?? "";
+  const additional = request?.additional ?? formData?.additional ?? "";
 
   return (
     <div className="rounded-xl bg-white p-3 shadow-sm">
@@ -45,11 +47,18 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
           <span className="text-md text-[#1A1A2E] font-semibold">{location}</span>
         </div>
       </div>
-
+      
+      <div className="m-3">
+        <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบาย</span>
+        <span className="px-2 text-[10px] text-[#4D4632]/60">Details</span>
+        <p className="text-md text-[#1A1A2E]">{description}</p>
+      </div>
       <div className="m-3">
         <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบายเพิ่มเติม</span>
         <span className="px-2 text-[10px] text-[#4D4632]/60">Additional Details</span>
-        <p className="text-md text-[#1A1A2E]">{description}</p>
+          <div className="mt-1 rounded-lg border border-dashed border-[#725C00]/40 bg-[#725C00]/5 px-3 py-2">
+            <p className="text-sm text-[#2F2A1F]/70 leading-relaxed">{additional}</p>
+          </div>
       </div>
 
     </div>

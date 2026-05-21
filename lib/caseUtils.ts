@@ -52,7 +52,7 @@ export function calcPendingDuration(datetime: string): string {
 
     if (remainHours === 0 && remainMinutes === 0) return `รอมอบหมายเจ้าหน้าที่ ${days} วันแล้ว`;
     if (remainHours === 0) return `รอมอบหมายเจ้าหน้าที่\u00A0\u00A0 ·\u00A0\u00A0${days} วัน ${remainMinutes} นาทีแล้ว`;
-    return `รอมอบหมายเจ้าหน้าที่\u00A0\u00A0 ·\u00A0\u00A0${days} วัน ${remainHours} ชม. ที่แล้ว`;
+    return `${days} วัน ${remainHours} ชม. ที่แล้ว`;
   }
 
   const hours = totalHours;

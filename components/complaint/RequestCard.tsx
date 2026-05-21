@@ -20,7 +20,7 @@ import {
   STATUS_ICON_TILE,
   STATUS_LABEL,
   STATUS_PILL,
-} from "./status";
+} from "../../lib/status";
 
 import { ProgressSteps } from "./ProgressSteps";
 
@@ -152,13 +152,19 @@ export function DetailStrip({
         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
 
         <div className="min-w-0">
-          <p className="font-medium leading-snug">
+          <span className="font-medium leading-snug">
             {request.detail}
-          </p>
+          </span>
 
-          {request.detailMeta && (
-            <p className="text-muted-foreground mt-0.5 text-xs">
+          {request.status !== "in_progress" && request.detailMeta && (
+            <span className="text-gray-400 mt-0.5 text-xs">
               {request.detailMeta}
+            </span>
+          )}
+
+          {request.status === "in_progress" && (
+            <p className="text-gray-400 mt-0.5 text-xs">
+             {request.detailMeta}
             </p>
           )}
         </div>

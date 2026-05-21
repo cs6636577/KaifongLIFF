@@ -11,6 +11,7 @@ export interface ServiceRequest {
   /** number of progress segments to render */
   steps: number;
   detail: string;
+  additional: string;
   detailMeta?: string;
   description?: string;
   location: string;

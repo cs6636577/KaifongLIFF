@@ -17,9 +17,11 @@ export async function GET(
       day: "numeric", month: "short", year: "numeric",
     }),
     // รายละเอียดคำร้อง
-    category: "ขยะมูลฝอยสิ่งปฏิกูล",
+    category: getCategory(item.problem_id),
     address: item.location,
     description: item.description,
+    additional:  "รบกวนมาช่วยด่วนๆ เป็นปัญหามากๆก่อสิ่งรบกวนให้กับบริเวณใกล้เคียง",
+    
 
     // fields ที่ StatusCard ใช้
     status: item.status,
@@ -29,12 +31,26 @@ export async function GET(
           : item.status === "in_progress"
           ? "ช่างอยู่ในพื้นที่แล้ว - กำลังดำเนินการ"
           : item.status === "paused"
-          ? "พักการทำงาน เนื่องจาก ต้องการทรัพยากรเพิ่มเติม" //static 
-          : calcPendingDuration(item.datetime),
+          ? "พักการทำงาน เนื่องจาก ต้องการทรัพยากรเพิ่มเติม" //static , description ??
+          : "รอมอบหมายเจ้าหน้าที่",
+      
+      detailMeta:
+       item.status === "resolved"
+          ? "" 
+          : item.status === "in_progress"
+          ? calcPendingDuration(item.datetime)
+          : item.status === "paused"
+          ? "" //static 
+          : "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(item.datetime),
 
-    detailMeta: "",
     icon: "build",
   };
 
   return Response.json(result);
+}
+
+function getCategory(problemId: number): string | undefined {
+  return data.problems.find(
+    (p) => p.id === problemId
+  )?.name ?? undefined;
 }

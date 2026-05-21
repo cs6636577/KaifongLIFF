@@ -11,8 +11,6 @@ export async function GET() {
 
       title: item.description,
 
-      category: "แจ้งปัญหา",
-
       icon: 
       item.status === "paused" 
       ? "stop" 
@@ -42,11 +40,17 @@ export async function GET() {
           : item.status === "in_progress"
           ? "ช่างอยู่ในพื้นที่แล้ว - กำลังดำเนินการ"
           : item.status === "paused"
-          ? "พักการทำงาน เนื่องจาก ต้องการทรัพยากรเพิ่มเติม" //static 
-          : calcPendingDuration(item.datetime),
-
-      detailMeta: ``,
-
+          ? "พักการทำงาน เนื่องจาก ต้องการทรัพยากรเพิ่มเติม" //static , description ??
+          : "รอมอบหมายเจ้าหน้าที่",
+      
+      detailMeta:
+       item.status === "resolved"
+          ? "" 
+          : item.status === "in_progress"
+          ? calcPendingDuration(item.datetime)
+          : item.status === "paused"
+          ? "" //static 
+          : "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(item.datetime),
       location: item.location,
 
       date: new Date(item.datetime).toLocaleDateString("th-TH", {
@@ -57,12 +61,7 @@ export async function GET() {
 
       group: getGroup(item.datetime),
 
-      rating:
-        item.status === "resolved"
-           ? [5, undefined][
-        Math.floor(Math.random() * 3)
-      ]
-     : undefined,
+      rating: getRating(item.id, item.user_id),
 
       showRateAction:
         item.status === "resolved",
@@ -71,7 +70,7 @@ export async function GET() {
 
   const payload = {
     user: {
-      name: "สมชาย ใจดี",
+      name: "สมชาย ใจดี", //ถ้ามีหลังบ้านเปลี่ยนจาก line
     },
 
     counts: {
@@ -101,5 +100,12 @@ export async function GET() {
   };
 
   return Response.json(payload);
+
+}
+
+function getRating(caseId: number, userId: number): number | undefined {
+  return data.ratings.find(
+    (r) => r.case_id === caseId && r.user_id === userId
+  )?.score ?? undefined;
 }
 
