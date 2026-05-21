@@ -33,6 +33,7 @@ const ICONS: Record<string, ElementType> = {
   stop: CircleStop,
 } as const;
 
+
 interface RequestCardProps {
   request: ServiceRequest;
   onRate?: (id: string) => void;
@@ -44,7 +45,6 @@ export function RequestCard({
 }: RequestCardProps) {
   const Icon = ICONS[request.icon];
   const accent = STATUS_ACCENT[request.status];
-
   const router = useRouter();
 
   return (
@@ -55,19 +55,25 @@ export function RequestCard({
         className={`absolute top-0 left-0 h-full w-1.5 ${accent}`}
       />
 
-      <div className="space-y-4 p-4 pl-5 sm:p-5 sm:pl-6">
+     
+       <div className="space-y-4 p-4 pl-5 sm:p-5 sm:pl-6">
         {/* top row: icon tile + status pill */}
         <div className="flex items-start justify-between gap-3">
+          {/*
           <div
             className={`flex h-12 w-12 items-center justify-center rounded-xl ${
               STATUS_ICON_TILE[request.status]
             }`}
           >
-            <Icon className="h-6 w-6" />
+             {/*<Icon className="h-6 w-6" />
+             
           </div>
+          */}
+          
 
          <StatusPill status={request.status} />
         </div>
+        
 
         {/* title */}
         <h3 className="text-base font-bold leading-snug sm:text-lg">

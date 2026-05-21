@@ -109,3 +109,6 @@ function getRating(caseId: number, userId: number): number | undefined {
   )?.score ?? undefined;
 }
 
+
+
+
