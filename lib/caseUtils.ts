@@ -50,17 +50,17 @@ export function calcPendingDuration(datetime: string): string {
     const remainHours = totalHours % 24;
     const remainMinutes = totalMinutes % 60;
 
-    if (remainHours === 0 && remainMinutes === 0) return `รอมอบหมายเจ้าหน้าที่ ${days} วันแล้ว`;
-    if (remainHours === 0) return `รอมอบหมายเจ้าหน้าที่\u00A0\u00A0 ·\u00A0\u00A0${days} วัน ${remainMinutes} นาทีแล้ว`;
+    if (remainHours === 0 && remainMinutes === 0) return `${days} วันแล้ว`;
+    if (remainHours === 0) return `${days} วัน ${remainMinutes} นาทีแล้ว`;
     return `${days} วัน ${remainHours} ชม. ที่แล้ว`;
   }
 
   const hours = totalHours;
   const minutes = totalMinutes % 60;
 
-  if (hours === 0) return `รอมอบหมายเจ้าหน้าที่ ${minutes} นาทีแล้ว`;
-  if (minutes === 0) return `รอมอบหมายเจ้าหน้าที่ ${hours} ชม.แล้ว`;
-  return `รอมอบหมายเจ้าหน้าที่\u00A0\u00A0 ·\u00A0\u00A0${hours} ชม. ${minutes} นาที ที่แล้ว`;
+  if (hours === 0) return `${minutes} นาทีแล้ว`;
+  if (minutes === 0) return `${hours} ชม.แล้ว`;
+  return `${hours} ชม. ${minutes} นาที ที่แล้ว`;
 }
 
 export function getGroup(datetime: string): "this_week" | "earlier" {

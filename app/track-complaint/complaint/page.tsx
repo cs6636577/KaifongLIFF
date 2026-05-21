@@ -15,6 +15,7 @@ import Navbar from "@/components/navbar";
 import type { ServiceRequest } from "@/lib/requests.types";
 import { RatingModal } from "@/components/complaint/RatingModal";
 import { Pagination } from "@/components/Pagination"
+import Link from "next/link";
 
  //font sarabun
 const sarabun = Sarabun({
@@ -246,13 +247,13 @@ function RequestSection({
       {/*ส่งidดึงข้อมุลไปหน้า details เพื่อดูรายละเอียด*/}
       <div className="grid gap-4 sm:grid-cols-2">
         {requests.map((r) => ( 
-           <a href={`/track-complaint/details?id=${r.id}`} key={r.id}>
+           <Link href={`/track-complaint/details?id=${r.id}`} key={r.id}>
           <RequestCard
             key={r.id}
             request={r}
             onRate={handleOpenRating}
           />
-          </a>
+          </Link>
         ))}
       </div>
 

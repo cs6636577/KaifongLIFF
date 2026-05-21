@@ -8,6 +8,7 @@ import EvidenceCard from "@/components/userform/EvidenceCard";
 import StepProgress from "@/components/userform/step_progress_3";
 import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
+import Link from "next/link";
   //font sarabun
 const sarabun = Sarabun({
   subsets: ['thai'],
@@ -65,12 +66,12 @@ if (!user) return <p>Loading...</p>;
             </div>
           </button>
         </div>
-        <a href="/userform/Complaint_Details">
+        <Link href="/userform/Complaint_Details">
           <div className="flex gap-2 justify-center mr-3 text-link-text font-bold">
           <div className="mt-1"><FaArrowLeft/></div>
             <span className="mb-5">ย้อนกลับแก้ไข (Back)</span>
           </div>
-        </a>
+        </Link>
         </div>
 
         

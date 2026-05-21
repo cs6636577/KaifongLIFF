@@ -53,6 +53,7 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
         <span className="px-2 text-[10px] text-[#4D4632]/60">Details</span>
         <p className="text-md text-[#1A1A2E]">{description}</p>
       </div>
+      { additional && (
       <div className="m-3">
         <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบายเพิ่มเติม</span>
         <span className="px-2 text-[10px] text-[#4D4632]/60">Additional Details</span>
@@ -60,6 +61,8 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
             <p className="text-sm text-[#2F2A1F]/70 leading-relaxed">{additional}</p>
           </div>
       </div>
+      )
+      }
 
     </div>
   );

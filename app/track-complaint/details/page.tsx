@@ -9,6 +9,7 @@ import EvidenceCard from "@/components/userform/EvidenceCard";
 import StatusCard from "@/components/complaint/StatusCard";
 import { FaArrowLeft } from "react-icons/fa";
 import type { ServiceRequest } from "@/lib/requests.types";
+import Link from "next/link";
   //font sarabun
 const sarabun = Sarabun({
   subsets: ['thai'],
@@ -31,6 +32,8 @@ useEffect(() => {
         setUser(data);
       });
 }, []);
+
+
 
 /*สำหรับหน้ารายละเอียดข้อมูลหลังกดcardเฉพาะตัว*/
 const searchParams = useSearchParams();
@@ -75,12 +78,12 @@ if (!user || !request) return (
          request={request}
         />
         
-         <a href="/track-complaint/complaint">
+         <Link href="/track-complaint/complaint">
           <div className="flex gap-6 justify-center mr-3 text-link-text font-bold">
           <div className="mt-1"><FaArrowLeft/></div>
             <span className="mb-5">ย้อนกลับ (Back)</span>
           </div>
-        </a>
+        </Link>
 
         </div>
 
