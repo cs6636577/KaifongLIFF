@@ -54,6 +54,10 @@ const card_form2 = () => {
                 </button>
             </div>
 
+            {/* เพิ่มAdditional Notesสถานที่เอาไว้ */}
+            <p className='text-[#4D4632]'>Description</p>
+            <input type="text" placeholder='รายละเอียดสถานที่ เช่น ใต้BTS...' className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
+
             {/* แผนที่ (เดี๋ยวค่อยวางapi) */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
                 <Image

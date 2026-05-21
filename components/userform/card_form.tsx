@@ -90,7 +90,11 @@ const card_form = () => {
         const isValid = validateForm();
         if (isValid) {
             // ถ้าvalidateผ่านให้ไปหน้าถัดไป
-            window.location.href = "/userform/Complaint_Details";
+            // window.location.href = "/userform/Complaint_Details";
+            console.log("prefix:" + selected)
+            console.log("name:" + name);
+            console.log("surname" + surname)
+            console.log("phone" + phone)
         }
     };
 
