@@ -1,7 +1,9 @@
-import React from 'react'
+"use client";
+import React, { useState } from 'react'
 import Navbar from '../../../../components/navbar'
 import { Sarabun } from 'next/font/google';
 import StepProgressMap from '@/components/userform/step_progressmap';
+import { SearchBar } from '@/components/complaint/SearchBar';
 
 //font sarabun
 const sarabun = Sarabun({
@@ -9,6 +11,8 @@ const sarabun = Sarabun({
   weight: ['100', '200', '300', '400', '500', '600', '700'],});
 
 const page = () => {
+  const [search, setSearch] = useState("");
+
   return (
     <div className={`${sarabun.className}`}>
       <Navbar/>
@@ -19,6 +23,7 @@ const page = () => {
       </div>
 
       <StepProgressMap/>
+      
     </div>
   )
 }

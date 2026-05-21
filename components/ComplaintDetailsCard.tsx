@@ -1,0 +1,59 @@
+import { RiMapPin2Line } from "react-icons/ri";
+import type { ServiceRequest } from "@/lib/requests.types";
+
+type ComplaintCardProps = {
+  request?: ServiceRequest;
+  formData?: {
+    category: string;
+    location: string;
+    description: string;
+  };
+};
+
+function ComplaintCard({ request, formData }: ComplaintCardProps) {
+  const category = request?.category ?? formData?.category ?? "";
+  const location = request?.location ?? formData?.location ?? "";
+  const description = request?.description ?? formData?.description ?? "";
+
+  return (
+    <div className="rounded-xl bg-white p-3 shadow-sm">
+
+      <div className="flex gap-2 m-3">
+        <div className="w-1.5 h-6 rounded-md bg-[#725C00] mt-3" />
+        <div>
+          <p className="text-lg font-bold text-[#1A1A2E]">รายละเอียดคำร้อง</p>
+          <p className="text-sm text-[#4D4632]">Complaint Details</p>
+        </div>
+      </div>
+
+      <div className="m-3">
+        <div className="relative bg-[#4D4632]/7 rounded-full px-4 py-3 block overflow-hidden">
+          <div className="absolute left-0 top-0 h-full w-[4px] bg-[#725C00]" />
+          <div className="flex items-center gap-1 mb-1">
+            <p className="text-[11px] font-semibold text-[#4D4632]/60">หัวข้อปัญหา</p>
+            <p className="text-[9px] text-[#4D4632]/50">Problem Category</p>
+          </div>
+          <p className="text-lg font-bold text-[#2F2A1F]">{category}</p>
+        </div>
+      </div>
+
+      <div className="m-3">
+        <span className="text-sm font-bold text-[#4D4632]/60">สถานที่เกิดเหตุ</span>
+        <span className="px-2 text-[10px] text-[#4D4632]/60">Location</span>
+        <div className="flex gap-2">
+          <RiMapPin2Line className="w-9 h-6 text-[#725C00]" />
+          <span className="text-md text-[#1A1A2E] font-semibold">{location}</span>
+        </div>
+      </div>
+
+      <div className="m-3">
+        <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบายเพิ่มเติม</span>
+        <span className="px-2 text-[10px] text-[#4D4632]/60">Additional Details</span>
+        <p className="text-md text-[#1A1A2E]">{description}</p>
+      </div>
+
+    </div>
+  );
+}
+
+export default ComplaintCard;
