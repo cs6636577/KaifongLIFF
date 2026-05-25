@@ -9,21 +9,62 @@ import { IoMdArrowRoundForward } from 'react-icons/io';
 import prepage from '../../app/userform/Reporter_Info/page'
 import Link from 'next/link'
 import { GrWaypoint } from 'react-icons/gr';
+import { useRouter } from 'next/navigation' 
+import { describe } from 'node:test';
+import { IssueTypeOptions } from '@/data/issuetype';
 
 
+interface FormErrors {
+    issueType: string;
+    subIssue: string;
+    detail: string;
+    location: string;
+    locationDescription: string;
+    additionalNotes: string;
+}
 
 const card_form2 = () => {
+    const router = useRouter()
     const [selected, setSelected] = React.useState<string>("");
     const [selectedSub, setselectedSub] = React.useState<string>("");
+    const [detail, setDetail] = React.useState<string>("");
+    const [location, setLocation] = React.useState<string>("");
+    const [locationDescription, setLocationDescription] = React.useState<string>("");
+    const [additionalNotes, setAdditionalNotes] = React.useState<string>("");
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelected(event.target.value);
         setselectedSub(event.target.value)
     }
 
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("ปัญหา:" + selected)
+        console.log("ปัญหาย่อย:" + selectedSub)
+        console.log("รายละเอียด" + detail)
+        console.log("ตำแหน่ง" + location)
+        console.log("รายละเอียดตำแหน่ง" + locationDescription)
+        console.log("หมายเหตุเพิ่มเติม" + additionalNotes)
+
+        // ดึง label จาก options
+        const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
+        const subOptions = IssueTypeOptions.find(o => o.value === selected)?.sub ?? []
+        const subLabel = subOptions.find(o => o.value === selectedSub)?.label ?? selectedSub
+
+        const res = await fetch('/api/form/complaint', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes}),
+        })
+
+        if (res.ok) {
+            router.push("/userform/details")
+        }
+    };
   return (
     <div className='w-full'>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
             {/* ประเภทปัญหา */}
             <p className='text-[#5D5C74] text-lg font-semibold'>ประเภทหมวดปัญหา</p>
@@ -37,7 +78,9 @@ const card_form2 = () => {
                 <p className='text-[#5D5C74] text-lg font-semibold'>รายละเอียด</p>
                 <p className='text-[#4D4632] text-base font-normal mb-1'>Details</p>
                 <textarea
+                    value={detail}
                     placeholder='กรุณาระบุรายละเอียดที่พบ...'
+                    onChange={(e) => setDetail(e.target.value)}
                     className="w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base h-36 align-top"
                 />            
             </div>
@@ -48,15 +91,25 @@ const card_form2 = () => {
             <p className='text-[#5D5C74] text-lg font-semibold'>ตำแหน่งเรื่องร้องทุกข์</p>
             <p className='text-[#4D4632] text-base font-normal mb-2'>Location</p>
             <div className='flex flex-row'>
-                <input type="text" placeholder='ระบุสถานที่ หรือ ปักหมุดในแผนที่' className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
+                <input
+                    type="text"
+                    value={location}
+                    placeholder='ระบุสถานที่ หรือ ปักหมุดในแผนที่'
+                    onChange={(e) => setLocation(e.target.value)}
+                    className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
                 <button className='bg-nt px-5 py-5 w-15 h-15 items-center rounded-2xl shadow-lg mx-5 mt-1 hover:cursor-pointer'>
                     <RiMapPin2Fill  size={22} color='695400'/>
                 </button>
             </div>
 
-            {/* เพิ่มAdditional Notesสถานที่เอาไว้ */}
+            {/* เพิ่มรายละเอียดสถานที่เอาไว้ */}
             <p className='text-[#4D4632]'>Description</p>
-            <input type="text" placeholder='รายละเอียดสถานที่ เช่น ใต้BTS...' className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
+            <input
+                type="text"
+                value={locationDescription}
+                placeholder='รายละเอียดสถานที่ เช่น ใต้BTS...'
+                onChange={(e) => setLocationDescription(e.target.value)}
+                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
 
             {/* แผนที่ (เดี๋ยวค่อยวางapi) */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
@@ -96,12 +149,14 @@ const card_form2 = () => {
         </div>
 
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
-            {/* รายละเอียดปัญหา */}
+            {/* รายละเอียดปัญหา additionalNotes*/}
             <div>
                 <p className='text-[#5D5C74] text-lg font-semibold'>หมายเหตุเพิ่มเติม</p>
                 <p className='text-[#4D4632] text-base font-normal mb-2'>Additional Notes</p>
                 <input
                     type='text'
+                    value={additionalNotes}
+                    onChange={(e) => setAdditionalNotes(e.target.value)}
                     className="w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base"
                     placeholder='ข้อมูลอื่นๆ ที่ต้องการแจ้ง...'
                 />         
@@ -109,7 +164,7 @@ const card_form2 = () => {
         </div>
 
         {/* ปุ่มถัดไป */}
-         <Link href='/userform/details'>
+         {/* <Link href='/userform/details'> */}
         <div className='flex items-center justify-center w-full mt-5 mb-10'>
             <button 
                 type="submit" 
@@ -124,7 +179,7 @@ const card_form2 = () => {
                 </div>
             </button>
         </div>
-        </Link>
+        {/* </Link> */}
 
         {/* ปุ่มย้อนกลับ */}
         <div className='flex items-center justify-center w-full mb-30'>
