@@ -9,30 +9,40 @@ import StepProgress from "@/components/userform/step_progress_3";
 import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+
   //font sarabun
 const sarabun = Sarabun({
   subsets: ['thai'],
   weight: ['100', '200', '300', '400', '500', '600', '700'],});
 
-function Details(){
-    
+export default function Details(){
+
 type User = {
   name: string;
   lastname: string;
   phone: string;
 };
 
+type Detail = {
+  issueType: string;
+  location: string;
+  detail: string;
+}
+
 const [user, setUser] = useState<User | null>(null);
+const [detail, setDetail] = useState<Detail | null>(null); 
 
 useEffect(() => {
-    fetch("/api/user")
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-      });
+    Promise.all([
+        fetch("/api/form/reporter").then(res => res.json()),
+        fetch("/api/form/complaint").then(res => res.json()),
+    ]).then(([userData, detailData]) => {
+        setUser(userData);
+        setDetail(detailData);
+    });
 }, []);
 
-if (!user) return <p>Loading...</p>;
+if (!user || !detail) return <p>Loading...</p>;
   
     return (
        <div className={`${sarabun.className} min-h-screen`}>
@@ -52,7 +62,11 @@ if (!user) return <p>Loading...</p>;
             "$1-$2-$3"
         )}
         />
-        <ComplaintCard />
+        <ComplaintCard formData={{
+          category: detail.issueType,
+          location: detail.location,
+          detail: detail.detail,
+        }}/>
         <EvidenceCard/>
         {/* ปุ่มยืนยัน*/}
         <div className='flex items-center justify-center w-full mb-4'>
@@ -80,4 +94,3 @@ if (!user) return <p>Loading...</p>;
 
     )
 }
-export default Details

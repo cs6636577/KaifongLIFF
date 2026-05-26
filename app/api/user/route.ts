@@ -1,7 +1,20 @@
-import data from "@/data/data.json"
+// app/api/user/route.ts
 
-export async function GET() {
-  //ดึงของ mock มาใช้ก่อน เดี๋ยว form เสดจะเอาตัว form มาใช้
-  return Response.json(data.users[0]);
-  //ใส่ case details where case id == คนที่คลิ้กมา
+import data from "@/data/mock_data_may2026.json";
+import { getCurrentUserId } from "@/lib/session";
+
+export async function GET(): Promise<Response> {
+  const userId = getCurrentUserId();
+
+  const user = data.meta.reference_ids.citizen_users.find(
+    (u) => u.user_id === userId
+  );
+
+  if (!user) return Response.json({ error: "not found" }, { status: 404 });
+
+  return Response.json({
+    name:    user.display_name.split(" ")[0],
+    lastname: user.display_name.split(" ")[1] ?? "",
+    phone:   user.phone,
+  });
 }

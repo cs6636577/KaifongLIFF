@@ -1,5 +1,4 @@
 export type RequestStatus = "in_progress" | "pending" | "resolved" | "paused";
-
 export interface ServiceRequest {
   id: string;
   title: string;

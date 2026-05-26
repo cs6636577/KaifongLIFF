@@ -17,7 +17,7 @@ import {
 } from "../../lib/status";
 
 
-import type { ServiceRequest } from "@/lib/requests.types";
+import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 
 type StatusCardProps = {
   request: ServiceRequest;

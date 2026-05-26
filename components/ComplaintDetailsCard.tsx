@@ -1,20 +1,22 @@
 import { RiMapPin2Line } from "react-icons/ri";
-import type { ServiceRequest } from "@/lib/requests.types";
+import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 
 type ComplaintCardProps = {
   request?: ServiceRequest;
   formData?: {
     category: string;
+    subcategory?: string;
     location: string;
-    description: string;
-    additional: string;
+    detail: string;
+    additional?: string;
   };
 };
 
 function ComplaintCard({ request, formData }: ComplaintCardProps) {
   const category = request?.category ?? formData?.category ?? "";
+  const subcategory = request?.subcategory ?? formData?.subcategory ?? "";
   const location = request?.location ?? formData?.location ?? "";
-  const description = request?.description ?? formData?.description ?? "";
+  const detail = request?.detail ?? formData?.detail ?? "";
   const additional = request?.additional ?? formData?.additional ?? "";
 
   return (
@@ -27,17 +29,26 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
           <p className="text-sm text-[#4D4632]">Complaint Details</p>
         </div>
       </div>
+<div className="m-3 space-y-2">
+  {/* Category */}
+  <div className="relative bg-[#4D4632]/7 rounded-[28px] px-4 py-3 overflow-hidden">
+    <div className="absolute left-0 top-0 h-full w-[4px] bg-[#725C00]" />
+    <div className="flex items-center gap-1 mb-0.5">
+      <p className="text-[11px] font-semibold text-[#4D4632]/60">หัวข้อปัญหา</p>
+      <p className="text-[9px] text-[#4D4632]/50">Category</p>
+    </div>
+    <p className="text-lg font-bold text-[#2F2A1F]">{category}</p>
 
-      <div className="m-3">
-        <div className="relative bg-[#4D4632]/7 rounded-full px-4 py-3 block overflow-hidden">
-          <div className="absolute left-0 top-0 h-full w-[4px] bg-[#725C00]" />
-          <div className="flex items-center gap-1 mb-1">
-            <p className="text-[11px] font-semibold text-[#4D4632]/60">หัวข้อปัญหา</p>
-            <p className="text-[9px] text-[#4D4632]/50">Problem Category</p>
-          </div>
-          <p className="text-lg font-bold text-[#2F2A1F]">{category}</p>
-        </div>
+    {/* Subcategory*/}
+    <div className="mt-2">
+      <div className="flex items-center gap-1 mb-0.5">
+        <p className="text-[10px] font-semibold text-[#4D4632]/55">หัวข้อปัญหาย่อย</p>
+        <p className="text-[9px] text-[#4D4632]/45">Subcategory</p>
       </div>
+      <p className="text-sm font-semibold text-[#2F2A1F]/85">{subcategory}</p>
+    </div>
+  </div>
+</div>
 
       <div className="m-3">
         <span className="text-sm font-bold text-[#4D4632]/60">สถานที่เกิดเหตุ</span>
@@ -51,7 +62,7 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
       <div className="m-3">
         <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบาย</span>
         <span className="px-2 text-[10px] text-[#4D4632]/60">Details</span>
-        <p className="text-md text-[#1A1A2E]">{description}</p>
+        <p className="text-md text-[#1A1A2E]">{detail}</p>
       </div>
       { additional && (
       <div className="m-3">

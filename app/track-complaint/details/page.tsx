@@ -8,7 +8,7 @@ import ComplaintCard from "../../../components/ComplaintDetailsCard";
 import EvidenceCard from "@/components/userform/EvidenceCard";
 import StatusCard from "@/components/complaint/StatusCard";
 import { FaArrowLeft } from "react-icons/fa";
-import type { ServiceRequest } from "@/lib/requests.types";
+import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 import Link from "next/link";
   //font sarabun
 const sarabun = Sarabun({
@@ -23,29 +23,25 @@ type User = {
   phone: string;
 };
 
+
 const [user, setUser] = useState<User | null>(null);
-
-useEffect(() => {
-    fetch("/api/user")
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-      });
-}, []);
-
-
 
 /*สำหรับหน้ารายละเอียดข้อมูลหลังกดcardเฉพาะตัว*/
 const searchParams = useSearchParams();
 const id = searchParams.get("id");
 const [request, setRequest] = useState<ServiceRequest | null>(null);
-useEffect(() => {
-    if (!id) return;
-    fetch(`/api/requests/${id}`)
-      .then(r => r.json())
-      .then(setRequest);
-}, [id]);
 
+useEffect(() => {
+  if (!id) return;
+
+  Promise.all([
+    fetch("/api/user").then((r) => r.json()),
+    fetch(`/api/complaint2/${id}`).then((r) => r.json()),
+  ]).then(([userData, requestData]) => {
+    setUser(userData);
+    setRequest(requestData);
+  });
+}, [id]);
 
 if (!user || !request) return (
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3">

@@ -6,6 +6,7 @@ import { prefixOptions } from '../../data/prefix';
 import { useState, useEffect } from 'react';
 import SearchableDropdown from './serchabledropdown';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation' 
 
 interface FormErrors {
     prefix: string;
@@ -14,7 +15,8 @@ interface FormErrors {
     phone: string;
 }
 
-const card_form = () => {
+export default function card_form() {
+    const router = useRouter()
     const [selected, setSelected] = React.useState<string>("");
     const [name, setName] = React.useState<string>("");
     const [surname, setSurname] = React.useState<string>("");
@@ -85,16 +87,26 @@ const card_form = () => {
         return Object.values(newErrors).every(error => error === "");
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const isValid = validateForm();
         if (isValid) {
             // ถ้าvalidateผ่านให้ไปหน้าถัดไป
             // window.location.href = "/userform/Complaint_Details";
-            console.log("prefix:" + selected)
-            console.log("name:" + name);
-            console.log("surname" + surname)
-            console.log("phone" + phone)
+            // console.log("prefix:" + selected)
+            // console.log("name:" + name);
+            // console.log("surname" + surname)
+            // console.log("phone" + phone)
+
+            const res = await fetch('/api/form/reporter', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prefix: selected, name, surname, phone }),
+            })
+
+            if (res.ok) {
+            router.push("/userform/Complaint_Details")
+            }
         }
     };
 
@@ -178,4 +190,3 @@ const card_form = () => {
   )
 }
 
-export default card_form
