@@ -2,89 +2,94 @@
 
 import { useEffect, useRef } from "react";
 
-const Map = () => {
-  const mapRef = useRef<HTMLDivElement>(null);
+interface Location {
+  lat: number;
+  lng: number;
+  name?: string;
+  address?: string;
+}
 
+interface MapProps {
+  center?: Location | null;
+  onMarkerSelect?: (place: { name: string; address: string; lat: number; lng: number }) => void;
+}
+
+const Map = ({ center = null, onMarkerSelect }: MapProps) => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
 
   useEffect(() => {
-    const initAutocomplete = () => {
+    const init = () => {
       if (!window.google || !mapRef.current) {
-        setTimeout(initAutocomplete, 100);
+        setTimeout(init, 100);
         return;
       }
 
-      initMap();
-    };
-
-    //ฟังก์ชั่นหลักmap
-    const initMap = () => {
       const bangkok = new google.maps.LatLng(13.736717, 100.523186);
 
-      const infowindow = new google.maps.InfoWindow();
-
       const map = new google.maps.Map(mapRef.current!, {
-        center: bangkok,
+        center: center ? { lat: center.lat, lng: center.lng } : bangkok,
         zoom: 15,
-        streetViewControl: false
+        streetViewControl: false,
       });
 
-      const request = {
-        query: "ตึกใบหยก",
-        fields: ["name", "geometry"],
-      };
+      mapInstanceRef.current = map;
 
-      const service = new google.maps.places.PlacesService(map);
-
-      type PlaceCallback = (
-        results: google.maps.places.PlaceResult[] | null,
-        status: google.maps.places.PlacesServiceStatus
-      ) => void;
-
-      service.findPlaceFromQuery(request,(results, status) => {
-          if (
-            status === google.maps.places.PlacesServiceStatus.OK &&
-            results
-          ) {
-            for (let i = 0; i < results.length; i++) {
-              createMarker(results[i], map, infowindow);
-            }
-            map.setCenter(results[0].geometry!.location!);
-            console.log()
-          }
-        }
-      );
+      if (center) {
+        placeMarker(center, map);
+      }
     };
 
-    const createMarker = (
-      place: google.maps.places.PlaceResult,
-      map: google.maps.Map,
-      infowindow: google.maps.InfoWindow
-    ) => {
-      if (!place.geometry || !place.geometry.location) return;
+    init();
 
-      const marker = new google.maps.Marker({
-        map,
-        position: place.geometry.location,
-      });
-
-      //อันนี้เอาไว้ดูละติจูดกับลองติจูดเฉยๆ
-      const lag = marker.getPosition();
-      console.log('Marker Lat:', lag.lat());
-      console.log('Marker Lng:', lag.lng());
-
-
-      google.maps.event.addListener(marker, "click", () => {
-        infowindow.setContent(place.name || "");
-        infowindow.open(map);
-      });
+    return () => {
+      if (markerRef.current) {
+        markerRef.current.setMap(null);
+        markerRef.current = null;
+      }
+      mapInstanceRef.current = null;
     };
-
-    initAutocomplete();
   }, []);
 
-  return (
-    <div ref={mapRef} style={{ width: "100%", height: "500px" }} />
-  );
+  const placeMarker = (
+    place: { lat: number; lng: number; name?: string; address?: string },
+    map: google.maps.Map
+  ) => {
+    if (markerRef.current) {
+      markerRef.current.setMap(null);
+      markerRef.current = null;
+    }
+
+    const position = new google.maps.LatLng(place.lat, place.lng);
+
+    const marker = new google.maps.Marker({
+      map,
+      position,
+    });
+
+    const infowindow = new google.maps.InfoWindow({
+      content: place.name ?? place.address ?? "",
+    });
+
+    marker.addListener("click", () => {
+      infowindow.open(map, marker);
+      if (onMarkerSelect) {
+        onMarkerSelect({ name: place.name ?? "", address: place.address ?? "", lat: place.lat, lng: place.lng });
+      }
+    });
+
+    markerRef.current = marker;
+    map.setCenter(position);
+  };
+
+  // react to center prop changes
+  useEffect(() => {
+    if (!center || !mapInstanceRef.current) return;
+    placeMarker(center, mapInstanceRef.current);
+  }, [center]);
+
+  return <div ref={mapRef} style={{ width: "100%", height: "500px" }} />;
 };
 
 export default Map;

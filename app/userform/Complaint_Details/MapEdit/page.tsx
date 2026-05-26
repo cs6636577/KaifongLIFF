@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Navbar from '../../../../components/navbar'
 import { Sarabun } from 'next/font/google';
 import StepProgressMap from '@/components/userform/step_progressmap';
@@ -15,21 +16,42 @@ const sarabun = Sarabun({
 
 const page = () => {
   const [search, setSearch] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
 
-    // เพิ่ม handler รับค่าจาก SearchBar
+  // รับค่าจาก SearchBar
+  const router = useRouter()
+
   const handlePlaceSelect = (place: {
     name: string;
     address: string;
     lat: number;
     lng: number;
   }) => {
-    setLocation(place.address); // ใส่ที่อยู่ลง input location
+    setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng });
     console.log("พิกัด:", place.lat, place.lng);
   };
 
-  useEffect(() => {
-    
-  })
+  const SendtoForm = () => {
+    if (!selectedLocation) {
+      alert("กรุณาเลือกตำแหน่งก่อนยืนยัน");
+      return;
+    }
+
+    const payload = {
+      name: selectedLocation.name,
+      address: selectedLocation.address,
+      lat: selectedLocation.lat,
+      lng: selectedLocation.lng,
+    };
+
+    sessionStorage.setItem("complaintLocation", JSON.stringify(payload));
+    router.push("/userform/Complaint_Details");
+  }
 
   return (
     <div className={`${sarabun.className}`}>
@@ -54,7 +76,10 @@ const page = () => {
             className='w-full h-auto block mx-auto lg:w-50% lg:max-h-150 rounded-2xl'
             alt="Map"
           /> */}
-          <Map/>
+          <Map
+            center={selectedLocation ? { lat: selectedLocation.lat, lng: selectedLocation.lng, name: selectedLocation.name, address: selectedLocation.address } : null}
+            onMarkerSelect={(place) => setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng })}
+          />
 
       {/* Location Card */}
         <div className='bg-white shadow-lg shadow-gray-100 rounded-3xl p-6 w-full mt-6 flex gap-5'>
@@ -68,8 +93,14 @@ const page = () => {
               ตำแหน่งปัจจุบัน (CURRENT LOCATION)
             </span>
             <span className='pr-15'>
-              1123/85 ถ.กตก ต.หญ้าแฝก
-              อ.เทืองทุ่ง จ.มหาสมุทร 10240
+              {selectedLocation ? (
+                <>
+                  <div className='font-semibold'>{selectedLocation.name}</div>
+                  <div>{selectedLocation.address}</div>
+                </>
+              ) : (
+                "กรุณาเลือกตำแหน่งจากแผนที่หรือช่องค้นหา"
+              )}
             </span>
 
           {/* สถานะความแม่นยำ */}
@@ -83,8 +114,8 @@ const page = () => {
         {/* ปุ่มถัดไป */}
           <div className='flex flex-col items-center justify-center w-full mt-5'>
               <button 
-                type="submit" 
                   id="next-button" 
+                  onClick={SendtoForm}
                   className='bg-nt text-black rounded-full px-6 py-3 mt-6 font-bold w-100 h-18 shadow-md hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'
               > 
                 <div className='flex items-center justify-center text-xl'>

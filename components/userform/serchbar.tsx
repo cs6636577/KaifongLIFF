@@ -22,7 +22,7 @@ const SearchBar = ({ onPlaceSelect }: SearchBarProps) => {
       }
 
       const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
-        componentRestrictions: { country: "th" }, // จำกัดแค่ไทย
+        componentRestrictions: { country: "th" }, 
         fields: ["name", "geometry", "formatted_address"],
       });
 
@@ -30,7 +30,6 @@ const SearchBar = ({ onPlaceSelect }: SearchBarProps) => {
         const place = autocomplete.getPlace();
         if (!place.geometry?.location) return;
 
-        // ส่งค่ากลับไปที่ parent
         onPlaceSelect?.({
           name: place.name ?? "",
           address: place.formatted_address ?? "",

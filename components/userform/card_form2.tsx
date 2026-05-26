@@ -30,11 +30,88 @@ const card_form2 = () => {
     const [locationDescription, setLocationDescription] = React.useState<string>("");
     const [additionalNotes, setAdditionalNotes] = React.useState<string>("");
 
+    useEffect(() => {
+      if (typeof window === 'undefined') return;
+
+      const storedDraft = sessionStorage.getItem("complaintFormDraft");
+      if (storedDraft) {
+        try {
+          const draft = JSON.parse(storedDraft) as {
+            selected: string;
+            selectedSub: string;
+            detail: string;
+            location: string;
+            locationDescription: string;
+            additionalNotes: string;
+          };
+
+          setSelected(draft.selected ?? "");
+          setselectedSub(draft.selectedSub ?? "");
+          setDetail(draft.detail ?? "");
+          setLocation(draft.location ?? "");
+          setLocationDescription(draft.locationDescription ?? "");
+          setAdditionalNotes(draft.additionalNotes ?? "");
+        } catch (error) {
+          console.warn("ไม่สามารถโหลดฟอร์มฉบับร่างจาก sessionStorage", error);
+        }
+      }
+
+      const stored = sessionStorage.getItem("complaintLocation");
+      if (stored) {
+        try {
+          const payload = JSON.parse(stored) as { name: string; address: string; lat: number; lng: number };
+          if (payload.name || payload.address) {
+            setLocation(payload.name || payload.address);
+            setLocationDescription(payload.address);
+          }
+        } catch (error) {
+          console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
+        }
+      }
+    }, []);
+
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelected(event.target.value);
         setselectedSub(event.target.value)
     }
 
+    const handleUseCurrentLocation = () => {
+      if (!navigator.geolocation) {
+        alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+
+          if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
+            const geocoder = new window.google.maps.Geocoder();
+            const latlng = { lat, lng };
+
+            geocoder.geocode({ location: latlng }, (results, status) => {
+              if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
+                setLocation(results[0].formatted_address || latLngText);
+                setLocationDescription(results[0].formatted_address || latLngText);
+              } else {
+                setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
+                setLocationDescription(latLngText);
+              }
+            });
+          } else {
+            setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
+            setLocationDescription(latLngText);
+          }
+        },
+        (error) => {
+          console.error(error);
+          alert("ไม่สามารถดึงตำแหน่งปัจจุบันได้ กรุณาลองใหม่");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -98,7 +175,11 @@ const card_form2 = () => {
                     onChange={(e) => setLocation(e.target.value)}
                     className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}
                 />
-                <button className='bg-nt px-5 py-5 w-15 h-15 items-center rounded-2xl shadow-lg mx-5 mt-1 hover:cursor-pointer'>
+                <button
+                    type="button"
+                    onClick={handleUseCurrentLocation}
+                    className='bg-nt px-5 py-5 w-15 h-15 items-center rounded-2xl shadow-lg mx-5 mt-1 hover:cursor-pointer'
+                >
                     <RiMapPin2Fill  size={22} color='695400'/>
                 </button>
             </div>
@@ -112,21 +193,34 @@ const card_form2 = () => {
                 onChange={(e) => setLocationDescription(e.target.value)}
                 className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
 
-            {/* แผนที่ (เดี๋ยวค่อยวางapi) */}
+            {/* แผนที่ */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
                 <Image
                     src={map}
                     className='w-full h-40'
                     alt="Picture"
                 />
-                <Link href='/userform/Complaint_Details/MapEdit'>
-                    <button className='absolute bottom-15 left-1/2 -translate-x-1/2 bg-white/80 h-10 rounded-full cursor-pointer'>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        const draft = {
+                          selected,
+                          selectedSub,
+                          detail,
+                          location,
+                          locationDescription,
+                          additionalNotes,
+                        };
+                        sessionStorage.setItem("complaintFormDraft", JSON.stringify(draft));
+                        router.push('/userform/Complaint_Details/MapEdit');
+                      }}
+                      className='absolute bottom-15 left-1/2 -translate-x-1/2 bg-white/80 h-10 rounded-full cursor-pointer'
+                    >
                         <div className='flex flex-row items-center justify-center px-4  text-base text-[#725C00]'>
                             <GrWaypoint className='mr-2'/>
                             <span className='text-xs font-semibold tracking-widest'>PIN LOCATION</span>
                         </div>
                     </button>
-                </Link>
             </div>
         </div>
 
