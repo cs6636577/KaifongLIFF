@@ -1,18 +1,16 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import DropDown from '../userform/dropdown'
 import { RiMapPin2Fill } from 'react-icons/ri';
 import map from '../../public/map/map.png'
 import Image from 'next/image'
 import { MdOutlineCameraAlt } from 'react-icons/md';
 import { IoMdArrowRoundForward } from 'react-icons/io';
-import prepage from '../../app/userform/Reporter_Info/page'
 import Link from 'next/link'
 import { GrWaypoint } from 'react-icons/gr';
 import { useRouter } from 'next/navigation' 
-import { describe } from 'node:test';
 import { IssueTypeOptions } from '@/data/issuetype';
-
+import { useState, useRef } from 'react';
 
 interface FormErrors {
     issueType: string;
@@ -62,6 +60,7 @@ const card_form2 = () => {
             router.push("/userform/details")
         }
     };
+
   return (
     <div className='w-full'>
       <form onSubmit={handleSubmit}>
@@ -92,11 +91,13 @@ const card_form2 = () => {
             <p className='text-[#4D4632] text-base font-normal mb-2'>Location</p>
             <div className='flex flex-row'>
                 <input
+                    id="map"
                     type="text"
                     value={location}
                     placeholder='ระบุสถานที่ หรือ ปักหมุดในแผนที่'
                     onChange={(e) => setLocation(e.target.value)}
-                    className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
+                    className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}
+                />
                 <button className='bg-nt px-5 py-5 w-15 h-15 items-center rounded-2xl shadow-lg mx-5 mt-1 hover:cursor-pointer'>
                     <RiMapPin2Fill  size={22} color='695400'/>
                 </button>
@@ -118,12 +119,14 @@ const card_form2 = () => {
                     className='w-full h-40'
                     alt="Picture"
                 />
-                <button className='absolute bottom-15 left-1/2 -translate-x-1/2 bg-white/80 h-10 rounded-full cursor-pointer'>
-                    <div className='flex flex-row items-center justify-center px-4  text-base text-[#725C00]'>
-                        <GrWaypoint className='mr-2'/>
-                        <span className='text-xs font-semibold tracking-widest'>PIN LOCATION</span>
-                    </div>
-                </button>
+                <Link href='/userform/Complaint_Details/MapEdit'>
+                    <button className='absolute bottom-15 left-1/2 -translate-x-1/2 bg-white/80 h-10 rounded-full cursor-pointer'>
+                        <div className='flex flex-row items-center justify-center px-4  text-base text-[#725C00]'>
+                            <GrWaypoint className='mr-2'/>
+                            <span className='text-xs font-semibold tracking-widest'>PIN LOCATION</span>
+                        </div>
+                    </button>
+                </Link>
             </div>
         </div>
 

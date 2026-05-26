@@ -1,15 +1,12 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../../../../components/navbar'
 import { Sarabun } from 'next/font/google';
 import StepProgressMap from '@/components/userform/step_progressmap';
-import mapDetail from '../../../../public/map/MapDetail.png'
-import Image from 'next/image'
 import { RiMapPin2Fill } from 'react-icons/ri';
 import SearchBar from '../../../../components/userform/serchbar'
 import { FaCircleCheck } from 'react-icons/fa6';
-import { IoMdArrowRoundForward } from 'react-icons/io';
-
+import Map from '../../../../components/Map'
 
 //font sarabun
 const sarabun = Sarabun({
@@ -18,6 +15,21 @@ const sarabun = Sarabun({
 
 const page = () => {
   const [search, setSearch] = useState("");
+
+    // เพิ่ม handler รับค่าจาก SearchBar
+  const handlePlaceSelect = (place: {
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  }) => {
+    setLocation(place.address); // ใส่ที่อยู่ลง input location
+    console.log("พิกัด:", place.lat, place.lng);
+  };
+
+  useEffect(() => {
+    
+  })
 
   return (
     <div className={`${sarabun.className}`}>
@@ -33,15 +45,16 @@ const page = () => {
       
       
     {/* search bar */}
-      <SearchBar/>
+      <SearchBar onPlaceSelect={handlePlaceSelect}/>
 
     {/* map */}
       <div className='flex flex-col items-start px-8 mt-8'>
-          <Image
+          {/* <Image
             src={mapDetail}
             className='w-full h-auto block mx-auto lg:w-50% lg:max-h-150 rounded-2xl'
             alt="Map"
-          />
+          /> */}
+          <Map/>
 
       {/* Location Card */}
         <div className='bg-white shadow-lg shadow-gray-100 rounded-3xl p-6 w-full mt-6 flex gap-5'>
