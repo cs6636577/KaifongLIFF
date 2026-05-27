@@ -29,6 +29,8 @@ const card_form2 = () => {
     const [location, setLocation] = React.useState<string>("");
     const [locationDescription, setLocationDescription] = React.useState<string>("");
     const [additionalNotes, setAdditionalNotes] = React.useState<string>("");
+    const [province, setProvince] = React.useState<string>("");
+    const [district, setDistrict] = React.useState<string>("");
 
     useEffect(() => {
       if (typeof window === 'undefined') return;
@@ -59,10 +61,12 @@ const card_form2 = () => {
       const stored = sessionStorage.getItem("complaintLocation");
       if (stored) {
         try {
-          const payload = JSON.parse(stored) as { name: string; address: string; lat: number; lng: number };
+          const payload = JSON.parse(stored) as { name: string; address: string; lat: number; lng: number; province?: string; district?: string };
           if (payload.name || payload.address) {
             setLocation(payload.name || payload.address);
             setLocationDescription(payload.address);
+            setProvince(payload.province ?? "");
+            setDistrict(payload.district ?? "");
           }
         } catch (error) {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
@@ -184,6 +188,12 @@ const card_form2 = () => {
                 </button>
             </div>
 
+            {(district || province) && (
+              <div className='text-sm text-[#4D4632]/80 mt-2'>
+                {district ? `${district}` : ""}{district && province ? ", " : ""}{province ? `${province}` : ""}
+              </div>
+            )}
+
             {/* เพิ่มรายละเอียดสถานที่เอาไว้ */}
             <p className='text-[#4D4632]'>Description</p>
             <input
@@ -201,20 +211,20 @@ const card_form2 = () => {
                     alt="Picture"
                 />
                     <button
-                      type='button'
-                      onClick={() => {
-                        const draft = {
-                          selected,
-                          selectedSub,
-                          detail,
-                          location,
-                          locationDescription,
-                          additionalNotes,
-                        };
-                        sessionStorage.setItem("complaintFormDraft", JSON.stringify(draft));
-                        router.push('/userform/Complaint_Details/MapEdit');
-                      }}
-                      className='absolute bottom-15 left-1/2 -translate-x-1/2 bg-white/80 h-10 rounded-full cursor-pointer'
+                        type='button'
+                        onClick={() => {
+                            const draft = {
+                            selected,
+                            selectedSub,
+                            detail,
+                            location,
+                            locationDescription,
+                            additionalNotes,
+                            };
+                            sessionStorage.setItem("complaintFormDraft", JSON.stringify(draft));
+                            router.push('/userform/Complaint_Details/MapEdit');
+                        }}
+                    className='absolute bottom-15 left-1/2 -translate-x-1/2 bg-white/80 h-10 rounded-full cursor-pointer'
                     >
                         <div className='flex flex-row items-center justify-center px-4  text-base text-[#725C00]'>
                             <GrWaypoint className='mr-2'/>

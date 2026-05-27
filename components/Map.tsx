@@ -7,11 +7,13 @@ interface Location {
   lng: number;
   name?: string;
   address?: string;
+  province?: string;
+  district?: string;
 }
 
 interface MapProps {
   center?: Location | null;
-  onMarkerSelect?: (place: { name: string; address: string; lat: number; lng: number }) => void;
+  onMarkerSelect?: (place: { name: string; address: string; lat: number; lng: number; province?: string; district?: string }) => void;
 }
 
 const Map = ({ center = null, onMarkerSelect }: MapProps) => {
@@ -74,10 +76,45 @@ const Map = ({ center = null, onMarkerSelect }: MapProps) => {
 
     marker.addListener("click", () => {
       infowindow.open(map, marker);
+    });
+
+    // Try reverse-geocoding to extract province/district, then notify parent
+    if (window.google && window.google.maps && window.google.maps.Geocoder) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location: position }, (results, status) => {
+        if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
+          const comps = results[0].address_components || [];
+          let province = "";
+          let district = "";
+          for (const c of comps) {
+            const types = c.types || [];
+            if (types.includes("administrative_area_level_1")) province = c.long_name;
+            if (types.includes("administrative_area_level_2")) district = c.long_name;
+            if (!district && types.includes("sublocality_level_1")) district = c.long_name;
+            if (!district && types.includes("locality")) district = c.long_name;
+          }
+
+          if (onMarkerSelect) {
+            onMarkerSelect({
+              name: place.name ?? "",
+              address: place.address ?? results[0].formatted_address ?? "",
+              lat: place.lat,
+              lng: place.lng,
+              province: province || undefined,
+              district: district || undefined,
+            });
+          }
+        } else {
+          if (onMarkerSelect) {
+            onMarkerSelect({ name: place.name ?? "", address: place.address ?? "", lat: place.lat, lng: place.lng });
+          }
+        }
+      });
+    } else {
       if (onMarkerSelect) {
         onMarkerSelect({ name: place.name ?? "", address: place.address ?? "", lat: place.lat, lng: place.lng });
       }
-    });
+    }
 
     markerRef.current = marker;
     map.setCenter(position);

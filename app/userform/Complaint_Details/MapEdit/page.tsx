@@ -21,6 +21,8 @@ const page = () => {
     address: string;
     lat: number;
     lng: number;
+    province?: string;
+    district?: string;
   } | null>(null);
 
   // รับค่าจาก SearchBar
@@ -31,9 +33,11 @@ const page = () => {
     address: string;
     lat: number;
     lng: number;
+    province?: string;
+    district?: string;
   }) => {
-    setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng });
-    console.log("พิกัด:", place.lat, place.lng);
+    setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng, province: place.province, district: place.district });
+    console.log("พิกัด:", place.lat, place.lng, place.province, place.district);
   };
 
   const SendtoForm = () => {
@@ -47,6 +51,8 @@ const page = () => {
       address: selectedLocation.address,
       lat: selectedLocation.lat,
       lng: selectedLocation.lng,
+      province: selectedLocation.province,
+      district: selectedLocation.district,
     };
 
     sessionStorage.setItem("complaintLocation", JSON.stringify(payload));
@@ -77,8 +83,8 @@ const page = () => {
             alt="Map"
           /> */}
           <Map
-            center={selectedLocation ? { lat: selectedLocation.lat, lng: selectedLocation.lng, name: selectedLocation.name, address: selectedLocation.address } : null}
-            onMarkerSelect={(place) => setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng })}
+            center={selectedLocation ? { lat: selectedLocation.lat, lng: selectedLocation.lng, name: selectedLocation.name, address: selectedLocation.address, province: selectedLocation.province, district: selectedLocation.district } : null}
+            onMarkerSelect={(place) => setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng, province: place.province, district: place.district })}
           />
 
       {/* Location Card */}
@@ -97,6 +103,12 @@ const page = () => {
                 <>
                   <div className='font-semibold'>{selectedLocation.name}</div>
                   <div>{selectedLocation.address}</div>
+                  {(selectedLocation.district || selectedLocation.province) && (
+                    <div className='text-sm text-[#4D4632]/80'>
+                      {selectedLocation.district ? `${selectedLocation.district}` : ""}
+                      {selectedLocation.province ? `, ${selectedLocation.province}` : ""}
+                    </div>
+                  )}
                 </>
               ) : (
                 "กรุณาเลือกตำแหน่งจากแผนที่หรือช่องค้นหา"

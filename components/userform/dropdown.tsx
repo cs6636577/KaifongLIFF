@@ -6,8 +6,8 @@ import { IoIosArrowForward } from 'react-icons/io';
 interface Props {
     selectedValue: string
     onSelectedChange: (value: string) => void
-    selectedSub: string                        // เพิ่ม
-    onSubChange: (value: string) => void       // เพิ่ม
+    selectedSub: string                        
+    onSubChange: (value: string) => void       
 }
 
 
@@ -15,7 +15,6 @@ const DropDown = ({ selectedValue, onSelectedChange, selectedSub, onSubChange }:
     const [open, setOpen] = useState(false)
     const [openSub, setOpenSub] = useState(false)
 
-    // หา sub options จาก selectedValue
     const subOptions = IssueTypeOptions.find(o => o.value === selectedValue)?.sub ?? []
 
   return (
