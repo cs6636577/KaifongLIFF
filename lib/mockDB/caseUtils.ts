@@ -43,3 +43,16 @@ function formatDuration(ms: number, prefix: string): string {
     ? `${prefix} ${parts.join(" ")}`
     : `${parts.join(" ")} ที่แล้ว`;
 }
+
+export function getComplaintNumber(complaintNo: string): string {
+  const parts = complaintNo.split("-");
+  // "C-202605001-0001" → ["C", "202605001", "0001"]
+
+  const yearAD = parseInt(parts[1].substring(0, 4)); // 2026
+  const year = (yearAD + 543).toString().substring(2, 4); // "69"
+  const no = parts[2] ?? "0000";                    // "0001"
+
+  const display = `REQ-${no}/${year}`;
+
+  return display ;
+}

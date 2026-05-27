@@ -14,7 +14,7 @@ export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder ?? "ค้นหารายการร้องเรียนของคุณ..."}
+        placeholder={placeholder ?? "ค้นหาหมายเลขคำร้องเรียนของคุณ..."}
         className="bg-card placeholder:text-muted-foreground focus-visible:ring-ring h-12 w-full rounded-2xl border border-border pr-4 pl-12 text-sm shadow-sm outline-none focus-visible:ring-2"
       />
     </div>

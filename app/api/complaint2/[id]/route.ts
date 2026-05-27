@@ -1,5 +1,5 @@
 import data from "@/data/mock_data_may2026.json";
-import { calcResolvedDuration, calcPendingDuration } from "@/lib/mockDB/caseUtils";
+import { calcResolvedDuration, calcPendingDuration,getComplaintNumber } from "@/lib/mockDB/caseUtils";
 import { STATUS_ID_MAP } from "@/lib/mockDB/status";
 import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 
@@ -17,7 +17,7 @@ export async function GET(
 
   const result: Partial<ServiceRequest> & { address?: string; description?: string } = {
     id:          item.complaint_id,
-    complaintNo: item.complaint_no,
+    complaintNo: getComplaintNumber(item.complaint_no),
     title:       item.title ?? "",
     location:    item.location_text,
     district:    item.district,
@@ -34,11 +34,12 @@ export async function GET(
 
     // fields ที่ StatusCard ใช้
     status,
-    detail: isResolved
+    actionNote: isResolved
       ? calcResolvedDuration(item.complaint_id)
       : isInProgress
       ? "ช่างอยู่ในพื้นที่แล้ว - กำลังดำเนินการ"
       : "รอมอบหมายเจ้าหน้าที่",
+    detail: item.detail,
 
     detailMeta: isResolved
       ? ""

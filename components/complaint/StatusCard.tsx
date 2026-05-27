@@ -1,9 +1,6 @@
-import { ElementType } from "react";
 import {
   CheckCircle2,
-  CircleStop,
-  MapPin,
-  
+  CircleStop, 
 } from "lucide-react";
 
 import { IoIosCheckmark } from "react-icons/io";
@@ -96,7 +93,7 @@ function StatusPill({
 
         <div className="min-w-0">
           <span className="font-medium leading-snug">
-            {request.detail}
+            {request.actionNote}
           </span>
 
           {request.status === "in_progress" && (

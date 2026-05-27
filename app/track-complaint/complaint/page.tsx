@@ -12,7 +12,7 @@ import {
 import { SearchBar } from "@/components/complaint/SearchBar";
 import { RequestCard } from "@/components/complaint/RequestCard";
 import Navbar from "@/components/navbar";
-import type { ServiceRequest } from "@/lib/requests.types";
+import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 import { RatingModal } from "@/components/complaint/RatingModal";
 import { Pagination } from "@/components/Pagination"
 import Link from "next/link";
@@ -123,7 +123,7 @@ export default function HomeClient() {
         
         if (
           search &&
-          !r.title
+          !r.complaintNo
             .toLowerCase()
             .includes(search.toLowerCase())
         ) {

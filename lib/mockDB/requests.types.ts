@@ -68,6 +68,9 @@ export interface ServiceRequest {
   icon: "trash" | "bolt" | "shield" | "stop";
   /*นอกเหนือตาราง complaint */
   detailMeta?: string;
+  date: string  //day format form createat
+  actionNote: string //action_note from workflow table เอาไว้ดูแอคชั่นของสถานะว่ากำลังทำอะไร
+  
    /** 0-100 progress (visual only) */
   progress: number;
   /** number of progress segments to render */
@@ -89,4 +92,3 @@ export interface RequestsPayload {
   requests: ServiceRequest[];
 }
 
-/*ขาดตาราง rating */

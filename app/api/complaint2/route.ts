@@ -1,7 +1,7 @@
 // app/api/requests/route.ts
 
 import data from "@/data/mock_data_may2026.json";
-import { calcResolvedDuration, calcPendingDuration, getGroup } from "@/lib/mockDB/caseUtils";
+import { calcResolvedDuration, calcPendingDuration, getGroup, getComplaintNumber } from "@/lib/mockDB/caseUtils";
 import type {NormalizedStatus, PriorityLevel, SourceChannel, ServiceRequest, RequestsPayload} from "@/lib/mockDB/requests.types";
 import { STATUS_ID_MAP,STATUS_PROGRESS } from "@/lib/mockDB/status";
 import { getCurrentUserId } from "@/lib/session";
@@ -39,9 +39,10 @@ export async function GET(): Promise<Response> {
 
     return {
       id:          c.complaint_id,
-      complaintNo: c.complaint_no,
+      complaintNo: getComplaintNumber(c.complaint_no) || "",
       title:       getCategory(c.category_id) || "",
-      detail:      isResolved
+      detail: c.detail,
+      actionNote:      isResolved
                      ? calcResolvedDuration(c.complaint_id)
                      : isInProgress
                      ? getLatestActionNote(c.complaint_id)
@@ -64,6 +65,7 @@ export async function GET(): Promise<Response> {
       closedAt:    c.closed_at,
       createdAt:   c.created_at,
       updatedAt:   c.updated_at,
+
       // UI fields
       icon:        CATEGORY_ICON[c.category_id] ?? "bolt",
       detailMeta:  isResolved

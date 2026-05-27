@@ -13,7 +13,7 @@ import { MdElectricBolt } from "react-icons/md";
 import { IoIosCheckmark } from "react-icons/io";
 import { FaArrowRight } from "react-icons/fa";
 
-import type { ServiceRequest } from "@/lib/requests.types";
+import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 
 import {
   STATUS_ACCENT,
@@ -57,27 +57,16 @@ export function RequestCard({
 
      
        <div className="space-y-4 p-4 pl-5 sm:p-5 sm:pl-6">
-        {/* top row: icon tile + status pill */}
+        {/* status pill */}
         <div className="flex items-start justify-between gap-3">
-          {/*
-          <div
-            className={`flex h-12 w-12 items-center justify-center rounded-xl ${
-              STATUS_ICON_TILE[request.status]
-            }`}
-          >
-             {/*<Icon className="h-6 w-6" />
-             
-          </div>
-          */}
-          
-
+         
          <StatusPill status={request.status} />
         </div>
         
 
         {/* title */}
         <h3 className="text-base font-bold leading-snug sm:text-lg">
-          {request.title}
+          {request.complaintNo} &nbsp;&nbsp;{request.title}
         </h3>
 
         {/* progress */}
@@ -159,7 +148,7 @@ export function DetailStrip({
 
         <div className="min-w-0">
           <span className="font-medium leading-snug">
-            {request.detail}
+            {request.actionNote}
           </span>
 
           {request.status !== "in_progress" && request.detailMeta && (
