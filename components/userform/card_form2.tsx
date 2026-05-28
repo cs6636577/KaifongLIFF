@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { IssueTypeOptions } from '@/data/issuetype';
 import { useState, useRef } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
+import StepProgress from './stepprogress';
 
 
 interface FormErrors {
@@ -172,6 +173,7 @@ const card_form2 = () => {
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
   return (
     <div className='w-full'>
+        {/* <StepProgress currentStep={1} /> */}
       <form onSubmit={handleSubmit}>
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
             {/* ประเภทปัญหา */}

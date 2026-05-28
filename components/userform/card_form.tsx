@@ -27,18 +27,43 @@ export default function card_form() {
         surname: "",
         phone: ""
     });
+    const phoneInputRef = React.useRef<HTMLInputElement | null>(null);
 
     const formatPhone = (value: string) => {
-    // เอาแค่ตัวเลข
         const numbers = value.replace(/\D/g, "").slice(0, 10);
-        // format เป็น xxx-xxx-xxxx
         if (numbers.length <= 3) return numbers;
         if (numbers.length <= 6) return `${numbers.slice(0,3)}-${numbers.slice(3)}`;
         return `${numbers.slice(0,3)}-${numbers.slice(3,6)}-${numbers.slice(6)}`;
     };
 
+    const positionForDigits = (formatted: string, digitCount: number) => {
+        let count = 0;
+        for (let i = 0; i < formatted.length; i++) {
+            if (/\d/.test(formatted[i])) {
+                count++;
+            }
+            if (count === digitCount) {
+                return i + 1;
+            }
+        }
+        return formatted.length;
+    };
+
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPhone(formatPhone(e.target.value));
+        const raw = e.target.value;
+        const numbers = raw.replace(/\D/g, "").slice(0, 10);
+        const formatted = formatPhone(numbers);
+
+        const cursorPos = e.target.selectionStart ?? raw.length;
+        const digitsBeforeCursor = raw.slice(0, cursorPos).replace(/\D/g, "").length;
+        const nextCursorPos = positionForDigits(formatted, digitsBeforeCursor);
+
+        setPhone(formatted);
+        window.requestAnimationFrame(() => {
+            if (phoneInputRef.current) {
+                phoneInputRef.current.setSelectionRange(nextCursorPos, nextCursorPos);
+            }
+        });
     };
 
     // Real-time validation
@@ -63,10 +88,9 @@ export default function card_form() {
 
     // ตรวจสอบเบอร์โทรศัพท์
     const isPhoneValid = (phoneNumber: string) => {
-        const phoneRegex = /^(06|08|09)\d{1}-\d{3}-\d{4}$/;
-        const spaceRegex = /^\s*$/;
-        if (spaceRegex.test(phoneNumber)) return false; // ตรวจสอบว่าค่าเป็นช่องว่างหรือไม่
-        return phoneRegex.test(phoneNumber.replace(/\s/g, ''));
+        const digits = phoneNumber.replace(/\D/g, "");
+        const onlyDigitsRegex = /^(06|08|09)\d{8}$/;
+        return onlyDigitsRegex.test(digits);
     };
 
     // Validate all fields
@@ -80,28 +104,28 @@ export default function card_form() {
 
         // Validate prefix - ต้องตรงกับในdropdown และไม่เป็นช่องว่าง
         if (!selected) {
-            newErrors.prefix = "กรุณาเลือกคำนำหน้า";
+            newErrors.prefix = "*กรุณาเลือกคำนำหน้า";
         } else if (!prefixOptions.some(opt => opt.value === selected)) {
             newErrors.prefix = "คำนำหน้าที่ใส่ไม่ตรงกับรายการในdropdown";
         }
 
         // Validate name
         if (!name.trim() || name.trim().length === 0) {
-            newErrors.name = "กรุณากรอกชื่อ";
+            newErrors.name = "*กรุณากรอกชื่อ";
         } else if(!isNameValid(name)){
             newErrors.name = "รูปแบบไม่ถูกต้อง";
         }
 
         // Validate surname
         if (!surname.trim() || surname.trim().length === 0) {
-            newErrors.surname = "กรุณากรอกนามสกุล";
+            newErrors.surname = "*กรุณากรอกนามสกุล";
         } else if(!isNameValid(surname)){
             newErrors.surname = "รูปแบบไม่ถูกต้อง";
         }
 
         // Validate phone
         if (!phone.trim() || phone.trim().length === 0) {
-            newErrors.phone = "กรุณากรอกเบอร์โทรศัพท์";
+            newErrors.phone = "*กรุณากรอกเบอร์โทรศัพท์";
         } else if (!isPhoneValid(phone)) {
             newErrors.phone = "รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง";
         }
@@ -145,7 +169,7 @@ export default function card_form() {
                 <div className="relative w-full mt-1 mb-1">
                     <SearchableDropdown selectedValue={selected} onSelectedChange={setSelected} />
                 </div>
-                {errors.prefix && <p className='text-red-500 text-sm mb-4'>{errors.prefix}</p>}
+                {errors.prefix && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.prefix}</p>}
             </div>
 
 
@@ -157,9 +181,9 @@ export default function card_form() {
                     placeholder='พิมพ์ชื่อของคุณ (ภาษาไทย)'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.name ? 'border-red-500' : 'border-transparent'}`}
+                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.name ? 'border-[#FA3E3E]/50' : 'border-transparent'}`}
                 />
-                {errors.name && <p className='text-red-500 text-sm mb-4'>{errors.name}</p>}
+                {errors.name && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.name}</p>}
             </div>
 
             {/* นามสกุล */}
@@ -170,18 +194,19 @@ export default function card_form() {
                     placeholder='พิมพ์นามสกุลของคุณ (ภาษาไทย)'
                     value={surname}
                     onChange={(e) => setSurname(e.target.value)}
-                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.surname ? 'border-red-500' : 'border-transparent'}`}
+                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.surname ? 'border-[#FA3E3E]/50' : 'border-transparent'}`}
                 />
-                {errors.surname && <p className='text-red-500 text-sm mb-4'>{errors.surname}</p>}
+                {errors.surname && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.surname}</p>}
             </div>
 
             {/* เบอร์โทรศัพท์ */}
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>เบอร์โทรศัพท์</p>
                 <p className='text-[#4D4632] text-base font-normal'>Phone Number</p>
-                <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-2 focus-within:border-black focus-within:ring-1 focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-red-500' : 'border-transparent'}`}>
+                <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-2 focus-within:border-black focus-within:ring-none focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-[#FA3E3E]/50' : 'border-transparent'}`}>
                     <MdOutlinePhone className="text-[#725C00] text-xl shrink-0 mx-3" />
                     <input
+                        ref={phoneInputRef}
                         type="tel"
                         placeholder="08X-XXX-XXXX"
                         value={phone}
@@ -189,7 +214,7 @@ export default function card_form() {
                         className="bg-transparent w-full placeholder:text-[#7F7660]/50 outline-none py-4 px-2 text-base"
                     />
                 </div>
-                {errors.phone && <p className='text-red-500 text-sm mb-4'>{errors.phone}</p>}
+                {errors.phone && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.phone}</p>}
             </div>
         </div>
         {/* ปุ่มถัดไป */}
