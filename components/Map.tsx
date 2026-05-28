@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
+import { FaLocationDot } from "react-icons/fa6";
 
 interface LocationResult {
   name: string;
@@ -99,10 +100,11 @@ const Map = ({ center = null, onLocationChange, onMarkerSelect }: MapProps) => {
         position: "absolute", top: "50%", left: "50%",
         transform: "translate(-50%, -100%)",
         zIndex: 10, pointerEvents: "none",
-        filter: "drop-shadow(0 3px 6px rgba(0,0,0,.35))",
+        filter: "drop-shadow(0 2px 2px rgba(0,0,0,.35))",
         userSelect: "none", fontSize: 40, lineHeight: 1,
       }}>
-        📍
+        {/* 📍 */}
+        <FaLocationDot color="#FF6060"/>
       </div>
 
       <div ref={mapRef} style={{ width: "100%", height: "100%" }} />

@@ -54,11 +54,11 @@ export default function card_form() {
         return prefixOptions.some(opt => opt.value === selected);
     };
 
-    const isNameValid = (name: string) => {
-        const nameRegex =   /^[a-zA-Zก-ฮะ-์เ-ไ\s]+$/;
+    const isNameValid = (n: string) => {
+        const nameRegex =   /^[ก-ฮะ-์เ-ไ\s]+$/;
         const spaceRegex = /^\s*$/;
-        if (spaceRegex.test(name)) return false; // ตรวจสอบว่าค่าเป็นช่องว่างหรือไม่
-        return nameRegex.test(name)
+        if (spaceRegex.test(n)) return false; // ตรวจสอบว่าค่าเป็นช่องว่างหรือไม่
+        return nameRegex.test(n)
     }
 
     // ตรวจสอบเบอร์โทรศัพท์
@@ -96,7 +96,7 @@ export default function card_form() {
         if (!surname.trim() || surname.trim().length === 0) {
             newErrors.surname = "กรุณากรอกนามสกุล";
         } else if(!isNameValid(surname)){
-            newErrors.name = "รูปแบบไม่ถูกต้อง";
+            newErrors.surname = "รูปแบบไม่ถูกต้อง";
         }
 
         // Validate phone
@@ -154,7 +154,7 @@ export default function card_form() {
                 <p className='text-[#231B00] text-lg font-semibold'>ชื่อ</p>
                 <p className='text-[#4D4632] text-base font-normal'>Name</p>
                 <input type="text"
-                    placeholder='พิมพ์ชื่อของคุณ'
+                    placeholder='พิมพ์ชื่อของคุณ (ภาษาไทย)'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.name ? 'border-red-500' : 'border-transparent'}`}
@@ -167,7 +167,7 @@ export default function card_form() {
                 <p className='text-[#231B00] text-lg font-semibold'>นามสกุล</p>
                 <p className='text-[#4D4632] text-base font-normal'>Surname</p>
                 <input type="text"
-                    placeholder='พิมพ์นามสกุลของคุณ'
+                    placeholder='พิมพ์นามสกุลของคุณ (ภาษาไทย)'
                     value={surname}
                     onChange={(e) => setSurname(e.target.value)}
                     className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.surname ? 'border-red-500' : 'border-transparent'}`}

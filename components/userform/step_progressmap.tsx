@@ -13,7 +13,9 @@ const step_progressmap = () => {
             {/* inactive step1 */}
             <div className="flex flex-col items-center">
                 <span className="bg-[#E2E0FC] text-white rounded-full w-12 h-12 flex items-center justify-center border-3 border-[#D1C6AB] -mt-2">
-                    <BiSolidUser   size={20} className="pt-0" color='63627A' />
+                    <GrDocumentText   size={20} className="pt-0" color='63627A' />
+                    {/* GrDocumentText */}
+                    {/* BiSolidUser */}
                 </span>
             </div>
     
@@ -35,7 +37,9 @@ const step_progressmap = () => {
           {/* inactive step3 */}
           <div className="flex flex-col items-center">
             <span className="bg-[#F4F4F1] text-[#7F7660] rounded-full w-12 h-12 flex items-center justify-center border-3 border-[#D1C6AB] -mt-2">
-              <GrDocumentText className="text-xl" color='D1C6AB'/>
+              <FaRegCheckCircle className="text-xl" color='D1C6AB'/>
+              {/* FaRegCheckCircle */}
+              {/* GrDocumentText */}
             </span>
           </div>
     
