@@ -69,7 +69,11 @@ if (!user || !request) return (
         )}
         />
         <ComplaintCard  request={request}/>
-        <EvidenceCard/>
+        {/*ทำเปน static ไปก่อนดึงมาจาก db จริงๆ */}
+        <EvidenceCard photos={[
+        "/evidence/Evidence_test_2.svg",
+        "/evidence/Evidence_test.svg",
+        ]} /> 
         <StatusCard
          request={request}
         />

@@ -14,7 +14,9 @@ export async function POST(req: NextRequest) {
         res.cookies.set("detail", body.detail)
         res.cookies.set("location", body.location)
         res.cookies.set("locationDescription", body.locationDescription)
-        //ยังไม่เพิ่มphoto
+        // photos เป็น string[] ของ base64 หรือ objectURL ชั่วคราว
+        res.cookies.set("photoCount", String((body.photos ?? []).length))
+
         res.cookies.set("additionalNotes", body.additionalNotes)
 
 
@@ -34,6 +36,7 @@ export async function GET() {
         location: cookieStore.get("location")?.value ?? "",
         locationDescription: cookieStore.get("locationDescription")?.value ?? "",
         additionalNotes: cookieStore.get("additionalNotes")?.value ?? "",
+        photoCount: Number(cookieStore.get("photoCount")?.value ?? "0")
     })
 }
 

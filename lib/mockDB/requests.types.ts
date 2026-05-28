@@ -1,6 +1,8 @@
 export type RequestStatus  =
-  | "NEW"
-  | "new"
+  | "OPEN"
+  | "open"
+  | "pending"
+  | "PENDING"
   | "IN_PROGRESS"
   | "in_progress"
   | "RESOLVED"
@@ -14,8 +16,10 @@ export type RequestStatus  =
 export type NormalizedStatus = "pending" | "in_progress" | "resolved" | "paused";
 
 export const STATUS_MAP: Record<RequestStatus, NormalizedStatus> = {
-  NEW: "pending",
-  new: "pending",
+  OPEN: "pending",
+  open: "pending",
+  pending: "pending",
+  PENDING: "pending",
   IN_PROGRESS: "in_progress",
   in_progress: "in_progress",
   RESOLVED: "resolved",

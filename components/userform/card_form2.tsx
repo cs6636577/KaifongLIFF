@@ -11,6 +11,8 @@ import { GrWaypoint } from 'react-icons/gr';
 import { useRouter } from 'next/navigation' 
 import { IssueTypeOptions } from '@/data/issuetype';
 import { useState, useRef } from 'react';
+import { usePhotoStore } from "@/hooks/usePhotoStore"
+
 
 interface FormErrors {
     issueType: string;
@@ -20,6 +22,8 @@ interface FormErrors {
     locationDescription: string;
     additionalNotes: string;
 }
+
+const MAX_PHOTOS = 5 
 
 const card_form2 = () => {
     const router = useRouter()
@@ -137,7 +141,17 @@ const card_form2 = () => {
             router.push("/userform/details")
         }
     };
-
+   //รูปภาพ
+    const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
+    
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const files = Array.from(e.target.files ?? [])
+        const remaining = MAX_PHOTOS - photos.length
+        files.slice(0, remaining).forEach(addPhoto)
+        e.target.value = "" // reset input
+    }
+    //ตอนกด zoom รุป
+    const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
   return (
     <div className='w-full'>
       <form onSubmit={handleSubmit}>
@@ -230,18 +244,78 @@ const card_form2 = () => {
                 <p className='text-[#5D5C74] text-lg font-semibold'>รูปภาพ</p>
                 <p className='text-[#4D4632] text-base font-normal mb-3'>Photo</p>
 
-                <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-64 bg-neutral-secondary-medium border-dashed border-3 border-[#D1C6AB] rounded-2xl cursor-pointer hover:bg-neutral-tertiary-medium">
-                        <div className="flex flex-col items-center justify-center text-body pt-5 pb-6">
-                            <div className='bg-white px-5 py-5 shadow-md rounded-full mb-5'>
-                                <MdOutlineCameraAlt size='30' color='725C00'/>
+                 {/* Upload Zone — ซ่อนถ้าครบ 5 รูปแล้ว */}
+                {photos.length < MAX_PHOTOS && (
+                    <div className="flex items-center justify-center w-full">
+                        <label className="flex flex-col items-center justify-center w-full h-64 bg-neutral-secondary-medium border-dashed border-3 border-[#D1C6AB] rounded-2xl cursor-pointer hover:bg-neutral-tertiary-medium">
+                            <div className="flex flex-col items-center justify-center text-body pt-5 pb-6">
+                                <div className='bg-white px-5 py-5 shadow-md rounded-full mb-5'>
+                                    <MdOutlineCameraAlt size='30' color='725C00' />
+                                </div>
+                                <p className="mb-2 text-lg text-[#5D5C74] font-semibold">
+                                    Upload รูป <span className="font-normal">(Upload Photo)</span>
+                                </p>
+                                <p className="text-base text-[#4D4632]">
+                                    อย่างน้อย 1 รูป (At least 1 photo)
+                                </p>
+                                <p className="text-sm text-[#9E9E9E] mt-1">
+                                    {photos.length}/{MAX_PHOTOS} รูป
+                                </p>
                             </div>
-                            <p className="mb-2 text-lg text-[#5D5C74] font-semibold"><span>Upload รูป</span> (Upload Photo)</p>
-                            <p className="text-base text-[#4D4632]">อย่างน้อย 1 รูป (At least 1 photo)</p>
-                        </div>
-                        <input id="dropzone-file" type="file" className="hidden" />
-                    </label>
-                </div> 
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={handleFileChange}
+                            />
+                        </label>
+                    </div>
+                )}
+
+               {/* Preview รูปที่เลือก */}
+{photoPreviews.length > 0 && (
+    <div className="grid grid-cols-3 gap-3 mt-4">
+        {photoPreviews.map((url, i) => (
+            <div key={i} className="relative rounded-xl overflow-hidden aspect-square">
+                <img
+                    src={url}
+                    alt={`photo-${i}`}
+                    className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setSelectedPhoto(url)}
+                />
+                <button
+                    type="button"
+                    onClick={() => removePhoto(i)}
+                    className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-black/70"
+                >
+                    ✕
+                </button>
+            </div>
+        ))}
+    </div>
+)}
+
+{/* Modal */}
+{selectedPhoto && (
+    <div
+        className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+        onClick={() => setSelectedPhoto(null)}
+    >
+        <button
+            className="absolute top-4 right-4 text-white bg-black/50 rounded-full w-9 h-9 flex items-center justify-center text-lg hover:bg-black/70"
+            onClick={() => setSelectedPhoto(null)}
+        >
+            ✕
+        </button>
+        <img
+            src={selectedPhoto}
+            className="max-w-[90vw] max-h-[90vh] rounded-2xl object-contain"
+            alt="preview"
+            onClick={(e) => e.stopPropagation()}
+        />
+    </div>
+)}
             </div>
         </div>
 
