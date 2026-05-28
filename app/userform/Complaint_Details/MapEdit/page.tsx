@@ -15,7 +15,7 @@ const sarabun = Sarabun({
   weight: ['100', '200', '300', '400', '500', '600', '700'],});
 
 const page = () => {
-  const [search, setSearch] = useState("");
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
     name: string;
     address: string;
@@ -28,16 +28,20 @@ const page = () => {
   // รับค่าจาก SearchBar
   const router = useRouter()
 
+  // SearchBar เลือก → แค่ panTo map (Map จะ reverse geocode เองแล้ว callback กลับมา)
   const handlePlaceSelect = (place: {
-    name: string;
-    address: string;
-    lat: number;
-    lng: number;
-    province?: string;
-    district?: string;
+    name: string; address: string; lat: number; lng: number;
+    province?: string; district?: string;
   }) => {
-    setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng, province: place.province, district: place.district });
-    console.log("พิกัด:", place.lat, place.lng, place.province, place.district);
+    setMapCenter({ lat: place.lat, lng: place.lng });
+  };
+
+  // Map reverse geocode เสร็จ → update location card
+  const handleLocationChange = (place: {
+    name: string; address: string; lat: number; lng: number;
+    province?: string; district?: string;
+  }) => {
+    setSelectedLocation(place);
   };
 
   const SendtoForm = () => {
@@ -45,19 +49,10 @@ const page = () => {
       alert("กรุณาเลือกตำแหน่งก่อนยืนยัน");
       return;
     }
-
-    const payload = {
-      name: selectedLocation.name,
-      address: selectedLocation.address,
-      lat: selectedLocation.lat,
-      lng: selectedLocation.lng,
-      province: selectedLocation.province,
-      district: selectedLocation.district,
-    };
-
-    sessionStorage.setItem("complaintLocation", JSON.stringify(payload));
+    console.log("พิกัด:", selectedLocation.lat, selectedLocation.lng, selectedLocation.province, selectedLocation.district);
+    sessionStorage.setItem("complaintLocation", JSON.stringify(selectedLocation));
     router.push("/userform/Complaint_Details");
-  }
+  };
 
   return (
     <div className={`${sarabun.className}`}>
@@ -82,10 +77,11 @@ const page = () => {
             className='w-full h-auto block mx-auto lg:w-50% lg:max-h-150 rounded-2xl'
             alt="Map"
           /> */}
-          <Map
-            center={selectedLocation ? { lat: selectedLocation.lat, lng: selectedLocation.lng, name: selectedLocation.name, address: selectedLocation.address, province: selectedLocation.province, district: selectedLocation.district } : null}
-            onMarkerSelect={(place) => setSelectedLocation({ name: place.name, address: place.address, lat: place.lat, lng: place.lng, province: place.province, district: place.district })}
-          />
+        {/* Map: รับ center สำหรับ panTo, callback reverse geocode กลับมา */}
+        <Map
+          center={mapCenter}
+          onMarkerSelect={handleLocationChange}
+        />
 
       {/* Location Card */}
         <div className='bg-white shadow-lg shadow-gray-100 rounded-3xl p-6 w-full mt-6 flex gap-5'>

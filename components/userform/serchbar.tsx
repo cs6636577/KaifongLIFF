@@ -22,7 +22,7 @@ const SearchBar = ({ onPlaceSelect }: SearchBarProps) => {
         setTimeout(init, 100);
         return;
       }
-
+      
       const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
         componentRestrictions: { country: "th" }, 
         fields: ["name", "geometry", "formatted_address", "address_components"],

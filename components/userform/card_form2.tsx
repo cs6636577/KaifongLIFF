@@ -31,6 +31,8 @@ const card_form2 = () => {
     const [additionalNotes, setAdditionalNotes] = React.useState<string>("");
     const [province, setProvince] = React.useState<string>("");
     const [district, setDistrict] = React.useState<string>("");
+    const [latitude, setlatitude] = React.useState<string>("");
+    const [longtitude, setLongtitude] = React.useState<string>("");
 
     useEffect(() => {
       if (typeof window === 'undefined') return;
@@ -43,6 +45,10 @@ const card_form2 = () => {
             selectedSub: string;
             detail: string;
             location: string;
+            Latitude: string;
+            longitude: string;
+            province: string;
+            district: string;
             locationDescription: string;
             additionalNotes: string;
           };
@@ -51,6 +57,10 @@ const card_form2 = () => {
           setselectedSub(draft.selectedSub ?? "");
           setDetail(draft.detail ?? "");
           setLocation(draft.location ?? "");
+          setDistrict(draft.district ?? "");
+          setProvince(draft.province ?? "");
+          setLongtitude(draft.longitude ?? "");
+          setlatitude(draft.Latitude ?? "");
           setLocationDescription(draft.locationDescription ?? "");
           setAdditionalNotes(draft.additionalNotes ?? "");
         } catch (error) {
@@ -61,23 +71,20 @@ const card_form2 = () => {
       const stored = sessionStorage.getItem("complaintLocation");
       if (stored) {
         try {
-          const payload = JSON.parse(stored) as { name: string; address: string; lat: number; lng: number; province?: string; district?: string };
+          const payload = JSON.parse(stored) as { name: string; address: string; locationNotes: string; lat: number; lng: number; province?: string; district?: string };
           if (payload.name || payload.address) {
             setLocation(payload.name || payload.address);
-            setLocationDescription(payload.address);
+            setLocationDescription(payload.locationNotes ?? "");
             setProvince(payload.province ?? "");
             setDistrict(payload.district ?? "");
+            setlatitude(payload.lat?.toString() ?? "");
+            setLongtitude(payload.lng?.toString() ?? "");
           }
         } catch (error) {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
         }
       }
     }, []);
-
-    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelected(event.target.value);
-        setselectedSub(event.target.value)
-    }
 
     const handleUseCurrentLocation = () => {
       if (!navigator.geolocation) {
@@ -89,6 +96,8 @@ const card_form2 = () => {
         async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+          setlatitude(lat.toString());
+          setLongtitude(lng.toString());
           const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 
           if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
@@ -98,15 +107,16 @@ const card_form2 = () => {
             geocoder.geocode({ location: latlng }, (results, status) => {
               if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
                 setLocation(results[0].formatted_address || latLngText);
-                setLocationDescription(results[0].formatted_address || latLngText);
+                // setLocationDescription(results[0].formatted_address || latLngText);
+                console.log("พิกัด: "+lat+" "+lng);
               } else {
                 setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
-                setLocationDescription(latLngText);
+                // setLocationDescription(latLngText);
               }
             });
           } else {
             setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
-            setLocationDescription(latLngText);
+            // setLocationDescription(latLngText);
           }
         },
         (error) => {
@@ -125,6 +135,10 @@ const card_form2 = () => {
         console.log("ตำแหน่ง" + location)
         console.log("รายละเอียดตำแหน่ง" + locationDescription)
         console.log("หมายเหตุเพิ่มเติม" + additionalNotes)
+        console.log("จังหวัด" + province)
+        console.log("เขต" + district)
+        console.log("ละติจูด" + latitude)
+        console.log("ลองติจูด"+ longtitude)
 
         // ดึง label จาก options
         const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
@@ -134,7 +148,7 @@ const card_form2 = () => {
         const res = await fetch('/api/form/complaint', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes}),
+            body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes, lat: latitude, lng: longtitude, province, district }),
         })
 
         if (res.ok) {
@@ -175,9 +189,10 @@ const card_form2 = () => {
                     id="map"
                     type="text"
                     value={location}
-                    placeholder='ระบุสถานที่ หรือ ปักหมุดในแผนที่'
+                    placeholder='กดปุ่มเพื่อระบุสถานที่ปัจจุบัน หรือ ปักหมุดในแผนที่'
                     onChange={(e) => setLocation(e.target.value)}
                     className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}
+                    disabled
                 />
                 <button
                     type="button"
@@ -187,19 +202,19 @@ const card_form2 = () => {
                     <RiMapPin2Fill  size={22} color='695400'/>
                 </button>
             </div>
-
+{/* 
             {(district || province) && (
               <div className='text-sm text-[#4D4632]/80 mt-2'>
                 {district ? `${district}` : ""}{district && province ? ", " : ""}{province ? `${province}` : ""}
               </div>
-            )}
+            )} */}
 
             {/* เพิ่มรายละเอียดสถานที่เอาไว้ */}
-            <p className='text-[#4D4632]'>Description</p>
+            <p className='text-[#4D4632]'>Details</p>
             <input
                 type="text"
                 value={locationDescription}
-                placeholder='รายละเอียดสถานที่ เช่น ใต้BTS...'
+                placeholder='คำอธิบายเพิ่มเติม เช่น ท่อน้ำรั่วหน้าประตูทางเข้าตึก...'
                 onChange={(e) => setLocationDescription(e.target.value)}
                 className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
 

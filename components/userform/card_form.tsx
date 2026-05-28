@@ -125,7 +125,7 @@ export default function card_form() {
             const res = await fetch('/api/form/reporter', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prefix: selected, name, surname, cleanPhone }),
+            body: JSON.stringify({ prefix: selected, name: name, surname: surname, phone: cleanPhone }),
             })
 
             if (res.ok) {
