@@ -10,6 +10,7 @@ import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
 import { usePhotoStore } from "@/hooks/usePhotoStore"
+import type { ServiceRequest } from "@/lib/mockDB/requests.types";
 
   //font sarabun
 const sarabun = Sarabun({
@@ -24,14 +25,9 @@ type User = {
   phone: string;
 };
 
-type Detail = {
-  issueType: string;
-  location: string;
-  detail: string;
-}
 
 const [user, setUser] = useState<User | null>(null);
-const [detail, setDetail] = useState<Detail | null>(null); 
+const [detail, setDetail] = useState<ServiceRequest | null>(null); 
 const { photos } = usePhotoStore()
 
 useEffect(() => {
@@ -72,13 +68,22 @@ async function handleSubmit() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              //ตาราง complaint 
                 name:      user.name,
                 lastname:  user.lastname,
                 phone:     user.phone,
-                issueType: detail.issueType,
+                category: detail.category,
+                subcategory: detail.subcategory,
                 location:  detail.location,
+                latitude: detail.latitude,
+                longtitude: detail.longitude,
+                province: detail.province,
+                district:  detail.district,
                 detail:    detail.detail,
+                additional_detail: detail.additional,
                 photos:    photoUrls,
+              //ตาราง workflow
+
             })
         })
 
@@ -114,9 +119,11 @@ if (!user || !detail) return <p>Loading...</p>;
         )}
         />
         <ComplaintCard formData={{
-          category: detail.issueType,
+          category: detail.category,
           location: detail.location,
           detail: detail.detail,
+          subcategory: detail.subcategory,
+          additional: detail.additional
         }}/>
         <EvidenceCard/>
         {/* ปุ่มยืนยัน*/}

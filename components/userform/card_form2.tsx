@@ -152,7 +152,18 @@ const card_form2 = () => {
         const res = await fetch('/api/form/complaint', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes, lat: latitude, lng: longtitude, province, district }),
+            body: JSON.stringify({ 
+               title:              issueLabel,
+                category:           issueLabel,
+                subcategory:        subLabel,
+                detail:             detail,
+                location:           location,
+                additional:         additionalNotes,
+                latitude:           latitude,
+                longitude:          longtitude,
+                province:           province,
+                district:           district,
+            }),
         })
 
         if (res.ok) {

@@ -3,30 +3,29 @@ import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers" 
 
 export async function POST(req: NextRequest) {
-    try{
+    try {
         const body = await req.json()
 
         console.log("body:", body)
         const res = NextResponse.json({ ok: true })
 
-        res.cookies.set("issueType", body.issueType)
-        res.cookies.set("subIssue", body.subIssue)
-        res.cookies.set("detail", body.detail)
-        res.cookies.set("location", body.location)
-        res.cookies.set("lat",body.lat)
-        res.cookies.set("lng",body.lng)
-        res.cookies.set("province",body.province)
-        res.cookies.set("district",body.district)
-        res.cookies.set("locationDescription", body.locationDescription)
-        // photos เป็น string[] ของ base64 หรือ objectURL ชั่วคราว
-        res.cookies.set("photoCount", String((body.photos ?? []).length))
-
-        res.cookies.set("additionalNotes", body.additionalNotes)
-
+        res.cookies.set("title",        body.title)
+        res.cookies.set("category",     body.category)
+        res.cookies.set("subcategory",  body.subcategory)
+        res.cookies.set("detail",       body.detail)
+        res.cookies.set("location",     body.location)
+        res.cookies.set("latitude",     body.latitude)
+        res.cookies.set("longitude",    body.longitude)
+        res.cookies.set("geocoded_at",  body.geocoded_at)
+        res.cookies.set("longitude",    body.location_accuracy)
+        res.cookies.set("province",     body.province)
+        res.cookies.set("district",     body.district)
+        res.cookies.set("additional",   body.additional)
+        res.cookies.set("photoCount",   String((body.photos ?? []).length))
 
         return res
-    }catch (error){
-        console.error("API Error:", error)  // ดู error จริงๆ
+    } catch (error) {
+        console.error("API Error:", error)
         return NextResponse.json({ error: String(error) }, { status: 500 })
     }
 }
@@ -34,17 +33,16 @@ export async function POST(req: NextRequest) {
 export async function GET() {
     const cookieStore = await cookies()
     return NextResponse.json({
-        issueType: cookieStore.get("issueType")?.value ?? "",
-        subIssue: cookieStore.get("subIssue")?.value ?? "",
-        detail: cookieStore.get("detail")?.value ?? "",
-        location: cookieStore.get("location")?.value ?? "",
-        lat: cookieStore.get("lat")?.value ?? "",
-        lng: cookieStore.get("lng")?.value ?? "",
-        province: cookieStore.get("province")?.value ?? "",
-        district: cookieStore.get("district")?.value ?? "",
-        locationDescription: cookieStore.get("locationDescription")?.value ?? "",
-        additionalNotes: cookieStore.get("additionalNotes")?.value ?? "",
-        photoCount: Number(cookieStore.get("photoCount")?.value ?? "0")
+        title:        cookieStore.get("title")?.value       ?? "",
+        category:     cookieStore.get("category")?.value    ?? "",
+        subcategory:  cookieStore.get("subcategory")?.value ?? "",
+        detail:       cookieStore.get("detail")?.value      ?? "",
+        location:     cookieStore.get("location")?.value    ?? "",
+        latitude:     cookieStore.get("latitude")?.value    ?? "",
+        longitude:    cookieStore.get("longitude")?.value   ?? "",
+        province:     cookieStore.get("province")?.value    ?? "",
+        district:     cookieStore.get("district")?.value    ?? "",
+        additional:   cookieStore.get("additional")?.value  ?? "",
+        photoCount:   Number(cookieStore.get("photoCount")?.value ?? "0"),
     })
 }
-
