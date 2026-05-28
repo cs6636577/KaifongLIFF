@@ -60,3 +60,5 @@ function getCategory(id: string): string {
 function getSubcategory(id: string): string {
   return data.meta.reference_ids.subcategories.find((s) => s.subcategory_id === id)?.name ?? "-";
 }
+
+//db-fake vercel blob url ดึงรูป 

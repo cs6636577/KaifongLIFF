@@ -9,6 +9,7 @@ import StepProgress from "@/components/userform/step_progress_3";
 import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+import { usePhotoStore } from "@/hooks/usePhotoStore"
 
   //font sarabun
 const sarabun = Sarabun({
@@ -31,6 +32,7 @@ type Detail = {
 
 const [user, setUser] = useState<User | null>(null);
 const [detail, setDetail] = useState<Detail | null>(null); 
+const { photos } = usePhotoStore()
 
 useEffect(() => {
     Promise.all([
@@ -41,6 +43,55 @@ useEffect(() => {
         setDetail(detailData);
     });
 }, []);
+
+async function handleSubmit() {
+  if (!user || !detail) return 
+    try {
+        // 1. อัพรูปไป Vercel Blob
+        const photoUrls = await Promise.all(
+    photos.map(async file => {
+        const fd = new FormData()
+        fd.append("file", file)
+
+        const res = await fetch("/api/upload", {
+            method: "POST",
+            body: fd
+        })
+
+        // log ดูว่า API return อะไรกลับมา
+        const text = await res.text()
+        console.log("upload response:", text)
+
+        const data = JSON.parse(text)
+        return data.url
+    })
+)
+
+        // 2. POST ข้อมูลทั้งหมดลง DB
+        const res = await fetch("/api/complaint2/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name:      user.name,
+                lastname:  user.lastname,
+                phone:     user.phone,
+                issueType: detail.issueType,
+                location:  detail.location,
+                detail:    detail.detail,
+                photos:    photoUrls,
+            })
+        })
+
+        const data = await res.json()
+
+        const newTab = window.open("", "_blank")
+        newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
+
+    } catch (error) {
+        console.error("Error:", error)
+    }
+}
+
 
 if (!user || !detail) return <p>Loading...</p>;
   
@@ -70,7 +121,9 @@ if (!user || !detail) return <p>Loading...</p>;
         <EvidenceCard/>
         {/* ปุ่มยืนยัน*/}
         <div className='flex items-center justify-center w-full mb-4'>
-          <button className='bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-xl shadow-[#FF8A65]/35 hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'> 
+          <button 
+            onClick={handleSubmit}
+            className='bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-xl shadow-[#FF8A65]/35 hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'> 
             <div className='flex items-center justify-center text-xl'>
               <span className='mr-2 px-3
               '>ยืนยันการแจ้งเหตุ</span>
@@ -93,4 +146,9 @@ if (!user || !detail) return <p>Loading...</p>;
        </div>
 
     )
+
 }
+
+
+
+

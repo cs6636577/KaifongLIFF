@@ -72,7 +72,7 @@ if (!user || !request) return (
         {/*ทำเปน static ไปก่อนดึงมาจาก db จริงๆ */}
         <EvidenceCard photos={[
         "/evidence/Evidence_test_2.svg",
-        "/evidence/Evidence_test.svg",
+        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/S__27615237-d5SCBPSi8FSk2CIFjURa0C0bKibS0H.jpg",
         ]} /> 
         <StatusCard
          request={request}

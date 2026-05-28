@@ -13,6 +13,10 @@ export async function POST(req: NextRequest) {
         res.cookies.set("subIssue", body.subIssue)
         res.cookies.set("detail", body.detail)
         res.cookies.set("location", body.location)
+        res.cookies.set("lat",body.lat)
+        res.cookies.set("lng",body.lng)
+        res.cookies.set("province",body.province)
+        res.cookies.set("district",body.district)
         res.cookies.set("locationDescription", body.locationDescription)
         // photos เป็น string[] ของ base64 หรือ objectURL ชั่วคราว
         res.cookies.set("photoCount", String((body.photos ?? []).length))
@@ -34,6 +38,10 @@ export async function GET() {
         subIssue: cookieStore.get("subIssue")?.value ?? "",
         detail: cookieStore.get("detail")?.value ?? "",
         location: cookieStore.get("location")?.value ?? "",
+        lat: cookieStore.get("lat")?.value ?? "",
+        lng: cookieStore.get("lng")?.value ?? "",
+        province: cookieStore.get("province")?.value ?? "",
+        district: cookieStore.get("district")?.value ?? "",
         locationDescription: cookieStore.get("locationDescription")?.value ?? "",
         additionalNotes: cookieStore.get("additionalNotes")?.value ?? "",
         photoCount: Number(cookieStore.get("photoCount")?.value ?? "0")

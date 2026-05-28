@@ -24,6 +24,7 @@ export const prefixOptions: PrefixOption[] = [
     "value": "005",
     "label": "นาง"
   },
+  /*
   {
     "value": "006",
     "label": "นักโทษชายหม่อมหลวง"
@@ -2015,5 +2016,5 @@ export const prefixOptions: PrefixOption[] = [
   {
     "value": "959",
     "label": "พระครูวิบูลย์ธรรมศาสก์"
-  }
+  }*/
 ];

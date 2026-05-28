@@ -28,6 +28,19 @@ export default function card_form() {
         phone: ""
     });
 
+    const formatPhone = (value: string) => {
+    // เอาแค่ตัวเลข
+        const numbers = value.replace(/\D/g, "").slice(0, 10);
+        // format เป็น xxx-xxx-xxxx
+        if (numbers.length <= 3) return numbers;
+        if (numbers.length <= 6) return `${numbers.slice(0,3)}-${numbers.slice(3)}`;
+        return `${numbers.slice(0,3)}-${numbers.slice(3,6)}-${numbers.slice(6)}`;
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPhone(formatPhone(e.target.value));
+    };
+
     // Real-time validation
     useEffect(() => {
         validateForm();
@@ -41,10 +54,16 @@ export default function card_form() {
         return prefixOptions.some(opt => opt.value === selected);
     };
 
+    const isNameValid = (name: string) => {
+        const nameRegex =   /^[a-zA-Zก-ฮะ-์เ-ไ\s]+$/;
+        const spaceRegex = /^\s*$/;
+        if (spaceRegex.test(name)) return false; // ตรวจสอบว่าค่าเป็นช่องว่างหรือไม่
+        return nameRegex.test(name)
+    }
+
     // ตรวจสอบเบอร์โทรศัพท์
     const isPhoneValid = (phoneNumber: string) => {
-        // ยอมรับฟอร์แมต 08X-XXX-XXXX หรือ 08XXXXXXXX หรือ 08X XXXXXX
-        const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+        const phoneRegex = /^(06|08|09)\d{1}-\d{3}-\d{4}$/;
         const spaceRegex = /^\s*$/;
         if (spaceRegex.test(phoneNumber)) return false; // ตรวจสอบว่าค่าเป็นช่องว่างหรือไม่
         return phoneRegex.test(phoneNumber.replace(/\s/g, ''));
@@ -67,20 +86,24 @@ export default function card_form() {
         }
 
         // Validate name
-        if (!name.trim() || name.trim().length === 0 || !/^[^\s]+(\s[^\s]+)*$/.test(name)) {
+        if (!name.trim() || name.trim().length === 0) {
             newErrors.name = "กรุณากรอกชื่อ";
+        } else if(!isNameValid(name)){
+            newErrors.name = "รูปแบบไม่ถูกต้อง";
         }
 
         // Validate surname
-        if (!surname.trim() || surname.trim().length === 0 || !/^[^\s]+(\s[^\s]+)*$/.test(surname)) {
+        if (!surname.trim() || surname.trim().length === 0) {
             newErrors.surname = "กรุณากรอกนามสกุล";
+        } else if(!isNameValid(surname)){
+            newErrors.name = "รูปแบบไม่ถูกต้อง";
         }
 
         // Validate phone
         if (!phone.trim() || phone.trim().length === 0) {
             newErrors.phone = "กรุณากรอกเบอร์โทรศัพท์";
         } else if (!isPhoneValid(phone)) {
-            newErrors.phone = "รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง (08X-XXX-XXXX หรือ 08XXXXXXXX หรือ)";
+            newErrors.phone = "รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง";
         }
 
         setErrors(newErrors);
@@ -98,10 +121,11 @@ export default function card_form() {
             // console.log("surname" + surname)
             // console.log("phone" + phone)
 
+            const cleanPhone = phone.replace(/-/g, "");
             const res = await fetch('/api/form/reporter', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prefix: selected, name, surname, phone }),
+            body: JSON.stringify({ prefix: selected, name: name, surname: surname, phone: cleanPhone }),
             })
 
             if (res.ok) {
@@ -161,7 +185,7 @@ export default function card_form() {
                         type="tel"
                         placeholder="08X-XXX-XXXX"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={handlePhoneChange}
                         className="bg-transparent w-full placeholder:text-[#7F7660]/50 outline-none py-4 px-2 text-base"
                     />
                 </div>
