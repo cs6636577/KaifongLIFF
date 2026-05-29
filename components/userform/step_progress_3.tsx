@@ -39,7 +39,7 @@ const step_progress_3 = () => {
          {/* active step3 */}
          <span className="border-4 border-nt/30 rounded-full flex items-center justify-center">
             <span className="bg-nt text-[#231B00] rounded-full w-14 h-14 flex items-center justify-center ">
-            <FaRegCheckCircle className="text-2xl text-[#7F7660]" />
+              <FaRegCheckCircle className="text-2xl text-[#7F7660]" />
             </span>
         </span>
         <p className='text-[#5D5C74] text-xs mt-3'>STEP 3</p>
