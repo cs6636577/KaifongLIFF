@@ -1,7 +1,7 @@
 import data from "@/data/mock_data_may2026.json";
 import { calcResolvedDuration, calcPendingDuration,getComplaintNumber } from "@/lib/mockDB/caseUtils";
 import { STATUS_ID_MAP } from "@/lib/mockDB/status";
-import type { ServiceRequest } from "@/lib/mockDB/requests.types";
+import type { ServiceRequest,Status } from "@/lib/mockDB/requests.types";
 
 export async function GET(
   _req: Request,
@@ -11,9 +11,9 @@ export async function GET(
   const item = data.complaints.find((c) => c.complaint_id === id);
   if (!item) return Response.json({ error: "not found" }, { status: 404 });
 
-  const status = STATUS_ID_MAP[item.current_status_id] ?? "pending";
+  const status: Status = getStatusCode(item.current_status_id);
   const isResolved   = status === "resolved";
-  const isInProgress = status === "in_progress";
+
 
   const result: Partial<ServiceRequest> & { address?: string; description?: string } = {
     id:          item.complaint_id,
@@ -34,18 +34,15 @@ export async function GET(
 
     // fields ที่ StatusCard ใช้
     status,
-    actionNote: isResolved
-      ? calcResolvedDuration(item.complaint_id)
-      : isInProgress
-      ? "ช่างอยู่ในพื้นที่แล้ว - กำลังดำเนินการ"
-      : "รอมอบหมายเจ้าหน้าที่",
+    actionNote:  isResolved
+                        ? calcResolvedDuration(item.complaint_id) : getLatestActionNote(item.complaint_id), 
     detail: item.detail,
-
+    additional: item.additional_detail ?? "",
     detailMeta: isResolved
-      ? ""
-      : isInProgress
-      ? calcPendingDuration(item.created_at)
-      : "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(item.created_at),
+                      ? ""
+                      : status === "pending"
+                      ?  "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(item.created_at)
+                      : `\n${calcPendingDuration(item.created_at)}`,
 
     icon: "bolt",
   };
@@ -61,4 +58,35 @@ function getSubcategory(id: string): string {
   return data.meta.reference_ids.subcategories.find((s) => s.subcategory_id === id)?.name ?? "-";
 }
 
-//db-fake vercel blob url ดึงรูป 
+
+function getLatestActionNote(complaintId: string): string {
+  const logs = data.workflow_logs
+    .filter((l) => l.complaint_id === complaintId)
+    .sort((a, b) => new Date(b.action_datetime).getTime() - new Date(a.action_datetime).getTime());
+  return logs[0]?.action_note ?? "-";
+}
+
+function getStatusCode(statusId: string): Status {
+  const code = data.meta.reference_ids.statuses.find(
+    (s) => s.status_id === statusId
+  )?.code;
+   switch (code) {
+    case "OPEN":
+    case "PENDING":
+      return "pending";
+    case "IN_PROGRESS":
+      return "in_progress";
+    case "RESOLVED":
+    case "CLOSED":
+      return "resolved";
+    case "PAUSED":
+      return "paused";
+    case "REJECTED":
+      return "rejected";
+    default:
+      return "pending";
+  }
+}
+
+
+//db-fake url ดึงรูป 

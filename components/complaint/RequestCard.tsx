@@ -1,6 +1,5 @@
 import { ElementType } from "react";
 import {
-  CheckCircle2,
   CircleStop,
   MapPin,
   Star,
@@ -20,12 +19,29 @@ import {
   STATUS_ICON_TILE,
   STATUS_LABEL,
   STATUS_PILL,
-} from "../../lib/status";
+} from "../../lib/mockDB/status";
 
 import { ProgressSteps } from "./ProgressSteps";
 
 import { useRouter } from "next/navigation";
 
+import {
+  Clock3,
+  Cog,
+  CheckCircle2,
+  XCircle,
+  PauseCircle,
+} from "lucide-react";
+
+const STATUS_ICON = {
+  pending: Clock3,
+  in_progress: Cog,
+  resolved: CheckCircle2,
+  rejected: XCircle,
+  paused: PauseCircle,
+} as const;
+
+//จะเปลี่ยนเปนอิโมจิ
 const ICONS: Record<string, ElementType> = {
   build: FaBuildingCircleArrowRight,
   bolt: MdElectricBolt,
@@ -71,7 +87,7 @@ export function RequestCard({
 
         {/* progress */}
         <ProgressSteps
-          steps={request.steps}
+          steps= {3}
           progress={request.progress}
           fillClassName={accent}
           completedClassName="bg-status-done"
@@ -89,7 +105,7 @@ export function RequestCard({
             <MapPin className="h-4 w-4 shrink-0" />
 
             <span className="truncate">
-              {request.location}
+              เขต{request.district},{" "}{request.province}
             </span>
           </div>
 
@@ -134,6 +150,7 @@ export function DetailStrip({
   onRate?: (id: string) => void;
 }) {
   const tone = STATUS_ICON_TILE[request.status];
+  const Icon = STATUS_ICON[request.status] ?? Clock3;
 
   return (
     <div
@@ -144,24 +161,25 @@ export function DetailStrip({
       }`}
     >
       <div className="flex min-w-0 items-start gap-2">
-        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+        <Icon className="mt-1 h-4 w-4 shrink-0" />
 
         <div className="min-w-0">
           <span className="font-medium leading-snug">
             {request.actionNote}
           </span>
 
-          {request.status !== "in_progress" && request.detailMeta && (
+
+            {request.status === "pending" && (
             <span className="text-gray-400 mt-0.5 text-xs">
-              {request.detailMeta}
+             {request.detailMeta}
             </span>
           )}
-
-          {request.status === "in_progress" && (
+          {request.status !== "pending" && (
             <p className="text-gray-400 mt-0.5 text-xs">
-             {request.detailMeta}
+              {request.detailMeta}
             </p>
           )}
+
         </div>
       </div>
 

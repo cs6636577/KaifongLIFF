@@ -174,11 +174,35 @@ const card_form2 = () => {
    //รูปภาพ
     const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
     
+    //กัน error
+    const [uploadError, setUploadError] = useState<string | null>(null)
+
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
+    const MAX_SIZE = 5 * 1024 * 1024
+    const MIN_SIZE = 1 * 1024
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setUploadError(null)
         const files = Array.from(e.target.files ?? [])
         const remaining = MAX_PHOTOS - photos.length
-        files.slice(0, remaining).forEach(addPhoto)
-        e.target.value = "" // reset input
+
+        for (const file of files.slice(0, remaining)) {
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                setUploadError(`"${file.name}" ไม่รองรับ รองรับเฉพาะ JPEG, PNG, WebP`)
+                continue
+            }
+            if (file.size < MIN_SIZE) {
+                setUploadError(`"${file.name}" เล็กเกินไป (ขั้นต่ำ 1 KB)`)
+                continue
+            }
+            if (file.size > MAX_SIZE) {
+                setUploadError(`"${file.name}" ใหญ่เกิน 5 MB`)
+                continue
+            }
+            addPhoto(file)
+        }
+
+        e.target.value = ""
     }
     //ตอนกด zoom รุป
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
@@ -309,6 +333,9 @@ const card_form2 = () => {
                             />
                         </label>
                     </div>
+                )}
+                {uploadError && (
+                    <p className="text-red-500 text-sm mt-2 text-center">{uploadError}</p>
                 )}
 
                {/* Preview รูปที่เลือก */}

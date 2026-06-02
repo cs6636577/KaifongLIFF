@@ -122,6 +122,13 @@ export default function HomeClient() {
         }
         
         if (
+          tab === "rejected" &&
+          r.status !== "rejected"
+        ) {
+          return false;
+        }
+        
+        if (
           search &&
           !r.complaintNo
             .toLowerCase()
@@ -166,6 +173,7 @@ export default function HomeClient() {
           resolved: 0,
           paused: 0,
           pending: 0,
+          rejected: 0,
           ...data?.counts,
           }}
         />

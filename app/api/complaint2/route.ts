@@ -2,8 +2,8 @@
 
 import data from "@/data/mock_data_may2026.json";
 import { calcResolvedDuration, calcPendingDuration, getGroup, getComplaintNumber } from "@/lib/mockDB/caseUtils";
-import type {NormalizedStatus, PriorityLevel, SourceChannel, ServiceRequest, RequestsPayload} from "@/lib/mockDB/requests.types";
-import { STATUS_ID_MAP,STATUS_PROGRESS } from "@/lib/mockDB/status";
+import type {Status, PriorityLevel, SourceChannel, ServiceRequest, RequestsPayload} from "@/lib/mockDB/requests.types";
+import {STATUS_PROGRESS } from "@/lib/mockDB/status";
 import { getCurrentUserId } from "@/lib/session";
 
 const TARGET_USER_ID = getCurrentUserId(); //ถ้าใช้แบคเอน auth ให้ไปแก้ใน /lib/session ตอนนี้ hardcode id 
@@ -12,13 +12,6 @@ const currentUser = data.meta.reference_ids.citizen_users.find(
   (u) => u.user_id === TARGET_USER_ID
 );
 
-const CATEGORY_ICON: Record<string, ServiceRequest["icon"]> = {
-  "cccc0000-0000-0000-0000-000000000001": "stop",   // น้ำประปา
-  "cccc0000-0000-0000-0000-000000000002": "bolt",   // ไฟฟ้า
-  "cccc0000-0000-0000-0000-000000000003": "stop",   // ถนน/ทางเท้า
-  "cccc0000-0000-0000-0000-000000000004": "trash",  // ขยะ/สิ่งแวดล้อม
-  "cccc0000-0000-0000-0000-000000000005": "shield", // เสียงรบกวน
-};
 
 const PRIORITY_MAP: Record<string, PriorityLevel> = {
   "eeee0000-0000-0000-0000-000000000001": "URGENT",
@@ -33,29 +26,32 @@ export async function GET(): Promise<Response> {
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
  const requests: ServiceRequest[] = complaints.map((c) => {
-    const status: NormalizedStatus = STATUS_ID_MAP[c.current_status_id] ?? "pending";
-    const isResolved = status === "resolved";
-    const isInProgress = status === "in_progress";
+    const status: Status = getStatusCode(c.current_status_id);
+    const isResolved = status === "resolved" ;
 
     return {
       id:          c.complaint_id,
       complaintNo: getComplaintNumber(c.complaint_no) || "",
       title:       getCategory(c.category_id) || "",
       detail: c.detail,
-      actionNote:      isResolved
-                     ? calcResolvedDuration(c.complaint_id)
-                     : isInProgress
-                     ? getLatestActionNote(c.complaint_id)
-                     : "รอมอบหมายเจ้าหน้าที่",
+      actionNote:  isResolved
+                    ? calcResolvedDuration(c.complaint_id) : getLatestActionNote(c.complaint_id),
       category:    c.category_id,
       status,
-      priority:    PRIORITY_MAP[c.priority_id] ?? "LOW",
+
+      priority:    PRIORITY_MAP[c.priority_id] ?? "not found",
       source:      c.source_channel_detail as SourceChannel,
+
       location:    c.location_text,
       district:    c.district,
       province:    c.province,
       latitude:    c.latitude,
       longitude:   c.longitude,
+
+      //ยังไม่มีในตาราง make มาก่อน เอามาจาก cookie ก็ได้ว่ามันขึ้นยัง
+      geocoded_at: "", 
+      location_accuracy: 0 ,
+
       assignedTeamId: c.assigned_team_id ?? "",
       assignedUserId: c.assigned_user_id ?? "",
       isAnonymous:    c.is_anonymous,
@@ -67,12 +63,14 @@ export async function GET(): Promise<Response> {
       updatedAt:   c.updated_at,
 
       // UI fields
-      icon:        CATEGORY_ICON[c.category_id] ?? "bolt",
-      detailMeta:  isResolved
-                     ? ""
-                     : isInProgress
-                     ? calcPendingDuration(c.created_at)
-                     : "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(c.created_at),
+      icon:        "bolt",
+
+      detailMeta: isResolved
+                      ? ""
+                      : status === "pending"
+                      ?  "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(c.created_at)
+                      : `${calcPendingDuration(c.created_at)}`,
+
       progress:    STATUS_PROGRESS[status],
       steps:       4,
       date:        new Date(c.created_at).toLocaleDateString("th-TH", {
@@ -92,6 +90,7 @@ export async function GET(): Promise<Response> {
       resolved:    requests.filter((r) => r.status === "resolved").length,
       pending:     requests.filter((r) => r.status === "pending").length,
       paused:      requests.filter((r) => r.status === "paused").length,
+      rejected:      requests.filter((r) => r.status === "rejected").length
     },
     requests,
   };
@@ -99,6 +98,7 @@ export async function GET(): Promise<Response> {
   return Response.json(payload);
 }
 
+//อนาคตจะเปลี่ยนเปน คิวรี่ 
 function getRating(complaintId: string, userId: string): number | undefined {
   return data.complaint_feedback.find(
     (f) => f.complaint_id === complaintId && f.user_id === userId
@@ -116,4 +116,26 @@ function getLatestActionNote(complaintId: string): string {
     .filter((l) => l.complaint_id === complaintId)
     .sort((a, b) => new Date(b.action_datetime).getTime() - new Date(a.action_datetime).getTime());
   return logs[0]?.action_note ?? "-";
+}
+
+function getStatusCode(statusId: string): Status {
+  const code = data.meta.reference_ids.statuses.find(
+    (s) => s.status_id === statusId
+  )?.code;
+   switch (code) {
+    case "OPEN":
+    case "PENDING":
+      return "pending";
+    case "IN_PROGRESS":
+      return "in_progress";
+    case "RESOLVED":
+    case "CLOSED":
+      return "resolved";
+    case "PAUSED":
+      return "paused";
+    case "REJECTED":
+      return "rejected";
+    default:
+      return "pending";
+  }
 }

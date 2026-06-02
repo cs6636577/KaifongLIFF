@@ -71,8 +71,8 @@ if (!user || !request) return (
         <ComplaintCard  request={request}/>
         {/*ทำเปน static ไปก่อนดึงมาจาก db จริงๆ */}
         <EvidenceCard photos={[
-        "/evidence/Evidence_test_2.svg",
-        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/S__27615237-d5SCBPSi8FSk2CIFjURa0C0bKibS0H.jpg",
+        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/%E0%B8%82%E0%B8%A2%E0%B8%B02-pxWbXcvzosvxb2PNCdjHxfMeHENEZW.jpg",
+        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/dFQROr7oWzulq5FZXmCxhHD3BI5Vg9Ut9cKwDLMZB2HckRJ7ErcRBhvNsUHeK1EBJfl-o4xWlKUIsaMCLYOpL1VhbnZBRw2hze.jpg",
         ]} /> 
         <StatusCard
          request={request}

@@ -1,7 +1,9 @@
 // app/api/form/card/route.ts
 import { NextRequest, NextResponse } from "next/server"
+import data from '@/data/mock_data_may2026.json'
 import { cookies } from "next/headers" 
 
+const { categories, subcategories } = data.meta.reference_ids
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json()
@@ -17,7 +19,7 @@ export async function POST(req: NextRequest) {
         res.cookies.set("latitude",     body.latitude)
         res.cookies.set("longitude",    body.longitude)
         res.cookies.set("geocoded_at",  body.geocoded_at)
-        res.cookies.set("longitude",    body.location_accuracy)
+        res.cookies.set("location_accuracy",    body.location_accuracy)
         res.cookies.set("province",     body.province)
         res.cookies.set("district",     body.district)
         res.cookies.set("additional",   body.additional)
@@ -32,10 +34,15 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
     const cookieStore = await cookies()
+
+    const categoryId    = cookieStore.get("category")?.value    ?? ""
+    const subcategoryId = cookieStore.get("subcategory")?.value ?? ""
     return NextResponse.json({
         title:        cookieStore.get("title")?.value       ?? "",
-        category:     cookieStore.get("category")?.value    ?? "",
-        subcategory:  cookieStore.get("subcategory")?.value ?? "",
+        category:     categories.find(c => c.category_id === categoryId)?.name,
+        subcategory:  subcategories.find(c => c.subcategory_id === subcategoryId)?.name,
+        categoryId: cookieStore.get("category")?.value ?? "",
+        subcategoryId: cookieStore.get("subcategory")?.value ?? "",
         detail:       cookieStore.get("detail")?.value      ?? "",
         location:     cookieStore.get("location")?.value    ?? "",
         latitude:     cookieStore.get("latitude")?.value    ?? "",

@@ -9,85 +9,45 @@
     },
     "reference_ids": {
       "tenant_id": "11111111-0000-0000-0000-000000000001",
-      "categories": [
-        {
-          "category_id": "cccc0000-0000-0000-0000-000000000001",
-          "name": "น้ำประปา",
-          "code": "WATER"
-        },
-        {
-          "category_id": "cccc0000-0000-0000-0000-000000000002",
-          "name": "ไฟฟ้า",
-          "code": "ELECTRIC"
-        },
-        {
-          "category_id": "cccc0000-0000-0000-0000-000000000003",
-          "name": "ถนน/ทางเท้า",
-          "code": "ROAD"
-        },
-        {
-          "category_id": "cccc0000-0000-0000-0000-000000000004",
-          "name": "ขยะ/สิ่งแวดล้อม",
-          "code": "WASTE"
-        },
-        {
-          "category_id": "cccc0000-0000-0000-0000-000000000005",
-          "name": "เสียงรบกวน",
-          "code": "NOISE"
-        }
-      ],
-      "subcategories": [
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000001",
-          "name": "น้ำไม่ไหล",
-          "category_idx": 0
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000002",
-          "name": "น้ำขุ่น",
-          "category_idx": 0
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000003",
-          "name": "ท่อแตก",
-          "category_idx": 0
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000004",
-          "name": "ไฟดับ",
-          "category_idx": 1
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000005",
-          "name": "ไฟกระพริบ",
-          "category_idx": 1
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000006",
-          "name": "ถนนชำรุด",
-          "category_idx": 2
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000007",
-          "name": "ทางเท้าพัง",
-          "category_idx": 2
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000008",
-          "name": "ขยะไม่ถูกเก็บ",
-          "category_idx": 3
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000009",
-          "name": "กลิ่นเหม็น",
-          "category_idx": 3
-        },
-        {
-          "subcategory_id": "dddd0000-0000-0000-0000-000000000010",
-          "name": "เสียงดังรบกวน",
-          "category_idx": 4
-        }
-      ],
+       "categories": [
+    { "category_id": "cccc0000-0000-0000-0000-000000000001", "name": "โครงสร้างพื้นฐานและสาธารณูปโภค", "code": "INFRA" },
+    { "category_id": "cccc0000-0000-0000-0000-000000000002", "name": "สิ่งแวดล้อมและสุขาภิบาล", "code": "ENV" },
+    { "category_id": "cccc0000-0000-0000-0000-000000000003", "name": "สาธารณสุขและมลพิษ", "code": "HEALTH" },
+    { "category_id": "cccc0000-0000-0000-0000-000000000004", "name": "ความเป็นระเบียบเรียบร้อยและจราจร", "code": "ORDER" },
+    { "category_id": "cccc0000-0000-0000-0000-000000000005", "name": "สวัสดิการสังคมและพัฒนาชุมชน", "code": "SOCIAL" },
+    { "category_id": "cccc0000-0000-0000-0000-000000000006", "name": "การบริการเจ้าหน้าที่และธรรมาภิบาล", "code": "GOV" }
+  ],
+  "subcategories": [
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000001", "name": "ถนนและทางเท้า", "code": "INFRA_ROAD", "category_idx": 0 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000002", "name": "ไฟฟ้าสาธารณะ", "code": "INFRA_LIGHT", "category_idx": 0 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000003", "name": "การระบายน้ำ", "code": "INFRA_DRAIN", "category_idx": 0 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000004", "name": "อาคารและสิ่งก่อสร้าง", "code": "INFRA_BUILDING", "category_idx": 0 },
+
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000005", "name": "การจัดการขยะ", "code": "ENV_WASTE", "category_idx": 1 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000006", "name": "พื้นที่สีเขียว", "code": "ENV_GREEN", "category_idx": 1 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000007", "name": "ความสะอาดทั่วไป", "code": "ENV_CLEAN", "category_idx": 1 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000008", "name": "ซากสัตว์", "code": "ENV_ANIMAL", "category_idx": 1 },
+
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000009", "name": "มลพิษทางเสียง", "code": "HEALTH_NOISE", "category_idx": 2 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000010", "name": "มลพิษทางอากาศและน้ำ", "code": "HEALTH_POLLUTION", "category_idx": 2 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000011", "name": "การควบคุมโรค", "code": "HEALTH_DISEASE", "category_idx": 2 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000012", "name": "อาหารและตลาด", "code": "HEALTH_FOOD", "category_idx": 2 },
+
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000013", "name": "การจราจรและที่จอดรถ", "code": "ORDER_TRAFFIC", "category_idx": 3 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000014", "name": "หาบเร่แผงลอย", "code": "ORDER_VENDOR", "category_idx": 3 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000015", "name": "สัตว์จรจัด", "code": "ORDER_STRAY", "category_idx": 3 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000016", "name": "ป้ายผิดกฎหมาย", "code": "ORDER_SIGN", "category_idx": 3 },
+
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000017", "name": "เบี้ยยังชีพและสวัสดิการ", "code": "SOCIAL_WELFARE", "category_idx": 4 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000018", "name": "ศูนย์พัฒนาเด็กเล็ก", "code": "SOCIAL_CHILD", "category_idx": 4 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000019", "name": "กิจกรรมชุมชน", "code": "SOCIAL_COMMUNITY", "category_idx": 4 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000020", "name": "อาชีพและรายได้", "code": "SOCIAL_JOB", "category_idx": 4 },
+
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000021", "name": "การบริการภาครัฐ", "code": "GOV_SERVICE", "category_idx": 5 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000022", "name": "บริการดิจิทัล", "code": "GOV_DIGITAL", "category_idx": 5 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000023", "name": "ความโปร่งใส", "code": "GOV_TRANSPARENCY", "category_idx": 5 },
+    { "subcategory_id": "dddd0000-0000-0000-0000-000000000024", "name": "ข้อเสนอแนะทั่วไป", "code": "GOV_FEEDBACK", "category_idx": 5 }
+  ],
       "priority_levels": [
         {
           "priority_id": "eeee0000-0000-0000-0000-000000000001",
@@ -123,7 +83,7 @@
         },
         {
           "status_id": "ffff0000-0000-0000-0000-000000000003",
-          "name": "รอข้อมูลเพิ่มเติม",
+          "name": "รอดำเนินการ",
           "code": "PENDING"
         },
         {
@@ -135,6 +95,16 @@
           "status_id": "ffff0000-0000-0000-0000-000000000005",
           "name": "ปิด",
           "code": "CLOSED"
+        },
+         {
+          "status_id": "ffff0000-0000-0000-0000-000000000006",
+          "name": "ถูกปฎิเสธ",
+          "code": "REJECTED"
+        },
+        {
+          "status_id": "ffff0000-0000-0000-0000-000000000007",
+          "name": "พักงาน",
+          "code": "PAUSED"
         }
       ],
       "teams": [
@@ -263,28 +233,29 @@
       "citizen_name": "สมชาย ใจดี",
       "citizen_phone": "0812345678",
       "citizen_email": null,
-      "title": "ไฟส่องสว่างทางดับ",
-      "detail": "รายละเอียดเรื่องร้องเรียน: ไฟส่องสว่างทางดับ บริเวณ มีนบุรี",
+      "title": "ขยะล้น",
+      "detail": "ขยะไม่ถูกเก็บ 1 สัปดาห์ ส่งผลให้เกิดการสะสมของขยะและมีกลิ่นเหม็นเน่ารุนแรงรบกวนประชาชนที่อาศัยอยู่ในบริเวณใกล้เคียง",
+      "additional_detail": "มีน้ำขังบริเวณกองขยะ",
       "image_url": null,
-      "category_id": "cccc0000-0000-0000-0000-000000000003",
-      "subcategory_id": "dddd0000-0000-0000-0000-000000000006",
+      "category_id": "cccc0000-0000-0000-0000-000000000002",
+      "subcategory_id": "dddd0000-0000-0000-0000-000000000005",
       "priority_id": "eeee0000-0000-0000-0000-000000000002",
       "latitude": 13.5119189,
       "longitude": 100.3874552,
       "district": "มีนบุรี",
       "province": "กรุงเทพมหานคร",
-      "location_text": "ถนนมีนบุรี แขวงมีนบุรี",
-      "current_status_id": "ffff0000-0000-0000-0000-000000000005",
+      "location_text": "159 แขวงมีนบุรี เขตมีนบุรี กรุงเทพมหานคร 10510 ประเทศไทย",
+      "current_status_id": "ffff0000-0000-0000-0000-000000000001",
       "source_channel_detail": "WEB",
       "assigned_team_id": "gggg0000-0000-0000-0000-000000000003",
       "assigned_user_id": "bbbb0000-0000-0000-0000-000000000005",
       "is_anonymous": true,
       "is_public_view": true,
-      "due_date": "2026-05-08 10:01:36",
-      "resolved_at": "2026-05-04 16:01:36",
-      "closed_at": "2026-05-04 19:01:36",
-      "created_at": "2026-05-01 10:01:36",
-      "updated_at": "2026-05-04 19:01:36"
+      "due_date": "2026-06-08 10:01:36",
+      "resolved_at": null,
+      "closed_at": null,
+      "created_at": "2026-06-01 10:01:36",
+      "updated_at": "2026-06-01 10:01:36"
     },
     {
       "complaint_id": "61bb497b-8b89-425e-8271-7c24b5b6774b",
@@ -3154,7 +3125,7 @@
       "district": "บางกะปิ",
       "province": "กรุงเทพมหานคร",
       "location_text": "ถนนบางกะปิ แขวงบางกะปิ",
-      "current_status_id": "ffff0000-0000-0000-0000-000000000003",
+      "current_status_id": "ffff0000-0000-0000-0000-000000000001",
       "source_channel_detail": "WEB",
       "assigned_team_id": "gggg0000-0000-0000-0000-000000000001",
       "assigned_user_id": "bbbb0000-0000-0000-0000-000000000003",
@@ -3410,7 +3381,7 @@
       "district": "บางรัก",
       "province": "กรุงเทพมหานคร",
       "location_text": "ถนนบางรัก แขวงบางรัก",
-      "current_status_id": "ffff0000-0000-0000-0000-000000000002",
+      "current_status_id": "ffff0000-0000-0000-0000-000000000007",
       "source_channel_detail": "PHONE",
       "assigned_team_id": "gggg0000-0000-0000-0000-000000000001",
       "assigned_user_id": "bbbb0000-0000-0000-0000-000000000002",
@@ -5266,7 +5237,7 @@
       "district": "บางกะปิ",
       "province": "กรุงเทพมหานคร",
       "location_text": "ถนนบางกะปิ แขวงบางกะปิ",
-      "current_status_id": "ffff0000-0000-0000-0000-000000000002",
+      "current_status_id": "ffff0000-0000-0000-0000-000000000006",
       "source_channel_detail": "WEB",
       "assigned_team_id": "gggg0000-0000-0000-0000-000000000004",
       "assigned_user_id": "bbbb0000-0000-0000-0000-000000000003",
@@ -5672,57 +5643,12 @@
       "action_type": "CREATE",
       "action_by": "aaaa0000-0000-0000-0000-000000000001",
       "action_role_id": null,
-      "action_note": "ยื่นเรื่องร้องเรียนใหม่",
+      "action_note": "รอมอบหมายเจ้าหน้าที่",
       "action_datetime": "2026-05-01 10:01:36",
       "ip_address": "192.168.1.144",
       "pending_reason": "ไม่มีการรอ",
       "assigned_team_id": null,
       "assigned_user_id": null
-    },
-    {
-      "workflow_log_id": "8d069b52-9c01-4598-9f36-053078ff3864",
-      "complaint_id": "b7a5f7bd-b6e3-4619-bd84-7f6c7ebdd971",
-      "from_status_id": "ffff0000-0000-0000-0000-000000000001",
-      "to_status_id": "ffff0000-0000-0000-0000-000000000002",
-      "action_type": "ASSIGN",
-      "action_by": "bbbb0000-0000-0000-0000-000000000005",
-      "action_role_id": null,
-      "action_note": "มอบหมายให้ทีมโยธาดำเนินการ",
-      "action_datetime": "2026-05-01 14:01:36",
-      "ip_address": "10.0.0.46",
-      "pending_reason": "ไม่มีการรอ",
-      "assigned_team_id": "gggg0000-0000-0000-0000-000000000003",
-      "assigned_user_id": "bbbb0000-0000-0000-0000-000000000005"
-    },
-    {
-      "workflow_log_id": "856edd4d-2705-450d-9599-b0cbe93b3232",
-      "complaint_id": "b7a5f7bd-b6e3-4619-bd84-7f6c7ebdd971",
-      "from_status_id": "ffff0000-0000-0000-0000-000000000002",
-      "to_status_id": "ffff0000-0000-0000-0000-000000000004",
-      "action_type": "RESOLVE",
-      "action_by": "bbbb0000-0000-0000-0000-000000000005",
-      "action_role_id": null,
-      "action_note": "ดำเนินการแก้ไขเสร็จสิ้น",
-      "action_datetime": "2026-05-04 16:01:36",
-      "ip_address": "10.0.0.42",
-      "pending_reason": "ไม่มีการรอ",
-      "assigned_team_id": "gggg0000-0000-0000-0000-000000000003",
-      "assigned_user_id": "bbbb0000-0000-0000-0000-000000000005"
-    },
-    {
-      "workflow_log_id": "36d98059-91a4-4b2f-9c4f-cbf3c9398e67",
-      "complaint_id": "b7a5f7bd-b6e3-4619-bd84-7f6c7ebdd971",
-      "from_status_id": "ffff0000-0000-0000-0000-000000000004",
-      "to_status_id": "ffff0000-0000-0000-0000-000000000005",
-      "action_type": "CLOSE",
-      "action_by": "bbbb0000-0000-0000-0000-000000000005",
-      "action_role_id": null,
-      "action_note": "ปิดเรื่องร้องเรียนเรียบร้อยแล้ว",
-      "action_datetime": "2026-05-04 19:01:36",
-      "ip_address": "10.0.0.27",
-      "pending_reason": "ไม่มีการรอ",
-      "assigned_team_id": "gggg0000-0000-0000-0000-000000000003",
-      "assigned_user_id": "bbbb0000-0000-0000-0000-000000000005"
     },
     {
       "workflow_log_id": "2df7d825-fbc7-4e49-9335-7705fd96ae27",
@@ -10517,7 +10443,7 @@
       "action_type": "ASSIGN",
       "action_by": "bbbb0000-0000-0000-0000-000000000002",
       "action_role_id": null,
-      "action_note": "มอบหมายให้ทีมประปาดำเนินการ",
+      "action_note": "พักงานเนื่องจากทรัพยากรไม่เพียงพอ",
       "action_datetime": "2026-05-19 15:43:58",
       "ip_address": "10.0.0.40",
       "pending_reason": "ไม่มีการรอ",
@@ -12362,7 +12288,7 @@
       "action_type": "ASSIGN",
       "action_by": "bbbb0000-0000-0000-0000-000000000003",
       "action_role_id": null,
-      "action_note": "มอบหมายให้ทีมสิ่งแวดล้อมดำเนินการ",
+      "action_note": "คำร้องถูกปฏิเสธ เนื่องจากรูปภาพไม่เกี่ยวข้องกับปัญหา",
       "action_datetime": "2026-05-29 23:18:38",
       "ip_address": "10.0.0.41",
       "pending_reason": "ไม่มีการรอ",
@@ -12686,16 +12612,6 @@
     }
   ],
   "complaint_feedback": [
-    {
-      "feedback_id": "d2da764e-91c7-4ae4-a19a-e5a9f348fc91",
-      "complaint_id": "b7a5f7bd-b6e3-4619-bd84-7f6c7ebdd971",
-      "user_id": "aaaa0000-0000-0000-0000-000000000001",
-      "score_overall": 3,
-      "comment": "พอใช้ได้ แต่ยังมีจุดที่ควรปรับปรุง",
-      "feedback_round": 1,
-      "trigger_event": "COMPLAINT_CLOSED",
-      "submitted_at": "2026-05-05 14:01:36"
-    },
     {
       "feedback_id": "c12fd2fa-5822-4e87-b75c-e46632695089",
       "complaint_id": "f9c72c69-3868-4ee0-b7c0-b1dfc24d678f",

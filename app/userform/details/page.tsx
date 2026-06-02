@@ -10,7 +10,7 @@ import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
 import { usePhotoStore } from "@/hooks/usePhotoStore"
-import type { ServiceRequest } from "@/lib/mockDB/requests.types";
+
 
   //font sarabun
 const sarabun = Sarabun({
@@ -24,10 +24,23 @@ type User = {
   lastname: string;
   phone: string;
 };
+type ComplaintDetail = {
+  categoryId: string;
+  subcategoryId: string;
+  category: string;
+  subcategory: string;
+  location: string;
+  latitude: string;
+  longitude: string;
+  province: string;
+  district: string;
+  detail: string;
+  additional: string;
+}
 
 
 const [user, setUser] = useState<User | null>(null);
-const [detail, setDetail] = useState<ServiceRequest | null>(null); 
+const [detail, setDetail] = useState<ComplaintDetail  | null>(null); 
 const { photos } = usePhotoStore()
 
 useEffect(() => {
@@ -69,19 +82,31 @@ async function handleSubmit() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               //ตาราง complaint 
+                complaint_no: "REQ-0001/69",
+
+                lineId: "static", //session
+
+                channel_id: "static", 
+                tenant_id: "static",
                 name:      user.name,
                 lastname:  user.lastname,
                 phone:     user.phone,
-                category: detail.category,
-                subcategory: detail.subcategory,
+                category_id: detail.categoryId,
+                subcategory_id: detail.subcategoryId,
+                current_status_id: "ffff0000-0000-0000-0000-000000000003",
                 location:  detail.location,
                 latitude: detail.latitude,
                 longtitude: detail.longitude,
                 province: detail.province,
                 district:  detail.district,
+
+                geocoded_at: "static",
+                location_accuracy: "static",
+
                 detail:    detail.detail,
                 additional_detail: detail.additional,
                 photos:    photoUrls,
+
               //ตาราง workflow
 
             })

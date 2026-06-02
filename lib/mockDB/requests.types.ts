@@ -1,34 +1,5 @@
-export type RequestStatus  =
-  | "OPEN"
-  | "open"
-  | "pending"
-  | "PENDING"
-  | "IN_PROGRESS"
-  | "in_progress"
-  | "RESOLVED"
-  | "resolved"
-  | "PAUSED"
-  | "paused"
-  | "CLOSED"
-  | "closed";
-
 /*รอประเภท สเถียร */
-export type NormalizedStatus = "pending" | "in_progress" | "resolved" | "paused";
-
-export const STATUS_MAP: Record<RequestStatus, NormalizedStatus> = {
-  OPEN: "pending",
-  open: "pending",
-  pending: "pending",
-  PENDING: "pending",
-  IN_PROGRESS: "in_progress",
-  in_progress: "in_progress",
-  RESOLVED: "resolved",
-  resolved: "resolved",
-  PAUSED: "paused",
-  paused: "paused",
-  CLOSED: "resolved",
-  closed: "resolved",
-};
+export type Status = "pending" | "in_progress" | "resolved" | "paused" | "rejected";
 
 export type PriorityLevel = "LOW" | "MEDIUM" | "HIGH" | "URGENT"
 export type SourceChannel = "WEB" | "LINE" | "PHONE" | "WALKIN" | "APP"
@@ -46,7 +17,7 @@ export interface ServiceRequest {
   category: string              // category_id (หรือ map เป็น label)
   subcategory?: string        // subcategory_id 
 
-  status: NormalizedStatus         // current_status_id (map เป็น enum)
+  status: Status         // current_status_id (map เป็น enum)
 
   priority: PriorityLevel       // priority_id (map เป็น enum)
 
@@ -55,8 +26,8 @@ export interface ServiceRequest {
   province: string              // province
   latitude: number              // latitude
   longitude: number             // longitude
-  geocoded_at: string          
-  location_accuracy: number,
+  geocoded_at?: string          
+  location_accuracy?: number,
 
   assignedTeamId: string        // assigned_team_id
   assignedUserId: string        // assigned_user_id
@@ -74,7 +45,7 @@ export interface ServiceRequest {
   source:       SourceChannel   // channels.channel_type หรือ channels.name
   actionNote:   string          // จากworkflow_logs อิงจาก componentID 
   /*ui */
-  icon: "trash" | "bolt" | "shield" | "stop";
+  icon: "trash" | "bolt" | "shield" | "stop"; //ถ้าข้อมุลจริงๆ จะดึง icon มาจาก db ชื่อคือ icon แต่จริงๆคือ emoji ดึงเปน text ได้
   /*นอกเหนือตาราง complaint */
   detailMeta?: string;
   date: string  //day format form createat
@@ -95,6 +66,7 @@ export interface RequestsPayload {
     resolved:    number;  
     pending:     number;  
     paused:      number; 
+    rejected:    number;
   };
   requests: ServiceRequest[];
 }

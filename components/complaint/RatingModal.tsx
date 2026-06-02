@@ -31,7 +31,7 @@ export function RatingModal({
       <div className="my-4">
         {/*ใส่ไปก่อนรอเก็บข้อมุลจริง*/}
         <img
-          src={"/evidence/Evidence_success.jpg"}
+          src={"/evidence/Evidence_success2.jpg"}
           className="rounded-xl w-40 h-40 object-cover"
           alt="คำอธิบายรูปภาพ"
         />

@@ -4,6 +4,7 @@ export type TabKey =
   | "resolved"
   |  "pending"
   |  "paused"
+  | "rejected"
   ;
 
 interface StatusTabsProps {
@@ -15,7 +16,8 @@ interface StatusTabsProps {
     in_progress: number;
     resolved: number;
     pending: number;
-    paused: number
+    paused: number;
+    rejected: number;
   };
 }
 
@@ -30,7 +32,8 @@ const TABS: {
     label: "กำลังดำเนินการ",
   },
   { key: "resolved", label: "เสร็จสิ้น" },
-  { key: "paused", label: "พักงาน" }
+  { key: "paused", label: "พักงาน" },
+  { key: "rejected", label:  "ถูกปฎิเสธ" },
 ];
 
 export function StatusTabs({

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { IssueTypeOption, IssueTypeOptions } from '../../data/issuetype'
+import data from '@/data/mock_data_may2026.json';
 import { IoIosArrowForward } from 'react-icons/io';
 
 interface Props {
@@ -14,8 +14,10 @@ interface Props {
 const DropDown = ({ selectedValue, onSelectedChange, selectedSub, onSubChange }: Props) => {
     const [open, setOpen] = useState(false)
     const [openSub, setOpenSub] = useState(false)
-
-    const subOptions = IssueTypeOptions.find(o => o.value === selectedValue)?.sub ?? []
+    
+    const { categories, subcategories } = data.meta.reference_ids
+    const selectedIdx = categories.findIndex(c => c.category_id === selectedValue)
+    const subOptions = subcategories.filter(s => s.category_idx === selectedIdx)
 
   return (
 <div className="w-full mt-1 mb-1 flex flex-col gap-2">
@@ -27,7 +29,7 @@ const DropDown = ({ selectedValue, onSelectedChange, selectedSub, onSubChange }:
             className="w-full bg-[#F4F4F1] rounded-xl py-4 px-4 pr-12 text-base text-left cursor-pointer"
         >
             {selectedValue
-            ? IssueTypeOptions.find(o => o.value === selectedValue)?.label
+            ? categories.find(c => c.category_id === selectedValue)?.name
             : "เลือกประเภทปัญหา"}
         </button>
         <IoIosArrowForward
@@ -38,13 +40,13 @@ const DropDown = ({ selectedValue, onSelectedChange, selectedSub, onSubChange }:
         {/* dropdown list */}
         {open && (
             <ul className="absolute z-10 w-full bg-white shadow-lg rounded-xl mt-1 max-h-60 overflow-y-auto">
-            {IssueTypeOptions.map(opt => (
+            {categories.map(opt => (
                 <li
-                key={opt.value}
-                onMouseDown={() => { onSelectedChange(opt.value); onSubChange(''); setOpen(false) }}
+                key={opt.category_id}
+                onMouseDown={() => { onSelectedChange(opt.category_id); onSubChange(''); setOpen(false) }}
                 className={`px-4 py-3 cursor-pointer text-base hover:bg-[#F4F4F1]`}
                 >
-                {opt.label}
+                {opt.name}
                 </li>
             ))}
             </ul>
@@ -60,7 +62,7 @@ const DropDown = ({ selectedValue, onSelectedChange, selectedSub, onSubChange }:
                         className="w-full bg-[#F4F4F1] rounded-xl py-4 px-4 pr-12 text-base text-left cursor-pointer"
                     >
                         {selectedSub
-                            ? subOptions.find(o => o.value === selectedSub)?.label
+                            ? subOptions.find(o => o.subcategory_id === selectedSub)?.name
                             : "เลือกประเภทย่อย"
                         }
                     </button>
@@ -72,11 +74,11 @@ const DropDown = ({ selectedValue, onSelectedChange, selectedSub, onSubChange }:
                         <ul className="absolute z-10 w-full bg-white shadow-lg rounded-xl mt-1 max-h-60 overflow-y-auto">
                             {subOptions.map(opt => (
                                 <li
-                                    key={opt.value}
-                                    onMouseDown={() => { onSubChange(opt.value); setOpenSub(false) }}
+                                    key={opt.subcategory_id}
+                                    onMouseDown={() => { onSubChange(opt.subcategory_id); setOpenSub(false) }}
                                     className={`px-4 py-3 cursor-pointer text-base hover:bg-[#F4F4F1]`}
                                 >
-                                    {opt.label}
+                                    {opt.name}
                                 </li>
                             ))}
                         </ul>

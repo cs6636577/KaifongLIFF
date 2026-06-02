@@ -1,20 +1,30 @@
-import {
-  CheckCircle2,
-  CircleStop, 
-} from "lucide-react";
-
 import { IoIosCheckmark } from "react-icons/io";
 import { FaArrowRight } from "react-icons/fa";
 
 import {
-  STATUS_ACCENT,
   STATUS_ICON_TILE,
   STATUS_LABEL,
   STATUS_PILL,
-} from "../../lib/status";
+} from "../../lib/mockDB/status";
 
 
 import type { ServiceRequest } from "@/lib/mockDB/requests.types";
+
+import {
+  Clock3,
+  Cog,
+  CheckCircle2,
+  XCircle,
+  PauseCircle,
+} from "lucide-react";
+
+const STATUS_ICON = {
+  pending: Clock3,
+  in_progress: Cog,
+  resolved: CheckCircle2,
+  rejected: XCircle,
+  paused: PauseCircle,
+} as const;
 
 type StatusCardProps = {
   request: ServiceRequest;
@@ -71,7 +81,7 @@ function StatusPill({
   );
 }
 
- function DetailStrip({
+export function DetailStrip({
   request,
   onRate,
 }: {
@@ -79,6 +89,7 @@ function StatusPill({
   onRate?: (id: string) => void;
 }) {
   const tone = STATUS_ICON_TILE[request.status];
+  const Icon = STATUS_ICON[request.status] ?? Clock3;
 
   return (
     <div
@@ -89,23 +100,25 @@ function StatusPill({
       }`}
     >
       <div className="flex min-w-0 items-start gap-2">
-        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+        <Icon className="mt-1 h-4 w-4 shrink-0" />
 
         <div className="min-w-0">
           <span className="font-medium leading-snug">
             {request.actionNote}
           </span>
 
-          {request.status === "in_progress" && (
+
+            {request.status === "pending" && (
+            <span className="text-gray-400 mt-0.5 text-xs">
+             {request.detailMeta}
+            </span>
+          )}
+          {request.status !== "pending" && (
             <p className="text-gray-400 mt-0.5 text-xs">
               {request.detailMeta}
             </p>
           )}
-            {request.status !== "in_progress" && request.detailMeta && (
-            <span className="text-gray-400 mt-0.5 text-xs">
-              {request.detailMeta}
-            </span>
-          )}
+
         </div>
       </div>
 
