@@ -26,6 +26,7 @@ type User = {
 
 type Detail = {
   issueType: string;
+  subIssue: string;
   location: string;
   detail: string;
 }
@@ -76,6 +77,7 @@ async function handleSubmit() {
                 lastname:  user.lastname,
                 phone:     user.phone,
                 issueType: detail.issueType,
+                subIssue:  detail.subIssue,
                 location:  detail.location,
                 detail:    detail.detail,
                 photos:    photoUrls,
@@ -115,6 +117,7 @@ if (!user || !detail) return <p>Loading...</p>;
         />
         <ComplaintCard formData={{
           category: detail.issueType,
+          subcategory: detail.subIssue,
           location: detail.location,
           detail: detail.detail,
         }}/>

@@ -22,6 +22,7 @@ interface FormErrors {
     location: string;
     locationDescription: string;
     additionalNotes: string;
+    photo: string;
 }
 
 const MAX_PHOTOS = 5 
@@ -38,10 +39,20 @@ const card_form2 = () => {
     const [district, setDistrict] = React.useState<string>("");
     const [latitude, setlatitude] = React.useState<string>("");
     const [longtitude, setLongtitude] = React.useState<string>("");
+    const [errors, setErrors] = React.useState<FormErrors>({
+        issueType: "",
+        subIssue: "",
+        detail: "",
+        location: "",
+        locationDescription: "",
+        additionalNotes: "",
+        photo: "",
+    })
+
+    const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
 
     useEffect(() => {
-      if (typeof window === 'undefined') return;
-
+    //   if (typeof window === 'undefined') return;
       const storedDraft = sessionStorage.getItem("complaintFormDraft");
       if (storedDraft) {
         try {
@@ -89,6 +100,9 @@ const card_form2 = () => {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
         }
       }
+      
+      //อนาคตอาจจะเพิ่มvalidateตรงนี้ (ตอนนี้คือถ้าเพิ่มแล้วหน้ามันรีตลอดไม่รู้เกิดจากอะไร)
+
     }, []);
 
     const handleUseCurrentLocation = () => {
@@ -132,37 +146,97 @@ const card_form2 = () => {
       );
     }
 
+    const validateForm = () => {
+        const newErrors: FormErrors = {
+            issueType: "",
+            subIssue: "",
+            detail: "",
+            location: "",
+            locationDescription: "",
+            additionalNotes: "",
+            photo: "",
+        };
+
+        //validate issue type
+        if (!selected) {
+            newErrors.issueType = "*กรุณาเลือกประเภทปัญหา";
+        } else if (!IssueTypeOptions.some(opt => opt.value === selected)) {
+            newErrors.issueType = "ประเภทปัญหาที่เลือกไม่ถูกต้อง";
+        }
+
+        // //validate subissue
+        // if(!selectedSub && IssueTypeOptions.find(opt => opt.value === selected)?.sub?.length){
+        //     newErrors.subIssue = "*กรุณาเลือกปัญหาย่อย";
+        // }
+
+        //validate sub issue
+        const selectedOption = IssueTypeOptions.find(opt => opt.value === selected);
+        if (selectedOption?.sub && selectedOption.sub.length > 0) {
+            if (!selectedSub) {
+                newErrors.subIssue = "*กรุณาเลือกปัญหาย่อย";
+            } else if (!selectedOption.sub.some(subOpt => subOpt.value === selectedSub)) {
+                newErrors.subIssue = "ปัญหาย่อยที่เลือกไม่ถูกต้อง";
+            }
+        }
+
+        //validate detail
+        if (!detail.trim()) {
+            newErrors.detail = "*กรุณากรอกรายละเอียด";
+        } else if (detail.trim().length > 300) {
+            newErrors.detail = "รายละเอียดต้องไม่เกิน 300 ตัวอักษร";
+        }
+
+        //validate location
+        if (!location.trim()) {
+            newErrors.location = "*กรุณาระบุสถานที่";
+        }
+
+        //validate additional notes
+        if (additionalNotes.trim().length > 100) {
+            newErrors.additionalNotes = "หมายเหตุเพิ่มเติมต้องไม่เกิน 100 ตัวอักษร";
+        }
+
+        if(photos.length === 0){
+            newErrors.photo = "*กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป";
+        }
+
+        setErrors(newErrors);
+        return Object.values(newErrors).every(error => error === "");
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("ปัญหา:" + selected)
-        console.log("ปัญหาย่อย:" + selectedSub)
-        console.log("รายละเอียด" + detail)
-        console.log("ตำแหน่ง" + location)
-        console.log("รายละเอียดตำแหน่ง" + locationDescription)
-        console.log("หมายเหตุเพิ่มเติม" + additionalNotes)
-        console.log("จังหวัด" + province)
-        console.log("เขต" + district)
-        console.log("ละติจูด" + latitude)
-        console.log("ลองติจูด"+ longtitude)
+        const isValid = validateForm();
 
-        // ดึง label จาก options
-        const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
-        const subOptions = IssueTypeOptions.find(o => o.value === selected)?.sub ?? []
-        const subLabel = subOptions.find(o => o.value === selectedSub)?.label ?? selectedSub
+        if(isValid){
+            console.log("ปัญหา:" + selected)
+            console.log("ปัญหาย่อย:" + selectedSub)
+            console.log("รายละเอียด" + detail)
+            console.log("ตำแหน่ง" + location)
+            console.log("รายละเอียดตำแหน่ง" + locationDescription)
+            console.log("หมายเหตุเพิ่มเติม" + additionalNotes)
+            console.log("จังหวัด" + province)
+            console.log("เขต" + district)
+            console.log("ละติจูด" + latitude)
+            console.log("ลองติจูด"+ longtitude)
 
-        const res = await fetch('/api/form/complaint', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes, lat: latitude, lng: longtitude, province, district }),
-        })
+            // ดึง label จาก options
+            const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
+            const subOptions = IssueTypeOptions.find(o => o.value === selected)?.sub ?? []
+            const subLabel = subOptions.find(o => o.value === selectedSub)?.label ?? selectedSub
 
-        if (res.ok) {
-            router.push("/userform/details")
+            const res = await fetch('/api/form/complaint', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes, lat: latitude, lng: longtitude, province, district }),
+            })
+
+            if (res.ok) {
+                router.push("/userform/details")
+            }
         }
     };
    //รูปภาพ
-    const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
-    
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const files = Array.from(e.target.files ?? [])
         const remaining = MAX_PHOTOS - photos.length
@@ -171,6 +245,7 @@ const card_form2 = () => {
     }
     //ตอนกด zoom รุป
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
+
   return (
     <div className='w-full'>
         {/* <StepProgress currentStep={1} /> */}
@@ -179,7 +254,13 @@ const card_form2 = () => {
             {/* ประเภทปัญหา */}
             <p className='text-[#5D5C74] text-lg font-semibold'>ประเภทหมวดปัญหา</p>
             <p className='text-[#4D4632] text-base font-normal mb-2'>Issue Type</p>
-            <DropDown selectedValue={selected} onSelectedChange={setSelected} selectedSub={selectedSub} onSubChange={setselectedSub} />
+            <DropDown
+                selectedValue={selected}
+                onSelectedChange={setSelected} 
+                selectedSub={selectedSub} 
+                onSubChange={setselectedSub} 
+            />
+            {errors.issueType && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.issueType}</p>}
         </div>
 
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
@@ -192,7 +273,8 @@ const card_form2 = () => {
                     placeholder='กรุณาระบุรายละเอียดที่พบ...'
                     onChange={(e) => setDetail(e.target.value)}
                     className="w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base h-36 align-top"
-                />            
+                />
+                {errors.detail && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.detail}</p>}       
             </div>
         </div>
 
@@ -218,6 +300,8 @@ const card_form2 = () => {
                     <RiMapPin2Fill  size={22} color='695400'/>
                 </button>
             </div>
+            {/* {errors.location && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.location}</p>}        */}
+
 {/* 
             {(district || province) && (
               <div className='text-sm text-[#4D4632]/80 mt-2'>
@@ -232,7 +316,8 @@ const card_form2 = () => {
                 value={locationDescription}
                 placeholder='คำอธิบายเพิ่มเติม เช่น ท่อน้ำรั่วหน้าประตูทางเข้าตึก...'
                 onChange={(e) => setLocationDescription(e.target.value)}
-                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
+                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}
+            />
 
             {/* แผนที่ */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
@@ -300,6 +385,8 @@ const card_form2 = () => {
                     </div>
                 )}
 
+            {errors.photo && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.photo}</p>}       
+
                {/* Preview รูปที่เลือก */}
 {photoPreviews.length > 0 && (
     <div className="grid grid-cols-3 gap-3 mt-4">
@@ -359,6 +446,7 @@ const card_form2 = () => {
                     placeholder='ข้อมูลอื่นๆ ที่ต้องการแจ้ง...'
                 />         
             </div>
+            {errors.additionalNotes && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.additionalNotes}</p>}
         </div>
 
         {/* ปุ่มถัดไป */}
