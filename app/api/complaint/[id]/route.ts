@@ -111,4 +111,3 @@ function getStatusCode(statusId: string): Status {
   }
 }
 
-
