@@ -1,10 +1,15 @@
-// app/api/form/card/route.ts
+// app/api/form/complaint/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers" 
+import issueTypes from "../../../../data/issuetype"
 
 export async function POST(req: NextRequest) {
     try{
         const body = await req.json()
+        const validIssueTypes = issueTypes.map(issue => issue.value)
+        if (!validIssueTypes.includes(body.issueType)) {
+            return NextResponse.json({ error: "Invalid issue type" }, { status: 400 })
+        }
 
         console.log("body:", body)
         const res = NextResponse.json({ ok: true })

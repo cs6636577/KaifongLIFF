@@ -55,7 +55,7 @@ const page = () => {
   };
 
   return (
-    <div className={`${sarabun.className} min-h-screen mobile-viewport`}>
+    <div className={`${sarabun.className} min-h-screen`}>
       <Navbar/>
 
     {/* หัวข้อ */}
