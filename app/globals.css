@@ -125,20 +125,6 @@ body {
   background-color: #F9F9F6;
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-/* The Mobile View Container */
-.mobile-viewport {
-  width: 100%;
-  max-width: 430px; /* Standard iPhone size */
-  min-height: 100vh;
-  position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
 
 nav{
   background-color: var(--color-nt);
