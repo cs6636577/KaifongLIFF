@@ -191,10 +191,10 @@ async function handleSubmit() {
 
         const data = await res.json()
         
-        /*
+        
         const newTab = window.open("", "_blank")
         newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
-        */
+        
 
     } catch (error) {
         console.error("Error:", error)

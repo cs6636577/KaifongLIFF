@@ -43,7 +43,7 @@ const card_form2 = () => {
 
     useEffect(() => {
       if (typeof window === 'undefined') return;
-
+      
       const storedDraft = sessionStorage.getItem("complaintFormDraft");
       if (storedDraft) {
         try {
@@ -58,6 +58,8 @@ const card_form2 = () => {
             district: string;
             locationDescription: string;
             additionalNotes: string;
+            geocodedAt: string;       
+            locationAccuracy: number | null;  
           };
 
           setSelected(draft.selected ?? "");
@@ -70,6 +72,8 @@ const card_form2 = () => {
           setlatitude(draft.Latitude ?? "");
           setLocationDescription(draft.locationDescription ?? "");
           setAdditionalNotes(draft.additionalNotes ?? "");
+          setGeocodedAt(draft.geocodedAt ?? "")
+          setLocationAccuracy(draft.locationAccuracy ?? null)
         } catch (error) {
           console.warn("ไม่สามารถโหลดฟอร์มฉบับร่างจาก sessionStorage", error);
         }
@@ -86,6 +90,7 @@ const card_form2 = () => {
             setDistrict(payload.district ?? "");
             setlatitude(payload.lat?.toString() ?? "");
             setLongtitude(payload.lng?.toString() ?? "");
+            
           }
         } catch (error) {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
@@ -103,12 +108,22 @@ const card_form2 = () => {
         async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+          const accuracy = position.coords.accuracy       
+          const geocodedTime = new Date().toISOString()    
           setlatitude(lat.toString());
           setLongtitude(lng.toString());
-
-          // เก็บ accuracy และเวลาที่ geocode
-         setLocationAccuracy(position.coords.accuracy)
-         setGeocodedAt(new Date().toISOString())
+          setLocationAccuracy(accuracy)
+          setGeocodedAt(geocodedTime)
+        
+          const current = JSON.parse(sessionStorage.getItem("complaintFormDraft") ?? "{}")
+            sessionStorage.setItem("complaintFormDraft", JSON.stringify({
+                ...current,
+                Latitude: lat.toString(),
+                longitude: lng.toString(),
+                geocodedAt: geocodedTime,
+                locationAccuracy: accuracy,
+            }))
+          
           const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 
           if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
@@ -295,6 +310,12 @@ const card_form2 = () => {
                             location,
                             locationDescription,
                             additionalNotes,
+                            geocodedAt,           
+                            locationAccuracy, 
+                            Latitude: latitude,      
+                            longitude: longtitude,   
+                            province,                
+                            district,                   
                             };
                             sessionStorage.setItem("complaintFormDraft", JSON.stringify(draft));
                             router.push('/userform/Complaint_Details/MapEdit');
