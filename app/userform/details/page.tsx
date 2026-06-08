@@ -207,7 +207,7 @@ async function handleSubmit() {
 if (!user || !detail) return <p>Loading...</p>;
   
     return (
-       <div className={`${sarabun.className} min-h-screen`}>
+       <div className={`${sarabun.className} mobile-viewport`}>
         <Navbar/>
         <StepProgress/>
         <div className="flex flex-col mx-auto gap-6 max-w-3xl px-5 sm:px-8 ">

@@ -203,7 +203,7 @@ export default function card_form() {
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>เบอร์โทรศัพท์</p>
                 <p className='text-[#4D4632] text-base font-normal'>Phone Number</p>
-                <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-1 focus-within:border-black focus-within:ring-none focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-[#FA3E3E]' : 'border-transparent'}`}>
+                <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-1 focus-within:border-black focus-within:ring-1 focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-[#FA3E3E]' : 'border-transparent'}`}>
                     <MdOutlinePhone className="text-[#725C00] text-xl shrink-0 mx-3" />
                     <input
                         ref={phoneInputRef}

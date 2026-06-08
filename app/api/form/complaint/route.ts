@@ -2,16 +2,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import data from '@/data/mock_data_may2026.json'
 import { cookies } from "next/headers" 
-import issueTypes from "../../../../data/issuetype"
 
 const { categories, subcategories } = data.meta.reference_ids
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json()
-        const validIssueTypes = issueTypes.map(issue => issue.value)
-        if (!validIssueTypes.includes(body.issueType)) {
-            return NextResponse.json({ error: "Invalid issue type" }, { status: 400 })
-        }
 
         console.log("body:", body)
         const res = NextResponse.json({ ok: true })

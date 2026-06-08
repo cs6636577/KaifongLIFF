@@ -468,7 +468,7 @@ const card_form2 = () => {
             </div>
         </div>
 
-        <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
+        <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6 h-screen-min'>
             {/* อัพโหลดรูปภาพ */}
             <div>
                 <p className='text-[#5D5C74] text-lg font-semibold'>รูปภาพ</p>
