@@ -501,11 +501,10 @@ const card_form2 = () => {
             <div>
                 <p className='text-[#5D5C74] text-lg font-semibold'>หมายเหตุเพิ่มเติม</p>
                 <p className='text-[#4D4632] text-base font-normal mb-2'>Additional Notes</p>
-                <input
-                    type='text'
+                <textarea
                     value={additionalNotes}
                     onChange={(e) => setAdditionalNotes(e.target.value)}
-                    className="w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base"
+                    className="w-full min-h-[5.5rem] bg-[#F4F4F1] rounded-xl p-4 mt-1 mb-1 placeholder:text-[#7F7660] text-base resize-none"
                     placeholder='ข้อมูลอื่นๆ ที่ต้องการแจ้ง...'
                 />         
             </div>
