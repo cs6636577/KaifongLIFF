@@ -11,7 +11,7 @@ const sarabun = Sarabun({
 
 const page = () => {
   return (
-    <div className={`${sarabun.className}`}>
+    <div className={`${sarabun.className} min-h-screen mobile-viewport`}>
       <Navbar />
       <StepProgress2 />
 

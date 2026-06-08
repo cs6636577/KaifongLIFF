@@ -58,7 +58,7 @@ export function RatingModal({
 
     (async () => {
       try {
-        const res = await fetch(`/api/complaint2/${requestId}`);
+        const res = await fetch(`/api/complaint/${requestId}`);
         if (!res.ok) throw new Error("fetch failed");
         const data = await res.json();
         const imgs = data.images ?? [];

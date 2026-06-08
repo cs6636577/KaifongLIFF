@@ -36,7 +36,7 @@ useEffect(() => {
 
   Promise.all([
     fetch("/api/user").then((r) => r.json()),
-    fetch(`/api/complaint2/${id}`).then((r) => r.json()),
+    fetch(`/api/complaint/${id}`).then((r) => r.json()),
   ]).then(([userData, requestData]) => {
     setUser(userData);
     setRequest(requestData);

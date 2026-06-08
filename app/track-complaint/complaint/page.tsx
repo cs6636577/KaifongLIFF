@@ -39,7 +39,7 @@ interface RequestsResponse {
 }
 
 async function fetchRequests() {
-  const res = await fetch("/api/complaint2");
+  const res = await fetch("/api/complaint");
 
   if (!res.ok) {
     throw new Error("Failed to fetch");

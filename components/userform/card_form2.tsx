@@ -12,6 +12,9 @@ import { useRouter } from 'next/navigation'
 import { useState, useRef } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
 import mockData from "@/data/mock_data_may2026.json"
+import StepProgress from './stepprogress';
+import GoogleStaticMap from './staticMap';
+import StaticMap from './staticMap';
 
 
 const categories = mockData.meta.reference_ids.categories;
@@ -63,6 +66,14 @@ const card_form2 = () => {
         setErrors((prev) => ({ ...prev, photo: "" }))
       }
     }, [photos.length, errors.photo])
+
+    const detailCharCount = detail.length
+    const additionalNotesCharCount = additionalNotes.length
+    const locationDetailCharCount = locationDescription.length
+
+    useEffect(() => {
+        validateForm()
+    },[selected, selectedSub, detail, location, locationDescription, additionalNotes, photos])
 
     useEffect(() => {
     //   if (typeof window === 'undefined') return;
@@ -118,8 +129,6 @@ const card_form2 = () => {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
         }
       }
-      
-      //อนาคตอาจจะเพิ่มvalidateตรงนี้ (ตอนนี้คือถ้าเพิ่มแล้วหน้ามันรีตลอดไม่รู้เกิดจากอะไร)
 
     }, []);
 
@@ -129,6 +138,7 @@ const card_form2 = () => {
         return;
       }
 
+      setLocationLoading(true)
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const lat = position.coords.latitude;
@@ -164,18 +174,26 @@ const card_form2 = () => {
                 setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
                 // setLocationDescription(latLngText);
               }
+              setLocationLoading(false)
             });
           } else {
             setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
             // setLocationDescription(latLngText);
+            setLocationLoading(false)
           }
         },
         (error) => {
           console.error(error);
           alert("ไม่สามารถดึงตำแหน่งปัจจุบันได้ กรุณาลองใหม่");
+          setLocationLoading(false)
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
+    }
+
+    const isTextValid = (text: string) => {
+        const textRegex = /^[ก-๙a-zA-Z0-9\s\/\.,\-\(\)]+$/;
+        return textRegex.test(text)
     }
 
     const validateForm = () => {
@@ -213,6 +231,8 @@ const card_form2 = () => {
             newErrors.detail = "*กรุณากรอกรายละเอียด";
         } else if (detail.trim().length > 300) {
             newErrors.detail = "รายละเอียดต้องไม่เกิน 300 ตัวอักษร";
+        } else if (!isTextValid(detail)) {
+            newErrors.detail = "รายละเอียดมีตัวอักษรที่ไม่ถูกต้อง";
         }
 
         // ตรวจสอบตำแหน่ง
@@ -221,8 +241,18 @@ const card_form2 = () => {
         }
 
         // ตรวจสอบหมายเหตุเพิ่มเติม
+        //validate location description
+        if (locationDescription.trim().length > 100) {
+            newErrors.locationDescription = "รายละเอียดสถานที่ต้องไม่เกิน 100 ตัวอักษร";
+        }else if (!isTextValid(locationDescription) && locationDescription.trim().length > 0) {
+            newErrors.locationDescription = "รายละเอียดสถานที่มีตัวอักษรที่ไม่ถูกต้อง";
+        }
+
+        //validate additional notes
         if (additionalNotes.trim().length > 100) {
             newErrors.additionalNotes = "หมายเหตุเพิ่มเติมต้องไม่เกิน 100 ตัวอักษร";
+        } else if (!isTextValid(additionalNotes)  && additionalNotes.trim().length > 0) {
+            newErrors.additionalNotes = "หมายเหตุเพิ่มเติมมีตัวอักษรที่ไม่ถูกต้อง";
         }
 
         if(photos.length === 0){
@@ -311,7 +341,7 @@ const card_form2 = () => {
     }
     //ตอนกด zoom รุป
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
-
+    const [locationLoading, setLocationLoading] = useState(false)
   return (
     <div className='w-full'>
         {/* <StepProgress currentStep={1} /> */}
@@ -327,6 +357,7 @@ const card_form2 = () => {
                 onSubChange={setselectedSub}
             />
             {errors.issueType && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.issueType}</p>}
+            {errors.subIssue && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.subIssue}</p>}
         </div>
 
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
@@ -338,8 +369,12 @@ const card_form2 = () => {
                     value={detail}
                     placeholder='กรุณาระบุรายละเอียดที่พบ...'
                     onChange={(e) => setDetail(e.target.value)}
-                    className="w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base h-36 align-top"
+                    id="detail"
+                    className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base h-36 align-top ${errors.detail ? 'border border-[#FA3E3E]' : 'border border-transparent'}`}
                 />
+                <p className="text-sm text-[#4D4632]/80 mt-1">
+                    {detailCharCount}/300 ตัวอักษร
+                </p>
                 {errors.detail && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.detail}</p>}       
             </div>
         </div>
@@ -361,9 +396,14 @@ const card_form2 = () => {
                 <button
                     type="button"
                     onClick={handleUseCurrentLocation}
-                    className='bg-nt px-5 py-5 w-15 h-15 items-center rounded-2xl shadow-lg mx-5 mt-1 hover:cursor-pointer'
+                    disabled={locationLoading}
+                    className={`bg-nt px-5 py-5 w-15 h-15 items-center rounded-2xl shadow-lg mx-5 mt-1 ${locationLoading ? 'opacity-70 cursor-not-allowed' : 'hover:cursor-pointer'}`}
                 >
-                    <RiMapPin2Fill  size={22} color='695400'/>
+                    {locationLoading ? (
+                        <div className="h-5 w-5 animate-spin rounded-full border-3 border-[#725C00]/20 border-t-[#725C00]" />
+                    ) : (
+                        <RiMapPin2Fill size={22} color='695400'/>
+                    )}
                 </button>
             </div>
             {/* {errors.location && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.location}</p>}        */}
@@ -382,16 +422,22 @@ const card_form2 = () => {
                 value={locationDescription}
                 placeholder='คำอธิบายเพิ่มเติม เช่น ท่อน้ำรั่วหน้าประตูทางเข้าตึก...'
                 onChange={(e) => setLocationDescription(e.target.value)}
-                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}
+                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base ${errors.locationDescription ? 'border border-[#FA3E3E]' : 'border border-transparent'}`}
             />
+             <p className="text-sm text-[#4D4632]/80 mt-1">
+                {locationDetailCharCount}/100 ตัวอักษร
+            </p>
+            {errors.locationDescription && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.locationDescription}</p>}       
+
 
             {/* แผนที่ */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
-                <Image
+                {/* <Image
                     src={map}
                     className='w-full h-40'
                     alt="Picture"
-                />
+                /> */}
+                <StaticMap className="w-full h-40"/>
                     <button
                         type='button'
                         onClick={() => {
@@ -516,9 +562,12 @@ const card_form2 = () => {
                 <textarea
                     value={additionalNotes}
                     onChange={(e) => setAdditionalNotes(e.target.value)}
-                    className="w-full min-h-[5.5rem] bg-[#F4F4F1] rounded-xl p-4 mt-1 mb-1 placeholder:text-[#7F7660] text-base resize-none"
+                    className={`w-full min-h-[5.5rem] bg-[#F4F4F1] rounded-xl p-4 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] resize-none text-base ${errors.additionalNotes ? 'border border-[#FA3E3E]' : 'border border-transparent'}`}
                     placeholder='ข้อมูลอื่นๆ ที่ต้องการแจ้ง...'
-                />         
+                />
+                <p className="text-sm text-[#4D4632]/80 mt-1">
+                    {additionalNotesCharCount}/100 ตัวอักษร
+                </p>         
             </div>
             {errors.additionalNotes && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.additionalNotes}</p>}
         </div>
