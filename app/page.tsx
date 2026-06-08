@@ -1,7 +1,8 @@
 "use client";
 import { useLIFF } from "../providers/liff-providers";
 import styles from "./page.module.css";
-import Navbar from "./userform/page";
+import Navbar from "../components/navbar";
+import StepProgress from "../components/userform/step_progress_1";
 
 export default function Home() {
   const { liff, liffError } = useLIFF();
@@ -9,24 +10,8 @@ export default function Home() {
   return (
     <div>
       <main className={styles.main}>
-        <h1>create-liff-app</h1>
-        {liff && <p>LIFF init succeeded.</p>}
-        {liffError && (
-          <>
-            <p>LIFF init failed.</p>
-            <p>
-              <code>{liffError}</code>
-            </p>
-          </>
-        )}
-        <a
-          href="https://developers.line.biz/ja/docs/liff/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          LIFF Documentation
-        </a>
         <Navbar />
+        
       </main>
     </div>
   );

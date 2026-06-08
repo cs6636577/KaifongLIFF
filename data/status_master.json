@@ -1,0 +1,69 @@
+{
+  "status_master": [
+    {
+      "status_id": "ffff0000-0000-0000-0000-000000000001",
+      "tenant_id": "11111111-0000-0000-0000-000000000001",
+      "status_name": "เปิด",
+      "status_code": "OPEN",
+      "description": "เรื่องร้องเรียนที่เพิ่งยื่นเข้ามา ยังไม่ได้รับการมอบหมาย",
+      "color_code": "#3B82F6",
+      "is_final": false,
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-01-01 00:00:00",
+      "updated_at": "2026-01-01 00:00:00"
+    },
+    {
+      "status_id": "ffff0000-0000-0000-0000-000000000002",
+      "tenant_id": "11111111-0000-0000-0000-000000000001",
+      "status_name": "กำลังดำเนินการ",
+      "status_code": "IN_PROGRESS",
+      "description": "เรื่องถูกมอบหมายให้เจ้าหน้าที่ดำเนินการแล้ว",
+      "color_code": "#F59E0B",
+      "is_final": false,
+      "display_order": 2,
+      "is_active": true,
+      "created_at": "2026-01-01 00:00:00",
+      "updated_at": "2026-01-01 00:00:00"
+    },
+    {
+      "status_id": "ffff0000-0000-0000-0000-000000000003",
+      "tenant_id": "11111111-0000-0000-0000-000000000001",
+      "status_name": "รอข้อมูลเพิ่มเติม",
+      "status_code": "PENDING",
+      "description": "รอเอกสารหรือข้อมูลเพิ่มเติมจากผู้ร้องเรียนหรือหน่วยงานที่เกี่ยวข้อง",
+      "color_code": "#8B5CF6",
+      "is_final": false,
+      "display_order": 3,
+      "is_active": true,
+      "created_at": "2026-01-01 00:00:00",
+      "updated_at": "2026-01-01 00:00:00"
+    },
+    {
+      "status_id": "ffff0000-0000-0000-0000-000000000004",
+      "tenant_id": "11111111-0000-0000-0000-000000000001",
+      "status_name": "แก้ไขแล้ว",
+      "status_code": "RESOLVED",
+      "description": "ดำเนินการแก้ไขปัญหาเสร็จสิ้นแล้ว รอผู้ร้องเรียนยืนยัน",
+      "color_code": "#10B981",
+      "is_final": false,
+      "display_order": 4,
+      "is_active": true,
+      "created_at": "2026-01-01 00:00:00",
+      "updated_at": "2026-01-01 00:00:00"
+    },
+    {
+      "status_id": "ffff0000-0000-0000-0000-000000000005",
+      "tenant_id": "11111111-0000-0000-0000-000000000001",
+      "status_name": "ปิด",
+      "status_code": "CLOSED",
+      "description": "เรื่องร้องเรียนปิดแล้ว ไม่มีการดำเนินการต่อ",
+      "color_code": "#6B7280",
+      "is_final": true,
+      "display_order": 5,
+      "is_active": true,
+      "created_at": "2026-01-01 00:00:00",
+      "updated_at": "2026-01-01 00:00:00"
+    }
+  ]
+}
