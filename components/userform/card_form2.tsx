@@ -13,6 +13,8 @@ import { IssueTypeOptions } from '@/data/issuetype';
 import { useState, useRef } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
 import StepProgress from './stepprogress';
+import GoogleStaticMap from './staticMap';
+import StaticMap from './staticMap';
 
 
 interface FormErrors {
@@ -156,6 +158,11 @@ const card_form2 = () => {
       );
     }
 
+    const isTextValid = (text: string) => {
+        const textRegex = /^[\w\sก-๙]+$/;
+        return textRegex.test(text)
+    }
+
     const validateForm = () => {
         const newErrors: FormErrors = {
             issueType: "",
@@ -174,11 +181,6 @@ const card_form2 = () => {
             newErrors.issueType = "ประเภทปัญหาที่เลือกไม่ถูกต้อง";
         }
 
-        // //validate subissue
-        // if(!selectedSub && IssueTypeOptions.find(opt => opt.value === selected)?.sub?.length){
-        //     newErrors.subIssue = "*กรุณาเลือกปัญหาย่อย";
-        // }
-
         //validate sub issue
         const selectedOption = IssueTypeOptions.find(opt => opt.value === selected);
         if (selectedOption?.sub && selectedOption.sub.length > 0) {
@@ -194,6 +196,8 @@ const card_form2 = () => {
             newErrors.detail = "*กรุณากรอกรายละเอียด";
         } else if (detail.trim().length > 300) {
             newErrors.detail = "รายละเอียดต้องไม่เกิน 300 ตัวอักษร";
+        } else if (!isTextValid(detail)) {
+            newErrors.detail = "รายละเอียดมีตัวอักษรที่ไม่ถูกต้อง";
         }
 
         //validate location
@@ -204,11 +208,15 @@ const card_form2 = () => {
         //validate location description
         if (locationDescription.trim().length > 100) {
             newErrors.locationDescription = "รายละเอียดสถานที่ต้องไม่เกิน 100 ตัวอักษร";
+        }else if (!isTextValid(locationDescription) && locationDescription.trim().length > 0) {
+            newErrors.locationDescription = "รายละเอียดสถานที่มีตัวอักษรที่ไม่ถูกต้อง";
         }
 
         //validate additional notes
         if (additionalNotes.trim().length > 100) {
             newErrors.additionalNotes = "หมายเหตุเพิ่มเติมต้องไม่เกิน 100 ตัวอักษร";
+        } else if (!isTextValid(additionalNotes)  && locationDescription.trim().length > 0) {
+            newErrors.additionalNotes = "หมายเหตุเพิ่มเติมมีตัวอักษรที่ไม่ถูกต้อง";
         }
 
         if(photos.length === 0){
@@ -351,11 +359,12 @@ const card_form2 = () => {
 
             {/* แผนที่ */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
-                <Image
+                {/* <Image
                     src={map}
                     className='w-full h-40'
                     alt="Picture"
-                />
+                /> */}
+                <StaticMap className="w-full h-40"/>
                     <button
                         type='button'
                         onClick={() => {
