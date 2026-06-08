@@ -89,6 +89,8 @@ async function handleSubmit() {
         const newTab = window.open("", "_blank")
         newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
 
+        //เด้งหน้าต่างยืนยันการแจ้งเหตุสำเร็จ (แล้วไปหน้าdataทั้งหมดไว้โชว์ว่าเก็บอะไรบ้าง)
+
     } catch (error) {
         console.error("Error:", error)
     }
@@ -98,7 +100,7 @@ async function handleSubmit() {
 if (!user || !detail) return <p>Loading...</p>;
   
     return (
-       <div className={`${sarabun.className} min-h-screen`}>
+       <div className={`${sarabun.className} min-h-screen mobile-viewport`}>
         <Navbar/>
         <StepProgress/>
         <div className="flex flex-col mx-auto gap-6 max-w-3xl px-5 sm:px-8 ">

@@ -159,7 +159,7 @@ const card_form2 = () => {
     }
 
     const isTextValid = (text: string) => {
-        const textRegex = /^[\w\sก-๙]+$/;
+        const textRegex = /^[ก-๙a-zA-Z0-9\s\/\.,\-\(\)]+$/;
         return textRegex.test(text)
     }
 
@@ -215,7 +215,7 @@ const card_form2 = () => {
         //validate additional notes
         if (additionalNotes.trim().length > 100) {
             newErrors.additionalNotes = "หมายเหตุเพิ่มเติมต้องไม่เกิน 100 ตัวอักษร";
-        } else if (!isTextValid(additionalNotes)  && locationDescription.trim().length > 0) {
+        } else if (!isTextValid(additionalNotes)  && additionalNotes.trim().length > 0) {
             newErrors.additionalNotes = "หมายเหตุเพิ่มเติมมีตัวอักษรที่ไม่ถูกต้อง";
         }
 
