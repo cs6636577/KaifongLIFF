@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
         const res = NextResponse.json({ ok: true })
 
         res.cookies.set("title",        body.title)
-        res.cookies.set("category",     body.category)
-        res.cookies.set("subcategory",  body.subcategory)
+        res.cookies.set("category_id",     body.category_id)
+        res.cookies.set("subcategory_id",  body.subcategory_id)
         res.cookies.set("detail",       body.detail)
         res.cookies.set("location",     body.location)
         res.cookies.set("latitude",     body.latitude)
@@ -35,14 +35,14 @@ export async function POST(req: NextRequest) {
 export async function GET() {
     const cookieStore = await cookies()
 
-    const categoryId    = cookieStore.get("category")?.value    ?? ""
-    const subcategoryId = cookieStore.get("subcategory")?.value ?? ""
+    const categoryId    = cookieStore.get("category_id")?.value    ?? ""
+    const subcategoryId = cookieStore.get("subcategory_id")?.value ?? ""
     return NextResponse.json({
         title:        cookieStore.get("title")?.value       ?? "",
         category:     categories.find(c => c.category_id === categoryId)?.name,
         subcategory:  subcategories.find(c => c.subcategory_id === subcategoryId)?.name,
-        categoryId: cookieStore.get("category")?.value ?? "",
-        subcategoryId: cookieStore.get("subcategory")?.value ?? "",
+        categoryId: categoryId,
+        subcategoryId: subcategoryId,
         detail:       cookieStore.get("detail")?.value      ?? "",
         location:     cookieStore.get("location")?.value    ?? "",
         latitude:     cookieStore.get("latitude")?.value    ?? "",

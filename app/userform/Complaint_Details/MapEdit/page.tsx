@@ -140,11 +140,11 @@ const page = () => {
               )}
             </span>
 
-          {/* สถานะความแม่นยำ */}
+          {/* สถานะความแม่นยำ (อันนี้ไม่ใช้แล้วเพราะไม่จำเป็น -- แต่อนาคตเผื่อจะใช้)
             <div className='flex flex-row gap-2 text-sm text-status-done bg-[#F0FDF4] rounded-full pl-3 w-57 mt-2'>
               <FaCircleCheck className='mt-1' size='12'/>
               <span>ความแม่นยำสูง (High Accuracy)</span>
-            </div>
+            </div> */}
           </div>
         </div>
 

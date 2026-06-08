@@ -9,10 +9,13 @@ import { IoMdArrowRoundForward } from 'react-icons/io';
 import Link from 'next/link'
 import { GrWaypoint } from 'react-icons/gr';
 import { useRouter } from 'next/navigation' 
-import { IssueTypeOptions } from '@/data/issuetype';
 import { useState, useRef } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
+import mockData from "@/data/mock_data_may2026.json"
 import StepProgress from './stepprogress';
+
+const categories = mockData.meta.reference_ids.categories;
+const subcategories = mockData.meta.reference_ids.subcategories;
 
 
 interface FormErrors {
@@ -22,6 +25,7 @@ interface FormErrors {
     location: string;
     locationDescription: string;
     additionalNotes: string;
+    photo: string;
 }
 
 const MAX_PHOTOS = 5 
@@ -41,9 +45,21 @@ const card_form2 = () => {
     const [geocodedAt, setGeocodedAt]           = useState<string>("")
     const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null)
 
-    useEffect(() => {
-      if (typeof window === 'undefined') return;
       
+    const [errors, setErrors] = React.useState<FormErrors>({
+        issueType: "",
+        subIssue: "",
+        detail: "",
+        location: "",
+        locationDescription: "",
+        additionalNotes: "",
+        photo: "",
+    })
+
+    const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
+
+    useEffect(() => {
+    //   if (typeof window === 'undefined') return;
       const storedDraft = sessionStorage.getItem("complaintFormDraft");
       if (storedDraft) {
         try {
@@ -96,6 +112,9 @@ const card_form2 = () => {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
         }
       }
+      
+      //อนาคตอาจจะเพิ่มvalidateตรงนี้ (ตอนนี้คือถ้าเพิ่มแล้วหน้ามันรีตลอดไม่รู้เกิดจากอะไร)
+
     }, []);
 
     const handleUseCurrentLocation = () => {
@@ -153,32 +172,84 @@ const card_form2 = () => {
       );
     }
 
+    const validateForm = () => {
+        const newErrors: FormErrors = {
+            issueType: "",
+            subIssue: "",
+            detail: "",
+            location: "",
+            locationDescription: "",
+            additionalNotes: "",
+            photo: "",
+        };
+
+        // ตรวจสอบหมวดปัญหา (category_id)
+        if (!selected) {
+            newErrors.issueType = "*กรุณาเลือกประเภทปัญหา";
+        } else if (!categories.some(cat => cat.category_id === selected)) {
+            newErrors.issueType = "ประเภทปัญหาที่เลือกไม่ถูกต้อง";
+        }
+
+        // ตรวจสอบปัญหาย่อย (subcategory_id)
+        const selectedCategoryIdx = categories.findIndex(cat => cat.category_id === selected);
+        const relatedSubs = selectedCategoryIdx >= 0 ? subcategories.filter(sub => sub.category_idx === selectedCategoryIdx) : [];
+        
+        if (relatedSubs && relatedSubs.length > 0) {
+            if (!selectedSub) {
+                newErrors.subIssue = "*กรุณาเลือกปัญหาย่อย";
+            } else if (!subcategories.some(sub => sub.subcategory_id === selectedSub)) {
+                newErrors.subIssue = "ปัญหาย่อยที่เลือกไม่ถูกต้อง";
+            }
+        }
+
+        // ตรวจสอบรายละเอียด
+        if (!detail.trim()) {
+            newErrors.detail = "*กรุณากรอกรายละเอียด";
+        } else if (detail.trim().length > 300) {
+            newErrors.detail = "รายละเอียดต้องไม่เกิน 300 ตัวอักษร";
+        }
+
+        // ตรวจสอบตำแหน่ง
+        if (!location.trim()) {
+            newErrors.location = "*กรุณาระบุสถานที่";
+        }
+
+        // ตรวจสอบหมายเหตุเพิ่มเติม
+        if (additionalNotes.trim().length > 100) {
+            newErrors.additionalNotes = "หมายเหตุเพิ่มเติมต้องไม่เกิน 100 ตัวอักษร";
+        }
+
+        if(photos.length === 0){
+            newErrors.photo = "*กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป";
+        }
+
+        setErrors(newErrors);
+        return Object.values(newErrors).every(error => error === "");
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("ปัญหา:" + selected)
-        console.log("ปัญหาย่อย:" + selectedSub)
-        console.log("รายละเอียด" + detail)
-        console.log("ตำแหน่ง" + location)
-        console.log("รายละเอียดตำแหน่ง" + locationDescription)
-        console.log("หมายเหตุเพิ่มเติม" + additionalNotes)
-        console.log("จังหวัด" + province)
-        console.log("เขต" + district)
-        console.log("ละติจูด" + latitude)
-        console.log("ลองติจูด"+ longtitude)
-        console.log("accuracy"+ locationAccuracy);
-        console.log("geocode"+geocodedAt)
-        // ดึง label จาก options
-        const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
-        const subOptions = IssueTypeOptions.find(o => o.value === selected)?.sub ?? []
-        const subLabel = subOptions.find(o => o.value === selectedSub)?.label ?? selectedSub
+        
+        const isValid = validateForm();
+
+        if(!isValid) {
+            return;
+        }
+
+        // ค้นหา label จากไอดี
+        const categoryObj = categories.find(c => c.category_id === selected);
+        const subcategoryObj = subcategories.find(s => s.subcategory_id === selectedSub);
+        
+        const categoryName = categoryObj?.name ?? selected;
+        const subcategoryName = subcategoryObj?.name ?? selectedSub;
 
         const res = await fetch('/api/form/complaint', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-               title:              issueLabel,
-                category:           issueLabel,
-                subcategory:        subLabel,
+               title:              categoryName,
+                category_id:        selected,
+                subcategory_id:     selectedSub,
                 detail:             detail,
                 location:           location,
                 additional:         additionalNotes,
@@ -195,9 +266,7 @@ const card_form2 = () => {
             router.push("/userform/details")
         }
     };
-   //รูปภาพ
-    const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
-    
+   
     //กัน error
     const [uploadError, setUploadError] = useState<string | null>(null)
 
@@ -230,6 +299,7 @@ const card_form2 = () => {
     }
     //ตอนกด zoom รุป
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
+
   return (
     <div className='w-full'>
         {/* <StepProgress currentStep={1} /> */}
@@ -238,7 +308,13 @@ const card_form2 = () => {
             {/* ประเภทปัญหา */}
             <p className='text-[#5D5C74] text-lg font-semibold'>ประเภทหมวดปัญหา</p>
             <p className='text-[#4D4632] text-base font-normal mb-2'>Issue Type</p>
-            <DropDown selectedValue={selected} onSelectedChange={setSelected} selectedSub={selectedSub} onSubChange={setselectedSub} />
+            <DropDown
+                selectedValue={selected}
+                onSelectedChange={setSelected} 
+                selectedSub={selectedSub} 
+                onSubChange={setselectedSub}
+            />
+            {errors.issueType && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.issueType}</p>}
         </div>
 
         <div className='bg-white shadow-lg shadow-gray-100 rounded-lg p-6 w-full mt-6'>
@@ -251,7 +327,8 @@ const card_form2 = () => {
                     placeholder='กรุณาระบุรายละเอียดที่พบ...'
                     onChange={(e) => setDetail(e.target.value)}
                     className="w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base h-36 align-top"
-                />            
+                />
+                {errors.detail && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.detail}</p>}       
             </div>
         </div>
 
@@ -277,6 +354,8 @@ const card_form2 = () => {
                     <RiMapPin2Fill  size={22} color='695400'/>
                 </button>
             </div>
+            {/* {errors.location && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.location}</p>}        */}
+
 {/* 
             {(district || province) && (
               <div className='text-sm text-[#4D4632]/80 mt-2'>
@@ -291,7 +370,8 @@ const card_form2 = () => {
                 value={locationDescription}
                 placeholder='คำอธิบายเพิ่มเติม เช่น ท่อน้ำรั่วหน้าประตูทางเข้าตึก...'
                 onChange={(e) => setLocationDescription(e.target.value)}
-                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}/>
+                className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-8 px-4 placeholder:text-[#7F7660] text-base`}
+            />
 
             {/* แผนที่ */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
@@ -368,6 +448,8 @@ const card_form2 = () => {
                     <p className="text-red-500 text-sm mt-2 text-center">{uploadError}</p>
                 )}
 
+            {errors.photo && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.photo}</p>}       
+
                {/* Preview รูปที่เลือก */}
 {photoPreviews.length > 0 && (
     <div className="grid grid-cols-3 gap-3 mt-4">
@@ -427,6 +509,7 @@ const card_form2 = () => {
                     placeholder='ข้อมูลอื่นๆ ที่ต้องการแจ้ง...'
                 />         
             </div>
+            {errors.additionalNotes && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.additionalNotes}</p>}
         </div>
 
         {/* ปุ่มถัดไป */}
