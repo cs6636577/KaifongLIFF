@@ -21,11 +21,26 @@ export async function POST(req: NextRequest) {
         const blob = await put(file.name, compressed, {
             access: "public",
             addRandomSuffix: true,
+            contentType: file.type,
         })
-
-        return NextResponse.json({ url: blob.url })
+        //ถ้ามี server ก้เก็บเข้า folder สำหรับตอนนี้คือเขียนไว้เฉยๆ เปนข้อมุล  
+        //path ที่คิดไว้ complaints/{complaint_id}/{file_id}.{ext}
+         const file_path = new URL(blob.url).pathname 
+        //compressed แล้วเท่าไหร่
+        
+        return NextResponse.json({ 
+            file_url: blob.url, 
+            file_type: "image", 
+            file_name: file.name,
+            file_path: file_path, 
+            file_size: compressed.length,
+            mime_type: file.type, 
+            
+        })
     } catch (error) {
         console.error("Upload error:", error)
         return NextResponse.json({ error: "เกิดข้อผิดพลาด" }, { status: 500 })
     }
 }
+
+

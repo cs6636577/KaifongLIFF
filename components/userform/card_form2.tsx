@@ -38,6 +38,8 @@ const card_form2 = () => {
     const [district, setDistrict] = React.useState<string>("");
     const [latitude, setlatitude] = React.useState<string>("");
     const [longtitude, setLongtitude] = React.useState<string>("");
+    const [geocodedAt, setGeocodedAt]           = useState<string>("")
+    const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null)
 
     useEffect(() => {
       if (typeof window === 'undefined') return;
@@ -103,6 +105,10 @@ const card_form2 = () => {
           const lng = position.coords.longitude;
           setlatitude(lat.toString());
           setLongtitude(lng.toString());
+
+          // เก็บ accuracy และเวลาที่ geocode
+         setLocationAccuracy(position.coords.accuracy)
+         setGeocodedAt(new Date().toISOString())
           const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 
           if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
@@ -144,7 +150,8 @@ const card_form2 = () => {
         console.log("เขต" + district)
         console.log("ละติจูด" + latitude)
         console.log("ลองติจูด"+ longtitude)
-
+        console.log("accuracy"+ locationAccuracy);
+        console.log("geocode"+geocodedAt)
         // ดึง label จาก options
         const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
         const subOptions = IssueTypeOptions.find(o => o.value === selected)?.sub ?? []
@@ -164,6 +171,8 @@ const card_form2 = () => {
                 longitude:          longtitude,
                 province:           province,
                 district:           district,
+                geocoded_at:         geocodedAt,
+                location_accuracy:   locationAccuracy
             }),
         })
 

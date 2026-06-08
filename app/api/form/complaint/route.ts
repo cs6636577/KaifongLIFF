@@ -47,6 +47,8 @@ export async function GET() {
         location:     cookieStore.get("location")?.value    ?? "",
         latitude:     cookieStore.get("latitude")?.value    ?? "",
         longitude:    cookieStore.get("longitude")?.value   ?? "",
+        geocoded_at:    cookieStore.get("geocoded_at")?.value   ?? "",
+        location_accuracy:    cookieStore.get("location_accuracy")?.value   ?? "",
         province:     cookieStore.get("province")?.value    ?? "",
         district:     cookieStore.get("district")?.value    ?? "",
         additional:   cookieStore.get("additional")?.value  ?? "",

@@ -20,6 +20,8 @@ const sarabun = Sarabun({
 export default function Details(){
 
 type User = {
+  line_user_id: string;
+  prefix: string;
   name: string;
   lastname: string;
   phone: string;
@@ -36,6 +38,9 @@ type ComplaintDetail = {
   district: string;
   detail: string;
   additional: string;
+  geocoded_at: string;
+  location_accuracy: string;
+  
 }
 
 
@@ -57,7 +62,7 @@ async function handleSubmit() {
   if (!user || !detail) return 
     try {
         // 1. อัพรูปไป Vercel Blob
-        const photoUrls = await Promise.all(
+        const photo= await Promise.all(
     photos.map(async file => {
         const fd = new FormData()
         fd.append("file", file)
@@ -71,8 +76,16 @@ async function handleSubmit() {
         const text = await res.text()
         console.log("upload response:", text)
 
-        const data = JSON.parse(text)
-        return data.url
+        const dataPhoto = JSON.parse(text)
+        //เอาข้อมูล ภาพต่างๆเพิ่มตาราง 
+        return {
+          file_url:   dataPhoto.file_url,
+          file_path:  dataPhoto.file_path,
+          file_name:  dataPhoto.file_name,
+          file_type:  dataPhoto.file_type,
+          mime_type:  dataPhoto.mime_type,
+          file_size:  dataPhoto.file_size,
+        }
     })
 )
 
@@ -81,41 +94,107 @@ async function handleSubmit() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              //ตาราง complaint 
-                complaint_no: "REQ-0001/69",
+              //ข้อมุลสำหรับตาราง complaint 
+                  complaint: {
+                    complaint_no: "", //จะเอาแบบเก่าหรือใหม่ แต่มันต้องเข้าไปที่หน้า api ก่อน รูปแบบ REQ-0001/69
 
-                lineId: "static", //session
+                    tenant_id: "static",
+                    user_id: "", // backend ใส่เองหลังสร้าง user
 
-                channel_id: "static", 
+                    district: detail.district,
+                    province: detail.province,
+
+                    is_public_view: true,
+
+                    channel_id: "hhhh0000-0000-0000-0000-000000000001", //line
+
+                    category_id: detail.categoryId,
+                    subcategory_id: detail.subcategoryId,
+
+                    current_status_id: "ffff0000-0000-0000-0000-000000000003",
+
+                    detail: detail.detail,
+                    additional_datail: detail.additional,
+
+                    latitude: detail.latitude,
+                    longitude: detail.longitude,
+
+                    geocoded_at: detail.geocoded_at,
+                    location_accuracy: detail.location_accuracy,
+                  },
+
+                //ข้อมุลสำหรับตาราง ComplaintFile
+                  files: photo.map((p) => ({
+                    complaint_id: "", // backend ใส่เอง
+
+                    file_name: p.file_name,
+
+                    file_path: p.file_path, //complaints/{complaint_id}/{file_id}.{ext} ใส่ตอนมี server ตอนมีข้อมุลในคิวรี่ ถ้ามีpath ใหม่ตาม server ก็เปลี่ยนตามนั้น
+
+                    is_primary: false,
+
+                    file_type: p.file_type, 
+
+                    file_url: p.file_url,
+
+                    file_size: p.file_size,
+
+                    mime_type: p.mime_type,
+
+                    uploaded_by: null,
+                  })),
+                //ข้อมุลสำหรับตาราง workflow
+                workflow: {
+                  workflow_log_id: "รอauto uuid ไม่ใช้",
+
+                  complaint_id: "auto จาก complaint ที่เพิ่งสร้าง",
+
+                  from_status_id: null, // ตอนสร้างใหม่ยังไม่มีสถานะก่อนหน้า
+
+                  to_status_id: "ffff0000-0000-0000-0000-000000000003", //สำหรับ mockData คือ pending 
+
+                  action_type: "SUBMIT", //ตอน nul->pending
+
+                  action_by: "ได้มาจากตอนดึง auto increment userID ของ complaint", 
+
+                  action_role_id: "ประชาชน", //บทบาทคือใครเปนคนกระทำ 
+                  action_note: "รอดำเนินการ", 
+
+                  ip_address: null, //ยังไม่ใช้หรืออาจจะไม่ได้ใช้เลย
+                  assigned_team_id: null, 
+                  assigned_user_id: null,  
+                },
+                //ข้อมุลสำหรับตาราง user 
+                user: {
                 tenant_id: "static",
-                name:      user.name,
-                lastname:  user.lastname,
-                phone:     user.phone,
-                category_id: detail.categoryId,
-                subcategory_id: detail.subcategoryId,
-                current_status_id: "ffff0000-0000-0000-0000-000000000003",
-                location:  detail.location,
-                latitude: detail.latitude,
-                longtitude: detail.longitude,
-                province: detail.province,
-                district:  detail.district,
 
-                geocoded_at: "static",
-                location_accuracy: "static",
+                line_user_id: user.line_user_id || "authen", // ได้จาก authen 
 
-                detail:    detail.detail,
-                additional_detail: detail.additional,
-                photos:    photoUrls,
+                title_name: user.prefix,
 
-              //ตาราง workflow
+                first_name: user.name,
+                last_name: user.lastname,
 
+                phone_number: user.phone,
+
+                is_active: true,
+              },
+
+
+                //ก็คือต้องเก็บ fullname phone ในตาราง user อีก userId ก็จะเพิ่มแถวข้อมุล user ในดาต้าเบส โดยที่มี lineID ซ้ำกัน 
+                //ดังนั้น เวลาดึงข้อมุล เมื่อรับ lineId ผ่าน authen ก็จะได้ ข้อมุลที่เกี่ยวกับ user และ complaint ทั้งหมดใน lineId นั้นๆ
+                //และแยก log  ตาม complaintID ผ่าน userID 
+
+             
             })
         })
 
         const data = await res.json()
-
+        
+        /*
         const newTab = window.open("", "_blank")
         newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
+        */
 
     } catch (error) {
         console.error("Error:", error)
