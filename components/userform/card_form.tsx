@@ -181,7 +181,7 @@ export default function card_form() {
                     placeholder='พิมพ์ชื่อของคุณ (ภาษาไทย)'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.name ? 'border-[#FA3E3E]/50' : 'border-transparent'}`}
+                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-1 ${errors.name ? 'border-[#FA3E3E]' : 'border-transparent'}`}
                 />
                 {errors.name && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.name}</p>}
             </div>
@@ -194,7 +194,7 @@ export default function card_form() {
                     placeholder='พิมพ์นามสกุลของคุณ (ภาษาไทย)'
                     value={surname}
                     onChange={(e) => setSurname(e.target.value)}
-                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-2 ${errors.surname ? 'border-[#FA3E3E]/50' : 'border-transparent'}`}
+                    className={`w-full bg-[#F4F4F1]/50 rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660]/50 text-base border-1 ${errors.surname ? 'border-[#FA3E3E]' : 'border-transparent'}`}
                 />
                 {errors.surname && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.surname}</p>}
             </div>
@@ -203,7 +203,7 @@ export default function card_form() {
             <div>
                 <p className='text-[#231B00] text-lg font-semibold'>เบอร์โทรศัพท์</p>
                 <p className='text-[#4D4632] text-base font-normal'>Phone Number</p>
-                <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-2 focus-within:border-black focus-within:ring-none focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-[#FA3E3E]/50' : 'border-transparent'}`}>
+                <div className={`flex items-center w-full rounded-xl bg-[#F4F4F1]/50 border-1 focus-within:border-black focus-within:ring-none focus-within:ring-black mt-1 mb-1 ${errors.phone ? 'border-[#FA3E3E]' : 'border-transparent'}`}>
                     <MdOutlinePhone className="text-[#725C00] text-xl shrink-0 mx-3" />
                     <input
                         ref={phoneInputRef}
