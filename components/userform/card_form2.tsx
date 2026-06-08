@@ -12,11 +12,12 @@ import { useRouter } from 'next/navigation'
 import { useState, useRef } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
 import mockData from "@/data/mock_data_may2026.json"
-import StepProgress from './stepprogress';
+
 
 const categories = mockData.meta.reference_ids.categories;
 const subcategories = mockData.meta.reference_ids.subcategories;
 
+/*ตอนนี้ข้อมูล accuracy ไม่ได้ถูกใช้งานแล้ว */
 
 interface FormErrors {
     issueType: string;
@@ -57,6 +58,11 @@ const card_form2 = () => {
     })
 
     const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
+    useEffect(() => {
+      if (photos.length > 0 && errors.photo) {
+        setErrors((prev) => ({ ...prev, photo: "" }))
+      }
+    }, [photos.length, errors.photo])
 
     useEffect(() => {
     //   if (typeof window === 'undefined') return;
@@ -279,7 +285,8 @@ const card_form2 = () => {
         const files = Array.from(e.target.files ?? [])
         const remaining = MAX_PHOTOS - photos.length
 
-        for (const file of files.slice(0, remaining)) {
+        let addedPhoto = false
+    for (const file of files.slice(0, remaining)) {
             if (!ALLOWED_TYPES.includes(file.type)) {
                 setUploadError(`"${file.name}" ไม่รองรับ รองรับเฉพาะ JPEG, PNG, WebP`)
                 continue
@@ -293,6 +300,11 @@ const card_form2 = () => {
                 continue
             }
             addPhoto(file)
+            addedPhoto = true
+        }
+
+        if (addedPhoto && errors.photo) {
+            setErrors((prev) => ({ ...prev, photo: "" }))
         }
 
         e.target.value = ""

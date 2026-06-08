@@ -120,7 +120,7 @@ async function handleSubmit() {
                     longitude: detail.longitude,
 
                     geocoded_at: detail.geocoded_at,
-                    location_accuracy: detail.location_accuracy,
+                    //accuracy ไม่เอาแล้ว
                   },
 
                 //ข้อมุลสำหรับตาราง ComplaintFile

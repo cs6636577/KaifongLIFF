@@ -43,6 +43,8 @@ useEffect(() => {
   });
 }, [id]);
 
+const evidencePhotos = request?.images?.length ? request.images : [{ url: "/evidence/add_photo.png" }];
+
 if (!user || !request) return (
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3">
     <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#725C00]/20 border-t-[#725C00]" />
@@ -69,11 +71,7 @@ if (!user || !request) return (
         )}
         />
         <ComplaintCard  request={request}/>
-        {/*ทำเปน static ไปก่อนดึงมาจาก db จริงๆ */}
-        <EvidenceCard photos={[
-        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/%E0%B8%82%E0%B8%A2%E0%B8%B02-pxWbXcvzosvxb2PNCdjHxfMeHENEZW.jpg",
-        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/dFQROr7oWzulq5FZXmCxhHD3BI5Vg9Ut9cKwDLMZB2HckRJ7ErcRBhvNsUHeK1EBJfl-o4xWlKUIsaMCLYOpL1VhbnZBRw2hze.jpg",
-        ]} /> 
+        <EvidenceCard photos={evidencePhotos} />
         <StatusCard
          request={request}
         />

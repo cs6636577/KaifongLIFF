@@ -246,6 +246,10 @@ function RequestSection({
   setOpenRating(true);
   };
 
+  const selectedRequest = selectedId
+    ? requests.find((r) => r.id === selectedId)
+    : undefined;
+
   return (
     <>
     <section className="space-y-3">
@@ -268,13 +272,27 @@ function RequestSection({
 
       <RatingModal
         open={openRating}
+        requestId={selectedId}
         onClose={() => setOpenRating(false)}
-        onSubmit={(score) => {
-        console.log(selectedId, score);
-        setOpenRating(false);
-    }}
-  />
-   {/*ต้องส่ง api ลงคะแนนไปให้ backend ด้วย*/}
+        /*TODO: ต้องสร้าง API route api update rating สร้างไว้ในไฟล์ api ได้เลย เพื่อรับข้อมูลคะแนน*/
+        onSubmit={async (data) => {
+          try {
+            // TODO: ส่งข้อมูลคะแนนและความเห็นไปยัง API
+            // POST api endpoint เช่น /api/complaint/rating
+            // Body: {
+            //ใส่ข้อมุลตาม table rating ใน DB เช่น
+            //   complaint_id: selectedId,
+            //   rating: data.rating,  // 1-5
+            //   comment: data.comment,  // ข้อความ
+            
+            // }
+            console.log('Rating submitted:', selectedId, data);
+          } catch (error) {
+            console.error('Error submitting rating:', error);
+          }
+        }}
+      />
+  
     </section>
     </>
     

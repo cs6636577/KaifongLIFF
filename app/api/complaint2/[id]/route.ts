@@ -32,6 +32,9 @@ export async function GET(
     address:     item.location_text,
     description: item.detail,
 
+    // fake image metadata for frontend evidence display
+    images: getComplaintImages(item.complaint_id),
+
     // fields ที่ StatusCard ใช้
     status,
     actionNote:  isResolved
@@ -56,6 +59,26 @@ function getCategory(id: string): string {
 
 function getSubcategory(id: string): string {
   return data.meta.reference_ids.subcategories.find((s) => s.subcategory_id === id)?.name ?? "-";
+}
+
+function getComplaintImages(complaintId: string) {
+  //ใส่ข้อมุลตามที่ดึงมาได้จากตาราง complaint_files โดยอิงจาก complaint_id
+  //ในนี้แค่เขียนฟังก์ชันสมมติขึ้นมาเพื่อให้ได้โครงสร้างข้อมูลที่ frontend ต้องการเท่านั้น ไม่ได้ดึงจาก db จริงๆ
+  const fileName1 = `${complaintId}-1.jpg`;
+  const fileName2 = `${complaintId}-2.jpg`;
+
+  return [
+    {
+      url: `https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/%E0%B8%82%E0%B8%A2%E0%B8%B02-pxWbXcvzosvxb2PNCdjHxfMeHENEZW.jpg`,
+      filePath: `/complaints/${complaintId}/${fileName1}`,
+      filename: fileName1,
+    },
+    {
+      url: null,
+      filePath: `/complaints/${complaintId}/${fileName2}`,
+      filename: fileName2,
+    },
+  ];
 }
 
 

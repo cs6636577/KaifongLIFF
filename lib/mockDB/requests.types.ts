@@ -14,7 +14,6 @@ export interface ServiceRequest {
   detail: string                // detail
 
   additional?: string           //additional แต่ยังไม่มีใน db
-
   category: string              // category_id (หรือ map เป็น label)
   subcategory?: string        // subcategory_id 
 
@@ -57,6 +56,12 @@ export interface ServiceRequest {
   group: "this_week" | "earlier";
   rating?: number;
   showRateAction?: boolean;
+  /* รูปภาพ */
+  images?: Array<{
+    url?: string | null;
+    filename?: string | null;
+    filePath?: string | null;
+  }>;
 }
 
 export interface RequestsPayload {
