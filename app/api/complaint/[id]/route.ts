@@ -69,7 +69,7 @@ function getComplaintImages(complaintId: string) {
 
   return [
     {
-      url: `https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/%E0%B8%82%E0%B8%A2%E0%B8%B02-pxWbXcvzosvxb2PNCdjHxfMeHENEZW.jpg`,
+      url: `https://jb95rtzbpi708swr.public.blob.vercel-storage.com/%E0%B8%82%E0%B8%A2%E0%B8%B02-GcHdIVGK6wQvLV6Y4eRUPvkSR4JIQG.jpg`,
       filePath: `/complaints/${complaintId}/${fileName1}`,
       filename: fileName1,
     },
@@ -112,4 +112,3 @@ function getStatusCode(statusId: string): Status {
 }
 
 
-//db-fake url ดึงรูป 

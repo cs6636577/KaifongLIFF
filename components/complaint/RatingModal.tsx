@@ -58,20 +58,30 @@ export function RatingModal({
 
     (async () => {
       try {
-        const res = await fetch(`/api/complaint/${requestId}`);
+        const res = "" /*await fetch(`/api/complaint/${requestId}`) <--อันเก่าขอมาจาก user ซึ่งไม่ใช่ */
+        //อนาคตจะขอ ข้อมุลรูปหลักฐานที่เสร็จสิ้นจาก technician 
+ /*
         if (!res.ok) throw new Error("fetch failed");
         const data = await res.json();
+      
         const imgs = data.images ?? [];
         const primary = imgs.find((i: any) => i.is_primary === true) ?? imgs[0];
+        
         const url = primary?.url ?? primary?.filePath ?? "/evidence/Evidence_success2.jpg";
         const path = primary?.filePath ?? primary?.file_url ?? primary?.file_name ?? "";
+        */
         if (mounted) {
+          if (mounted) setImageUrl("/evidence/Evidence_success2.jpg");
+          /*
           setImageUrl(url);
           setPrimaryPath(path || null);
+          
           setAltText(`${requestId ?? ""} ${path}`.trim() || "รูปประกอบการประเมิน");
+          */
+          
         }
       } catch (e) {
-        if (mounted) setImageUrl("/evidence/Evidence_success2.jpg");
+        if (mounted) setImageUrl("/evidence/Evidence_default.webp");
       }
     })();
 
