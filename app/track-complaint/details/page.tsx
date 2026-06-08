@@ -36,12 +36,14 @@ useEffect(() => {
 
   Promise.all([
     fetch("/api/user").then((r) => r.json()),
-    fetch(`/api/complaint2/${id}`).then((r) => r.json()),
+    fetch(`/api/complaint/${id}`).then((r) => r.json()),
   ]).then(([userData, requestData]) => {
     setUser(userData);
     setRequest(requestData);
   });
 }, [id]);
+
+const evidencePhotos = request?.images?.length ? request.images : [{ url: "/evidence/add_photo.png" }];
 
 if (!user || !request) return (
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3">
@@ -69,11 +71,7 @@ if (!user || !request) return (
         )}
         />
         <ComplaintCard  request={request}/>
-        {/*ทำเปน static ไปก่อนดึงมาจาก db จริงๆ */}
-        <EvidenceCard photos={[
-        "/evidence/Evidence_test_2.svg",
-        "https://137mnse6fuwyz2zc.public.blob.vercel-storage.com/S__27615237-d5SCBPSi8FSk2CIFjURa0C0bKibS0H.jpg",
-        ]} /> 
+        <EvidenceCard photos={evidencePhotos} />
         <StatusCard
          request={request}
         />

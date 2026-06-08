@@ -9,13 +9,18 @@ import { IoMdArrowRoundForward } from 'react-icons/io';
 import Link from 'next/link'
 import { GrWaypoint } from 'react-icons/gr';
 import { useRouter } from 'next/navigation' 
-import { IssueTypeOptions } from '@/data/issuetype';
 import { useState, useRef } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
+import mockData from "@/data/mock_data_may2026.json"
 import StepProgress from './stepprogress';
 import GoogleStaticMap from './staticMap';
 import StaticMap from './staticMap';
 
+
+const categories = mockData.meta.reference_ids.categories;
+const subcategories = mockData.meta.reference_ids.subcategories;
+
+/*ตอนนี้ข้อมูล accuracy ไม่ได้ถูกใช้งานแล้ว */
 
 interface FormErrors {
     issueType: string;
@@ -41,6 +46,10 @@ const card_form2 = () => {
     const [district, setDistrict] = React.useState<string>("");
     const [latitude, setlatitude] = React.useState<string>("");
     const [longtitude, setLongtitude] = React.useState<string>("");
+    const [geocodedAt, setGeocodedAt]           = useState<string>("")
+    const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null)
+
+      
     const [errors, setErrors] = React.useState<FormErrors>({
         issueType: "",
         subIssue: "",
@@ -52,6 +61,11 @@ const card_form2 = () => {
     })
 
     const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
+    useEffect(() => {
+      if (photos.length > 0 && errors.photo) {
+        setErrors((prev) => ({ ...prev, photo: "" }))
+      }
+    }, [photos.length, errors.photo])
 
     const detailCharCount = detail.length
     const additionalNotesCharCount = additionalNotes.length
@@ -77,6 +91,8 @@ const card_form2 = () => {
             district: string;
             locationDescription: string;
             additionalNotes: string;
+            geocodedAt: string;       
+            locationAccuracy: number | null;  
           };
 
           setSelected(draft.selected ?? "");
@@ -89,6 +105,8 @@ const card_form2 = () => {
           setlatitude(draft.Latitude ?? "");
           setLocationDescription(draft.locationDescription ?? "");
           setAdditionalNotes(draft.additionalNotes ?? "");
+          setGeocodedAt(draft.geocodedAt ?? "")
+          setLocationAccuracy(draft.locationAccuracy ?? null)
         } catch (error) {
           console.warn("ไม่สามารถโหลดฟอร์มฉบับร่างจาก sessionStorage", error);
         }
@@ -105,6 +123,7 @@ const card_form2 = () => {
             setDistrict(payload.district ?? "");
             setlatitude(payload.lat?.toString() ?? "");
             setLongtitude(payload.lng?.toString() ?? "");
+            
           }
         } catch (error) {
           console.warn("ไม่สามารถโหลดตำแหน่งจาก sessionStorage", error);
@@ -124,8 +143,22 @@ const card_form2 = () => {
         async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+          const accuracy = position.coords.accuracy       
+          const geocodedTime = new Date().toISOString()    
           setlatitude(lat.toString());
           setLongtitude(lng.toString());
+          setLocationAccuracy(accuracy)
+          setGeocodedAt(geocodedTime)
+        
+          const current = JSON.parse(sessionStorage.getItem("complaintFormDraft") ?? "{}")
+            sessionStorage.setItem("complaintFormDraft", JSON.stringify({
+                ...current,
+                Latitude: lat.toString(),
+                longitude: lng.toString(),
+                geocodedAt: geocodedTime,
+                locationAccuracy: accuracy,
+            }))
+          
           const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 
           if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
@@ -174,24 +207,26 @@ const card_form2 = () => {
             photo: "",
         };
 
-        //validate issue type
+        // ตรวจสอบหมวดปัญหา (category_id)
         if (!selected) {
             newErrors.issueType = "*กรุณาเลือกประเภทปัญหา";
-        } else if (!IssueTypeOptions.some(opt => opt.value === selected)) {
+        } else if (!categories.some(cat => cat.category_id === selected)) {
             newErrors.issueType = "ประเภทปัญหาที่เลือกไม่ถูกต้อง";
         }
 
-        //validate sub issue
-        const selectedOption = IssueTypeOptions.find(opt => opt.value === selected);
-        if (selectedOption?.sub && selectedOption.sub.length > 0) {
+        // ตรวจสอบปัญหาย่อย (subcategory_id)
+        const selectedCategoryIdx = categories.findIndex(cat => cat.category_id === selected);
+        const relatedSubs = selectedCategoryIdx >= 0 ? subcategories.filter(sub => sub.category_idx === selectedCategoryIdx) : [];
+        
+        if (relatedSubs && relatedSubs.length > 0) {
             if (!selectedSub) {
                 newErrors.subIssue = "*กรุณาเลือกปัญหาย่อย";
-            } else if (!selectedOption.sub.some(subOpt => subOpt.value === selectedSub)) {
+            } else if (!subcategories.some(sub => sub.subcategory_id === selectedSub)) {
                 newErrors.subIssue = "ปัญหาย่อยที่เลือกไม่ถูกต้อง";
             }
         }
 
-        //validate detail
+        // ตรวจสอบรายละเอียด
         if (!detail.trim()) {
             newErrors.detail = "*กรุณากรอกรายละเอียด";
         } else if (detail.trim().length > 300) {
@@ -200,11 +235,12 @@ const card_form2 = () => {
             newErrors.detail = "รายละเอียดมีตัวอักษรที่ไม่ถูกต้อง";
         }
 
-        //validate location
+        // ตรวจสอบตำแหน่ง
         if (!location.trim()) {
             newErrors.location = "*กรุณาระบุสถานที่";
         }
 
+        // ตรวจสอบหมายเหตุเพิ่มเติม
         //validate location description
         if (locationDescription.trim().length > 100) {
             newErrors.locationDescription = "รายละเอียดสถานที่ต้องไม่เกิน 100 ตัวอักษร";
@@ -229,42 +265,79 @@ const card_form2 = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        
         const isValid = validateForm();
 
-        if(isValid){
-            console.log("ปัญหา:" + selected)
-            console.log("ปัญหาย่อย:" + selectedSub)
-            console.log("รายละเอียด" + detail)
-            console.log("ตำแหน่ง" + location)
-            console.log("รายละเอียดตำแหน่ง" + locationDescription)
-            console.log("หมายเหตุเพิ่มเติม" + additionalNotes)
-            console.log("จังหวัด" + province)
-            console.log("เขต" + district)
-            console.log("ละติจูด" + latitude)
-            console.log("ลองติจูด"+ longtitude)
+        if(!isValid) {
+            return;
+        }
 
-            // ดึง label จาก options
-            const issueLabel = IssueTypeOptions.find(o => o.value === selected)?.label ?? selected
-            const subOptions = IssueTypeOptions.find(o => o.value === selected)?.sub ?? []
-            const subLabel = subOptions.find(o => o.value === selectedSub)?.label ?? selectedSub
+        // ค้นหา label จากไอดี
+        const categoryObj = categories.find(c => c.category_id === selected);
+        const subcategoryObj = subcategories.find(s => s.subcategory_id === selectedSub);
+        
+        const categoryName = categoryObj?.name ?? selected;
+        const subcategoryName = subcategoryObj?.name ?? selectedSub;
 
-            const res = await fetch('/api/form/complaint', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ issueType: issueLabel, subIssue: subLabel, detail, location, locationDescription, additionalNotes, lat: latitude, lng: longtitude, province, district }),
-            })
+        const res = await fetch('/api/form/complaint', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+               title:              categoryName,
+                category_id:        selected,
+                subcategory_id:     selectedSub,
+                detail:             detail,
+                location:           location,
+                additional:         additionalNotes,
+                latitude:           latitude,
+                longitude:          longtitude,
+                province:           province,
+                district:           district,
+                geocoded_at:         geocodedAt,
+                location_accuracy:   locationAccuracy
+            }),
+        })
 
-            if (res.ok) {
-                router.push("/userform/details")
-            }
+        if (res.ok) {
+            router.push("/userform/details")
         }
     };
-   //รูปภาพ
+   
+    //กัน error
+    const [uploadError, setUploadError] = useState<string | null>(null)
+
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
+    const MAX_SIZE = 5 * 1024 * 1024
+    const MIN_SIZE = 1 * 1024
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setUploadError(null)
         const files = Array.from(e.target.files ?? [])
         const remaining = MAX_PHOTOS - photos.length
-        files.slice(0, remaining).forEach(addPhoto)
-        e.target.value = "" // reset input
+
+        let addedPhoto = false
+    for (const file of files.slice(0, remaining)) {
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                setUploadError(`"${file.name}" ไม่รองรับ รองรับเฉพาะ JPEG, PNG, WebP`)
+                continue
+            }
+            if (file.size < MIN_SIZE) {
+                setUploadError(`"${file.name}" เล็กเกินไป (ขั้นต่ำ 1 KB)`)
+                continue
+            }
+            if (file.size > MAX_SIZE) {
+                setUploadError(`"${file.name}" ใหญ่เกิน 5 MB`)
+                continue
+            }
+            addPhoto(file)
+            addedPhoto = true
+        }
+
+        if (addedPhoto && errors.photo) {
+            setErrors((prev) => ({ ...prev, photo: "" }))
+        }
+
+        e.target.value = ""
     }
     //ตอนกด zoom รุป
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
@@ -375,6 +448,12 @@ const card_form2 = () => {
                             location,
                             locationDescription,
                             additionalNotes,
+                            geocodedAt,           
+                            locationAccuracy, 
+                            Latitude: latitude,      
+                            longitude: longtitude,   
+                            province,                
+                            district,                   
                             };
                             sessionStorage.setItem("complaintFormDraft", JSON.stringify(draft));
                             router.push('/userform/Complaint_Details/MapEdit');
@@ -422,6 +501,9 @@ const card_form2 = () => {
                             />
                         </label>
                     </div>
+                )}
+                {uploadError && (
+                    <p className="text-red-500 text-sm mt-2 text-center">{uploadError}</p>
                 )}
 
             {errors.photo && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.photo}</p>}       
@@ -477,11 +559,10 @@ const card_form2 = () => {
             <div>
                 <p className='text-[#5D5C74] text-lg font-semibold'>หมายเหตุเพิ่มเติม</p>
                 <p className='text-[#4D4632] text-base font-normal mb-2'>Additional Notes</p>
-                <input
-                    type='text'
+                <textarea
                     value={additionalNotes}
                     onChange={(e) => setAdditionalNotes(e.target.value)}
-                    className={`w-full bg-[#F4F4F1] rounded-xl p-2 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] text-base ${errors.additionalNotes ? 'border border-[#FA3E3E]' : 'border border-transparent'}`}
+                    className={`w-full min-h-[5.5rem] bg-[#F4F4F1] rounded-xl p-4 mt-1 mb-1 py-4 px-4 placeholder:text-[#7F7660] resize-none text-base ${errors.additionalNotes ? 'border border-[#FA3E3E]' : 'border border-transparent'}`}
                     placeholder='ข้อมูลอื่นๆ ที่ต้องการแจ้ง...'
                 />
                 <p className="text-sm text-[#4D4632]/80 mt-1">

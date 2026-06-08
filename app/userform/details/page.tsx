@@ -11,6 +11,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
 import { usePhotoStore } from "@/hooks/usePhotoStore"
 
+
   //font sarabun
 const sarabun = Sarabun({
   subsets: ['thai'],
@@ -19,20 +20,32 @@ const sarabun = Sarabun({
 export default function Details(){
 
 type User = {
+  line_user_id: string;
+  prefix: string;
   name: string;
   lastname: string;
   phone: string;
 };
-
-type Detail = {
-  issueType: string;
-  subIssue: string;
+type ComplaintDetail = {
+  categoryId: string;
+  subcategoryId: string;
+  category: string;
+  subcategory: string;
   location: string;
+  latitude: string;
+  longitude: string;
+  province: string;
+  district: string;
   detail: string;
+  additional: string;
+  geocoded_at: string;
+  location_accuracy: string;
+  
 }
 
+
 const [user, setUser] = useState<User | null>(null);
-const [detail, setDetail] = useState<Detail | null>(null); 
+const [detail, setDetail] = useState<ComplaintDetail  | null>(null); 
 const { photos } = usePhotoStore()
 
 useEffect(() => {
@@ -49,7 +62,7 @@ async function handleSubmit() {
   if (!user || !detail) return 
     try {
         // 1. อัพรูปไป Vercel Blob
-        const photoUrls = await Promise.all(
+        const photo= await Promise.all(
     photos.map(async file => {
         const fd = new FormData()
         fd.append("file", file)
@@ -63,31 +76,125 @@ async function handleSubmit() {
         const text = await res.text()
         console.log("upload response:", text)
 
-        const data = JSON.parse(text)
-        return data.url
+        const dataPhoto = JSON.parse(text)
+        //เอาข้อมูล ภาพต่างๆเพิ่มตาราง 
+        return {
+          file_url:   dataPhoto.file_url,
+          file_path:  dataPhoto.file_path,
+          file_name:  dataPhoto.file_name,
+          file_type:  dataPhoto.file_type,
+          mime_type:  dataPhoto.mime_type,
+          file_size:  dataPhoto.file_size,
+        }
     })
 )
 
         // 2. POST ข้อมูลทั้งหมดลง DB
-        const res = await fetch("/api/complaint2/submit", {
+        const res = await fetch("/api/complaint/submit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                name:      user.name,
-                lastname:  user.lastname,
-                phone:     user.phone,
-                issueType: detail.issueType,
-                subIssue:  detail.subIssue,
-                location:  detail.location,
-                detail:    detail.detail,
-                photos:    photoUrls,
+              //ข้อมุลสำหรับตาราง complaint 
+                  complaint: {
+                    complaint_no: "", //จะเอาแบบเก่าหรือใหม่ แต่มันต้องเข้าไปที่หน้า api ก่อน รูปแบบ REQ-0001/69
+
+                    tenant_id: "static",
+                    user_id: "", // backend ใส่เองหลังสร้าง user
+
+                    district: detail.district,
+                    province: detail.province,
+
+                    is_public_view: true,
+
+                    channel_id: "hhhh0000-0000-0000-0000-000000000001", //line
+
+                    category_id: detail.categoryId,
+                    subcategory_id: detail.subcategoryId,
+
+                    current_status_id: "ffff0000-0000-0000-0000-000000000003",
+
+                    detail: detail.detail,
+                    additional_datail: detail.additional,
+
+                    latitude: detail.latitude,
+                    longitude: detail.longitude,
+
+                    geocoded_at: detail.geocoded_at,
+                    //accuracy ไม่เอาแล้ว
+                  },
+
+                //ข้อมุลสำหรับตาราง ComplaintFile
+                  files: photo.map((p) => ({
+                    complaint_id: "", // backend ใส่เอง
+
+                    file_name: p.file_name,
+
+                    file_path: p.file_path, //complaints/{complaint_id}/{file_id}.{ext} ใส่ตอนมี server ตอนมีข้อมุลในคิวรี่ ถ้ามีpath ใหม่ตาม server ก็เปลี่ยนตามนั้น
+
+                    is_primary: false,
+
+                    file_type: p.file_type, 
+
+                    file_url: p.file_url,
+
+                    file_size: p.file_size,
+
+                    mime_type: p.mime_type,
+
+                    uploaded_by: null,
+                  })),
+                //ข้อมุลสำหรับตาราง workflow
+                workflow: {
+                  workflow_log_id: "รอauto uuid ไม่ใช้",
+
+                  complaint_id: "auto จาก complaint ที่เพิ่งสร้าง",
+
+                  from_status_id: null, // ตอนสร้างใหม่ยังไม่มีสถานะก่อนหน้า
+
+                  to_status_id: "ffff0000-0000-0000-0000-000000000003", //สำหรับ mockData คือ pending 
+
+                  action_type: "SUBMIT", //ตอน nul->pending
+
+                  action_by: "ได้มาจากตอนดึง auto increment userID ของ complaint", 
+
+                  action_role_id: "ประชาชน", //บทบาทคือใครเปนคนกระทำ 
+                  action_note: "รอดำเนินการ", 
+
+                  ip_address: null, //ยังไม่ใช้หรืออาจจะไม่ได้ใช้เลย
+                  assigned_team_id: null, 
+                  assigned_user_id: null,  
+                },
+                //ข้อมุลสำหรับตาราง user 
+                user: {
+                tenant_id: "static",
+
+                line_user_id: user.line_user_id || "authen", // ได้จาก authen 
+
+                title_name: user.prefix,
+
+                first_name: user.name,
+                last_name: user.lastname,
+
+                phone_number: user.phone,
+
+                is_active: true,
+              },
+
+
+                //ก็คือต้องเก็บ fullname phone ในตาราง user อีก userId ก็จะเพิ่มแถวข้อมุล user ในดาต้าเบส โดยที่มี lineID ซ้ำกัน 
+                //ดังนั้น เวลาดึงข้อมุล เมื่อรับ lineId ผ่าน authen ก็จะได้ ข้อมุลที่เกี่ยวกับ user และ complaint ทั้งหมดใน lineId นั้นๆ
+                //และแยก log  ตาม complaintID ผ่าน userID 
+
+             
             })
         })
 
         const data = await res.json()
-
+        
+        
         const newTab = window.open("", "_blank")
         newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
+        
 
         //เด้งหน้าต่างยืนยันการแจ้งเหตุสำเร็จ (แล้วไปหน้าdataทั้งหมดไว้โชว์ว่าเก็บอะไรบ้าง)
 
@@ -118,10 +225,11 @@ if (!user || !detail) return <p>Loading...</p>;
         )}
         />
         <ComplaintCard formData={{
-          category: detail.issueType,
-          subcategory: detail.subIssue,
+          category: detail.category,
           location: detail.location,
           detail: detail.detail,
+          subcategory: detail.subcategory,
+          additional: detail.additional
         }}/>
         <EvidenceCard/>
         {/* ปุ่มยืนยัน*/}

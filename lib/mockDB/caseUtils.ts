@@ -44,6 +44,7 @@ function formatDuration(ms: number, prefix: string): string {
     : `${parts.join(" ")} ที่แล้ว`;
 }
 
+//ไม่ใช้แล้ว ใช้ตอนบันทึกเข้า ไม่ใช่แกะออก 
 export function getComplaintNumber(complaintNo: string): string {
   const parts = complaintNo.split("-");
   // "C-202605001-0001" → ["C", "202605001", "0001"]

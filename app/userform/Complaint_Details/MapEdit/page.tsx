@@ -44,13 +44,42 @@ const page = () => {
     setSelectedLocation(place);
   };
 
-  const SendtoForm = () => {
+  const SendtoForm = async () => {
     if (!selectedLocation) {
       alert("กรุณาเลือกตำแหน่งก่อนยืนยัน");
       return;
     }
     console.log("พิกัด:", selectedLocation.lat, selectedLocation.lng, selectedLocation.province, selectedLocation.district);
     sessionStorage.setItem("complaintLocation", JSON.stringify(selectedLocation));
+    // พยายามดึงค่าความแม่นยำของตำแหน่งจากอุปกรณ์ (หากผู้ใช้อนุญาตให้เข้าถึงตำแหน่ง)
+    let detectedAccuracy: number | null = null;
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 });
+        });
+        detectedAccuracy = pos.coords.accuracy ?? null;
+      } catch (err) {
+        console.warn('Could not get device geolocation for accuracy:', err);
+        detectedAccuracy = null;
+      }
+    }
+
+    // อัปเดต complaintFormDraft เพื่อเก็บค่า geocodedAt และ locationAccuracy ไว้สำหรับนำกลับมาใช้เมื่อผู้ใช้กลับเข้ามาแก้ไขฟอร์มในภายหลัง
+    try {
+      const current = JSON.parse(sessionStorage.getItem("complaintFormDraft") ?? "{}")
+      const updatedDraft = {
+        ...current,
+        Latitude: selectedLocation.lat?.toString(),
+        longitude: selectedLocation.lng?.toString(),
+        geocodedAt: new Date().toISOString(),
+        locationAccuracy: detectedAccuracy,
+      }
+      sessionStorage.setItem("complaintFormDraft", JSON.stringify(updatedDraft))
+    } catch (err) {
+      console.warn("Failed to update complaintFormDraft with geocode info", err)
+    }
+
     router.push("/userform/Complaint_Details");
   };
 

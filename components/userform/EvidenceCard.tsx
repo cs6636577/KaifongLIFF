@@ -1,15 +1,27 @@
 import { usePhotoStore } from "@/hooks/usePhotoStore"
 import { useState } from "react"
 
+interface EvidenceImage {
+    url?: string | null;
+    filePath?: string | null;
+    file_name?: string | null;
+}
+
 interface EvidenceCardProps {
-    photos?: string[]  // URL string (preview หรือจาก DB ก็ได้)
+    photos?: Array<string | EvidenceImage>  // URL string หรือ metadata รูปจาก DB
 }
 
 function EvidenceCard({ photos }: EvidenceCardProps) {
     // ถ้าไม่ส่ง prop มา → ดึงจาก store (หน้า form)
     const { photoPreviews } = usePhotoStore()
     const displayPhotos = photos ?? photoPreviews
-    const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
+    const [selectedPhoto, setSelectedPhoto] = useState<string | EvidenceImage | null>(null)
+
+    const getPhotoSrc = (item: string | EvidenceImage | null) => {
+        if (!item) return ""
+        if (typeof item === "string") return item
+        return item.url ?? item.filePath ?? item.file_name ?? ""
+    }
 
     return (
         <div className="rounded-xl bg-white p-3 shadow-sm">
@@ -23,15 +35,33 @@ function EvidenceCard({ photos }: EvidenceCardProps) {
 
             {/* รูป thumbnail */}
             <div className="grid grid-cols-3 m-3 gap-3">
-                {displayPhotos.map((url, i) => (
-                    <img
+                {displayPhotos.map((item, i) => {
+                    const url = typeof item === "string" ? item : item.url ?? item.filePath ?? ""
+                    const filePath = typeof item === "object" ? item.filePath : null
+                    const fileName = typeof item === "object" ? item.file_name : null
+                    return (
+                    <div
                         key={i}
-                        src={url}
-                        className="rounded-full w-18 h-18 object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                        alt={`evidence-${i}`}
-                        onClick={() => setSelectedPhoto(url)}
-                    />
-                ))}
+                        className="rounded-full w-18 h-18 overflow-hidden bg-[#f3f2ef] flex items-center justify-center cursor-pointer"
+                        onClick={() => setSelectedPhoto(item)}
+                    >
+                        <img
+                            src={url}
+                            className="w-full h-full object-cover"
+                            alt={`evidence-${i}`}
+                            onError={(event) => {
+                                const target = event.currentTarget as HTMLImageElement
+                                console.error("Error loading evidence image", {
+                                    url,
+                                    filePath,
+                                    file_name: fileName,
+                                })
+                                target.src = "/evidence/Evidence_default.webp"
+                            }}
+                        />
+                    </div>
+                    )
+                })}
             </div>
 
             {/* Modal แสดงรูปใหญ่ */}
@@ -40,7 +70,6 @@ function EvidenceCard({ photos }: EvidenceCardProps) {
                     className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
                     onClick={() => setSelectedPhoto(null)}
                 >
-                   
                     <button
                         className="absolute top-4 right-4 text-white bg-black/50 rounded-full w-9 h-9 flex items-center justify-center text-lg hover:bg-black/70"
                         onClick={() => setSelectedPhoto(null)}
@@ -49,9 +78,24 @@ function EvidenceCard({ photos }: EvidenceCardProps) {
                     </button>
 
                     <img
-                        src={selectedPhoto}
+                        src={getPhotoSrc(selectedPhoto)}
                         className="max-w-[90vw] max-h-[90vh] rounded-2xl object-contain"
                         alt="preview"
+                        onError={(event) => {
+                            const target = event.currentTarget as HTMLImageElement
+                            const source = getPhotoSrc(selectedPhoto)
+                            const fallbackPath = typeof selectedPhoto === "object" ? selectedPhoto.filePath ?? selectedPhoto.url ?? selectedPhoto.file_name ?? "" : ""
+                            console.error("Error loading evidence modal image", {
+                                source,
+                                fallbackPath,
+                                selectedPhoto,
+                            })
+                            if (fallbackPath && fallbackPath !== source) {
+                                target.src = fallbackPath
+                                return
+                            }
+                            target.src = "/evidence/Evidence_default.webp"
+                        }}
                         onClick={(e) => e.stopPropagation()}
                     />
                 </div>

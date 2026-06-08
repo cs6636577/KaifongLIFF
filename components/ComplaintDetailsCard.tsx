@@ -37,7 +37,7 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
       <p className="text-[11px] font-semibold text-[#4D4632]/60">หัวข้อปัญหา</p>
       <p className="text-[9px] text-[#4D4632]/50">Category</p>
     </div>
-    <p className="text-lg font-bold text-[#2F2A1F]">{category}</p>
+    <p className="text-lg font-bold text-[#2F2A1F] break-words whitespace-normal">{category}</p>
 
     {/* Subcategory*/}
     <div className="mt-2">
@@ -45,7 +45,7 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
         <p className="text-[10px] font-semibold text-[#4D4632]/55">หัวข้อปัญหาย่อย</p>
         <p className="text-[9px] text-[#4D4632]/45">Subcategory</p>
       </div>
-      <p className="text-sm font-semibold text-[#2F2A1F]/85">{subcategory}</p>
+      <p className="text-sm font-semibold text-[#2F2A1F]/85 break-words whitespace-normal">{subcategory}</p>
     </div>
   </div>
 </div>
@@ -55,21 +55,21 @@ function ComplaintCard({ request, formData }: ComplaintCardProps) {
         <span className="px-2 text-[10px] text-[#4D4632]/60">Location</span>
         <div className="flex gap-2">
           <RiMapPin2Line className="w-9 h-6 text-[#725C00]" />
-          <span className="text-md text-[#1A1A2E] font-semibold">{location}</span>
+          <span className="text-md text-[#1A1A2E] font-semibold break-words whitespace-normal">{location}</span>
         </div>
       </div>
       
       <div className="m-3">
         <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบาย</span>
         <span className="px-2 text-[10px] text-[#4D4632]/60">Details</span>
-        <p className="text-md text-[#1A1A2E]">{detail}</p>
+        <p className="text-md text-[#1A1A2E] break-words whitespace-normal">{detail}</p>
       </div>
       { additional && (
       <div className="m-3">
         <span className="text-sm font-bold text-[#4D4632]/60">คำอธิบายเพิ่มเติม</span>
         <span className="px-2 text-[10px] text-[#4D4632]/60">Additional Details</span>
           <div className="mt-1 rounded-lg border border-dashed border-[#725C00]/40 bg-[#725C00]/5 px-3 py-2">
-            <p className="text-sm text-[#2F2A1F]/70 leading-relaxed">{additional}</p>
+            <p className="text-sm text-[#2F2A1F]/70 leading-relaxed break-words whitespace-normal">{additional}</p>
           </div>
       </div>
       )
