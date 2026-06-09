@@ -153,7 +153,7 @@ const page = () => {
               <button 
                   id="next-button" 
                   onClick={SendtoForm}
-                  className='bg-nt text-black rounded-full px-6 py-3 mt-6 font-bold w-100 h-18 shadow-md hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'
+                  className='bg-nt text-black rounded-full px-6 py-3 mt-6 font-bold w-full h-18 shadow-md hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'
               > 
                 <div className='flex items-center justify-center text-xl'>
                   <span className='mr-2'>ยืนยันตำแหน่ง</span>

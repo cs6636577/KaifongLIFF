@@ -10,6 +10,7 @@ import { MdSend } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
 import { usePhotoStore } from "@/hooks/usePhotoStore"
+import liff from "@line/liff";
 
 
   //font sarabun
@@ -190,10 +191,16 @@ async function handleSubmit() {
         })
 
         const data = await res.json()
-        
-        
+        console.log("submit response:", data)
+        alert("ส่งข้อมูลสำเร็จ ✅");
+
+        if (liff.isInClient()) {
+          liff.closeWindow();
+        }
+         /*
         const newTab = window.open("", "_blank")
         newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
+        */
         
 
         //เด้งหน้าต่างยืนยันการแจ้งเหตุสำเร็จ (แล้วไปหน้าdataทั้งหมดไว้โชว์ว่าเก็บอะไรบ้าง)
