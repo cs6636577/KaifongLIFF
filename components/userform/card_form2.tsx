@@ -149,15 +149,21 @@ const card_form2 = () => {
           setLongtitude(lng.toString());
           setLocationAccuracy(accuracy)
           setGeocodedAt(geocodedTime)
-        
-          const current = JSON.parse(sessionStorage.getItem("complaintFormDraft") ?? "{}")
-            sessionStorage.setItem("complaintFormDraft", JSON.stringify({
-                ...current,
-                Latitude: lat.toString(),
-                longitude: lng.toString(),
-                geocodedAt: geocodedTime,
-                locationAccuracy: accuracy,
-            }))
+                    const draftBase = {
+                        selected,
+                        selectedSub,
+                        detail,
+                        location,
+                        locationDescription,
+                        additionalNotes,
+                        geocodedAt: geocodedTime,
+                        Latitude: lat.toString(),
+                        longitude: lng.toString(),
+                        province,
+                        district,
+                        locationAccuracy: accuracy,
+                    };
+                    sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
           
           const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 
@@ -167,18 +173,37 @@ const card_form2 = () => {
 
             geocoder.geocode({ location: latlng }, (results, status) => {
               if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
+                                const components = results[0].address_components ?? [];
+                                let geocodeProvince = "";
+                                let geocodeDistrict = "";
+                                for (const component of components) {
+                                    const types = component.types ?? [];
+                                    if (types.includes("administrative_area_level_1")) geocodeProvince = component.long_name;
+                                    if (types.includes("administrative_area_level_2")) geocodeDistrict = component.long_name;
+                                    if (!geocodeDistrict && types.includes("sublocality_level_1")) geocodeDistrict = component.long_name;
+                                    if (!geocodeDistrict && types.includes("locality")) geocodeDistrict = component.long_name;
+                                }
+                                setProvince(geocodeProvince);
+                                setDistrict(geocodeDistrict);
                 setLocation(results[0].formatted_address || latLngText);
-                // setLocationDescription(results[0].formatted_address || latLngText);
+                                // setLocationDescription(results[0].formatted_address || latLngText);
                 console.log("พิกัด: "+lat+" "+lng);
+                                sessionStorage.setItem(
+                                    "complaintFormDraft",
+                                    JSON.stringify({
+                                        ...draftBase,
+                                        province: geocodeProvince,
+                                        district: geocodeDistrict,
+                                    })
+                                );
               } else {
                 setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
-                // setLocationDescription(latLngText);
+                                sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
               }
               setLocationLoading(false)
             });
           } else {
             setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
-            // setLocationDescription(latLngText);
             setLocationLoading(false)
           }
         },
