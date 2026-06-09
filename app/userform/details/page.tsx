@@ -102,9 +102,9 @@ async function handleSubmit() {
             body: JSON.stringify({
               //ข้อมุลสำหรับตาราง complaint 
                   complaint: {
-                    complaint_no: "", //จะเอาแบบเก่าหรือใหม่ แต่มันต้องเข้าไปที่หน้า api ก่อน รูปแบบ REQ-0001/69
+                    complaint_no: "", //C-202605001-0002 บันทึกแบบ mockdata
 
-                    tenant_id: "static",
+                    tenant_id: "static", //จะเปนข้อมุลที่สร้างหลังจากดึงข้อมุลของตัวหน่วยงานได้ตอนนี้ใช้ id ตัวเลขแบบ static ไปก่อน แก้เลขที่ตรงนี้ได้
                     user_id: "", // backend ใส่เองหลังสร้าง user
 
                     district: detail.district,
@@ -127,11 +127,13 @@ async function handleSubmit() {
 
                     geocoded_at: detail.geocoded_at,
                     //accuracy ไม่เอาแล้ว
+                    //timeต่างๆน่าจะอัพเดทหลังเข้า db 
+                    //due_date resolved_at closed_at ตอนเข้ามาครั้งแรกที่มีสถานะ pending ก็ยังไม่มี due_date resolved_at closed_at 
                   },
 
                 //ข้อมุลสำหรับตาราง ComplaintFile
                   files: photo.map((p) => ({
-                    complaint_id: "", // backend ใส่เอง
+                    complaint_id: "", // backend ใส่เอง ดึง complaint_id ที่เพิ่งสร้างเปน lastID
 
                     file_name: p.file_name,
 
