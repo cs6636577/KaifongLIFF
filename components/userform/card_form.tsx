@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import SearchableDropdown from './serchabledropdown';
 import { useRouter } from 'next/navigation' 
 
+// สร้าง interface สำหรับเก็บข้อความ error ของแต่ละฟิลด์ --> ใช้ในการจัดการและแสดงข้อความ error ได้ง่ายขึ้น
 interface FormErrors {
     prefix: string;
     name: string;
@@ -28,6 +29,7 @@ export default function card_form() {
     });
     const phoneInputRef = React.useRef<HTMLInputElement | null>(null);
 
+    // ฟังก์ชันสำหรับจัดรูปแบบเบอร์โทรศัพท์แบบเรียลไทม์ (ตอนแก้เบอร์โทรศัพท์จะมีขีดกลางขึ้นอัตโนมัติ)
     const formatPhone = (value: string) => {
         const numbers = value.replace(/\D/g, "").slice(0, 10);
         if (numbers.length <= 3) return numbers;
@@ -35,6 +37,7 @@ export default function card_form() {
         return `${numbers.slice(0,3)}-${numbers.slice(3,6)}-${numbers.slice(6)}`;
     };
 
+    // ฟังก์ชันสำหรับคำนวณตำแหน่งเคอร์เซอร์ใหม่หลังจากจัดรูปแบบเบอร์โทรศัพท์
     const positionForDigits = (formatted: string, digitCount: number) => {
         let count = 0;
         for (let i = 0; i < formatted.length; i++) {
@@ -48,6 +51,7 @@ export default function card_form() {
         return formatted.length;
     };
 
+    // ฟังก์ชันสำหรับจัดการการเปลี่ยนแปลงของอินพุตเบอร์โทรศัพท์
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value;
         const numbers = raw.replace(/\D/g, "").slice(0, 10);
@@ -69,14 +73,6 @@ export default function card_form() {
     useEffect(() => {
         validateForm();
     }, [selected, name, surname, phone]); // Removed hasAttemptedSubmit from dependencies
-
-    // ตรวจสอบว่าคำนำหน้าตรงกับในdropdown
-    const isPrefixValid = () => {
-        if (!selected) return false;
-        const spaceRegex = /^\s*$/;
-        if (spaceRegex.test(selected)) return false; // ตรวจสอบว่าค่าเป็นช่องว่างหรือไม่
-        return prefixOptions.some(opt => opt.value === selected);
-    };
 
     const isNameValid = (n: string) => {
         const nameRegex =   /^[ก-ฮะ-์เ-ไ\s]+$/;
@@ -137,22 +133,15 @@ export default function card_form() {
         e.preventDefault();
         const isValid = validateForm();
         if (isValid) {
-            // ถ้าvalidateผ่านให้ไปหน้าถัดไป
-            // window.location.href = "/userform/Complaint_Details";
-            // console.log("prefix:" + selected)
-            // console.log("name:" + name);
-            // console.log("surname" + surname)
-            // console.log("phone" + phone)
+            const cleanPhone = phone.replace(/-/g, ""); // ลบขีดกลางออกจากเบอร์โทรศัพท์ก่อนลงข้อมูล
+            const selectedLabel = prefixOptions.find(opt => opt.value === selected)?.label; //แปลงvalue(001) เป็น label(นาย) เพื่อส่งไปยัง backend --> ดูข้อมูลได้จาก data/prefix.ts
 
-            const cleanPhone = phone.replace(/-/g, "");
-            const selectedLabel = prefixOptions.find(opt => opt.value === selected)?.label;
-            console.log("Selected Prefix:", selectedLabel);
+            // ส่งข้อมูลไปยัง backend ผ่าน API route
             const res = await fetch('/api/form/reporter', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ prefix: selectedLabel, name: name, surname: surname, phone: cleanPhone }),
             })
-
             if (res.ok) {
             router.push("/userform/Complaint_Details")
             }

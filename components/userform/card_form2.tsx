@@ -2,18 +2,14 @@
 import React, { useEffect } from 'react'
 import DropDown from '../userform/dropdown'
 import { RiMapPin2Fill } from 'react-icons/ri';
-import map from '../../public/map/map.png'
-import Image from 'next/image'
 import { MdOutlineCameraAlt } from 'react-icons/md';
 import { IoMdArrowRoundForward } from 'react-icons/io';
 import Link from 'next/link'
 import { GrWaypoint } from 'react-icons/gr';
 import { useRouter } from 'next/navigation' 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { usePhotoStore } from "@/hooks/usePhotoStore"
 import mockData from "@/data/mock_data_may2026.json"
-import StepProgress from './stepprogress';
-import GoogleStaticMap from './staticMap';
 import StaticMap from './staticMap';
 
 
@@ -22,6 +18,7 @@ const subcategories = mockData.meta.reference_ids.subcategories;
 
 /*ตอนนี้ข้อมูล accuracy ไม่ได้ถูกใช้งานแล้ว */
 
+// สร้าง interface สำหรับเก็บข้อความ error ของแต่ละฟิลด์ --> ใช้ในการจัดการและแสดงข้อความ error ได้ง่ายขึ้น
 interface FormErrors {
     issueType: string;
     subIssue: string;
@@ -48,8 +45,11 @@ const card_form2 = () => {
     const [longtitude, setLongtitude] = React.useState<string>("");
     const [geocodedAt, setGeocodedAt]           = useState<string>("")
     const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null)
+    const detailCharCount = detail.length
+    const additionalNotesCharCount = additionalNotes.length
+    const locationDetailCharCount = locationDescription.length
 
-      
+    // สร้าง state สำหรับเก็บข้อความ error ของแต่ละฟิลด์   
     const [errors, setErrors] = React.useState<FormErrors>({
         issueType: "",
         subIssue: "",
@@ -60,6 +60,7 @@ const card_form2 = () => {
         photo: "",
     })
 
+    // ใช้ custom hook สำหรับจัดการรูปภาพ
     const { photos, photoPreviews, addPhoto, removePhoto } = usePhotoStore()
     useEffect(() => {
       if (photos.length > 0 && errors.photo) {
@@ -67,16 +68,13 @@ const card_form2 = () => {
       }
     }, [photos.length, errors.photo])
 
-    const detailCharCount = detail.length
-    const additionalNotesCharCount = additionalNotes.length
-    const locationDetailCharCount = locationDescription.length
-
+    // ตรวจสอบความถูกต้องของฟอร์มทุกครั้งที่มีการเปลี่ยนแปลงข้อมูลในฟิลด์ที่สำคัญ
     useEffect(() => {
         validateForm()
     },[selected, selectedSub, detail, location, locationDescription, additionalNotes, photos])
 
+    // โหลดข้อมูลฉบับร่างและตำแหน่งจาก sessionStorageเมื่อคอมโพเนนต์ถูก mount เพื่อให้ผู้ใช้สามารถกลับมาแก้ไขฟอร์มได้โดยไม่สูญเสียข้อมูลที่กรอกไว้ก่อนหน้านี้
     useEffect(() => {
-    //   if (typeof window === 'undefined') return;
       const storedDraft = sessionStorage.getItem("complaintFormDraft");
       if (storedDraft) {
         try {
@@ -112,6 +110,7 @@ const card_form2 = () => {
         }
       }
 
+      // โหลดตำแหน่งจาก sessionStorage ตอนออกมาจากการpin location เช่น ชื่อสถานที่ รายละเอียดตำแหน่ง จังหวัด อำเภอ ละติจูด ลองจิจูด เพื่อให้ผู้ใช้สามารถกลับมาแก้ไขตำแหน่งได้โดยไม่สูญเสียข้อมูลที่กรอกไว้ก่อนหน้านี้
       const stored = sessionStorage.getItem("complaintLocation");
       if (stored) {
         try {
@@ -132,6 +131,7 @@ const card_form2 = () => {
 
     }, []);
 
+    // ฟังก์ชันสำหรับดึงตำแหน่งปัจจุบันของผู้ใช้และแปลงเป็นที่อยู่โดยใช้ Google Geocoding API เมื่อผู้ใช้กดปุ่ม "ใช้ตำแหน่งปัจจุบัน"
     const handleUseCurrentLocation = () => {
       if (!navigator.geolocation) {
         alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
@@ -143,34 +143,38 @@ const card_form2 = () => {
         async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          const accuracy = position.coords.accuracy       
-          const geocodedTime = new Date().toISOString()    
+          const accuracy = position.coords.accuracy //เก็บเผื่อเฉยๆ
+          const geocodedTime = new Date().toISOString()  
+          
+          // อัพเดต state และ sessionStorage ด้วยข้อมูลตำแหน่งที่ได้รับ
           setlatitude(lat.toString());
           setLongtitude(lng.toString());
           setLocationAccuracy(accuracy)
           setGeocodedAt(geocodedTime)
-                    const draftBase = {
-                        selected,
-                        selectedSub,
-                        detail,
-                        location,
-                        locationDescription,
-                        additionalNotes,
-                        geocodedAt: geocodedTime,
-                        Latitude: lat.toString(),
-                        longitude: lng.toString(),
-                        province,
-                        district,
-                        locationAccuracy: accuracy,
-                    };
-                    sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
-          
+            const draftBase = {
+                selected,
+                selectedSub,
+                detail,
+                location,
+                locationDescription,
+                additionalNotes,
+                geocodedAt: geocodedTime,
+                Latitude: lat.toString(),
+                longitude: lng.toString(),
+                province,
+                district,
+                locationAccuracy: accuracy,
+            };
+            // อัพเดต sessionStorage ด้วยข้อมูลตำแหน่งที่ได้รับ
+            sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
           const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
 
+          // ใช้ Google Geocoding API เพื่อแปลงพิกัดเป็นที่อยู่
           if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
             const geocoder = new window.google.maps.Geocoder();
             const latlng = { lat, lng };
 
+            // ดึงข้อมูลจังหวัดและอำเภอจากผลลัพธ์ของ Geocoding API เพื่อเก็บไว้ใน state และ sessionStorage
             geocoder.geocode({ location: latlng }, (results, status) => {
               if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
                                 const components = results[0].address_components ?? [];
@@ -178,6 +182,7 @@ const card_form2 = () => {
                                 let geocodeDistrict = "";
                                 for (const component of components) {
                                     const types = component.types ?? [];
+                                    // ตรวจสอบประเภทของแต่ละ component เพื่อดึงข้อมูลจังหวัดและอำเภอ
                                     if (types.includes("administrative_area_level_1")) geocodeProvince = component.long_name;
                                     if (types.includes("administrative_area_level_2")) geocodeDistrict = component.long_name;
                                     if (!geocodeDistrict && types.includes("sublocality_level_1")) geocodeDistrict = component.long_name;
@@ -185,18 +190,20 @@ const card_form2 = () => {
                                 }
                                 setProvince(geocodeProvince);
                                 setDistrict(geocodeDistrict);
+                // ถ้าได้ผลลัพธ์จาก Geocoding API ให้ใช้ที่อยู่ที่ได้มาแสดงในฟิลด์ตำแหน่งและเก็บข้อมูลจังหวัดและอำเภอไว้ใน state และ sessionStorage เพื่อใช้ในการส่งข้อมูลไปยัง backend และแสดงให้ผู้ใช้เห็น
                 setLocation(results[0].formatted_address || latLngText);
-                                // setLocationDescription(results[0].formatted_address || latLngText);
                 console.log("พิกัด: "+lat+" "+lng);
-                                sessionStorage.setItem(
-                                    "complaintFormDraft",
-                                    JSON.stringify({
-                                        ...draftBase,
-                                        province: geocodeProvince,
-                                        district: geocodeDistrict,
-                                    })
-                                );
-              } else {
+
+                // อัพเดต sessionStorage ด้วยข้อมูลตำแหน่งที่ได้รับจาก Geocoding API
+                sessionStorage.setItem(
+                    "complaintFormDraft",
+                    JSON.stringify({
+                        ...draftBase,
+                        province: geocodeProvince,
+                        district: geocodeDistrict,
+                    })
+                );
+              }else {
                 setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
                                 sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
               }
@@ -216,11 +223,13 @@ const card_form2 = () => {
       );
     }
 
+    //กันตัวอักษรพิเศษ ยกเว้น - / , . ( ) และช่องว่าง
     const isTextValid = (text: string) => {
         const textRegex = /^[ก-๙a-zA-Z0-9\s\/\.,\-\(\)]+$/;
         return textRegex.test(text)
     }
 
+    // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์มทั้งหมดก่อนส่งข้อมูลไปยัง backend และแสดงข้อความ error ที่เหมาะสมในแต่ละฟิลด์
     const validateForm = () => {
         const newErrors: FormErrors = {
             issueType: "",
@@ -288,6 +297,7 @@ const card_form2 = () => {
         return Object.values(newErrors).every(error => error === "");
     }
 
+    // ฟังก์ชันสำหรับจัดการการส่งฟอร์ม เมื่อผู้ใช้กดปุ่ม "ถัดไป" จะตรวจสอบความถูกต้องของฟอร์มทั้งหมดอีกครั้งก่อนส่งข้อมูลไปยัง backend และนำผู้ใช้ไปยังหน้าถัดไปหากข้อมูลถูกต้อง
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
@@ -304,6 +314,7 @@ const card_form2 = () => {
         const categoryName = categoryObj?.name ?? selected;
         const subcategoryName = subcategoryObj?.name ?? selectedSub;
 
+        // เตรียมข้อมูลสำหรับส่งไปยัง backend
         const res = await fetch('/api/form/complaint', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -335,6 +346,7 @@ const card_form2 = () => {
     const MAX_SIZE = 5 * 1024 * 1024
     const MIN_SIZE = 1 * 1024
 
+    // ฟังก์ชันสำหรับจัดการการเปลี่ยนแปลงของอินพุตไฟล์เมื่อผู้ใช้เลือกไฟล์รูปภาพใหม่ โดยจะตรวจสอบประเภทและขนาดของไฟล์ก่อนเพิ่มเข้าไปใน state และแสดงข้อความ error หากไฟล์ไม่ถูกต้อง
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         setUploadError(null)
         const files = Array.from(e.target.files ?? [])
@@ -431,14 +443,6 @@ const card_form2 = () => {
                     )}
                 </button>
             </div>
-            {/* {errors.location && <p className='text-[#FA3E3E] text-sm mb-4'>{errors.location}</p>}        */}
-
-{/* 
-            {(district || province) && (
-              <div className='text-sm text-[#4D4632]/80 mt-2'>
-                {district ? `${district}` : ""}{district && province ? ", " : ""}{province ? `${province}` : ""}
-              </div>
-            )} */}
 
             {/* เพิ่มรายละเอียดสถานที่เอาไว้ */}
             <p className='text-[#4D4632]'>Details</p>
@@ -457,11 +461,6 @@ const card_form2 = () => {
 
             {/* แผนที่ */}
             <div className='bg-[#F4F4F1] rounded-2xl pt-1 overflow-hidden mt-2 relative'> 
-                {/* <Image
-                    src={map}
-                    className='w-full h-40'
-                    alt="Picture"
-                /> */}
                 <StaticMap className="w-full h-40"/>
                     <button
                         type='button'
@@ -598,7 +597,6 @@ const card_form2 = () => {
         </div>
 
         {/* ปุ่มถัดไป */}
-         {/* <Link href='/userform/details'> */}
         <div className='flex items-center justify-center w-full mt-5 mb-10'>
             <button 
                 type="submit" 
@@ -613,7 +611,6 @@ const card_form2 = () => {
                 </div>
             </button>
         </div>
-        {/* </Link> */}
 
         {/* ปุ่มย้อนกลับ */}
         <div className='flex items-center justify-center w-full mb-30'>

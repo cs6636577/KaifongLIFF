@@ -102,12 +102,6 @@ const page = () => {
 
     {/* map */}
       <div className='flex flex-col items-start px-8 mt-8'>
-          {/* <Image
-            src={mapDetail}
-            className='w-full h-auto block mx-auto lg:w-50% lg:max-h-150 rounded-2xl'
-            alt="Map"
-          /> */}
-        {/* Map: รับ center สำหรับ panTo, callback reverse geocode กลับมา */}
         <Map
           center={mapCenter}
           onMarkerSelect={handleLocationChange}
@@ -140,12 +134,6 @@ const page = () => {
                 "กรุณาเลือกตำแหน่งจากแผนที่หรือช่องค้นหา"
               )}
             </span>
-
-          {/* สถานะความแม่นยำ (อันนี้ไม่ใช้แล้วเพราะไม่จำเป็น -- แต่อนาคตเผื่อจะใช้)
-            <div className='flex flex-row gap-2 text-sm text-status-done bg-[#F0FDF4] rounded-full pl-3 w-57 mt-2'>
-              <FaCircleCheck className='mt-1' size='12'/>
-              <span>ความแม่นยำสูง (High Accuracy)</span>
-            </div> */}
           </div>
         </div>
 
