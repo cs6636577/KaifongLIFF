@@ -47,6 +47,8 @@ type ComplaintDetail = {
 
 const [user, setUser] = useState<User | null>(null);
 const [detail, setDetail] = useState<ComplaintDetail  | null>(null); 
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 const { photos } = usePhotoStore()
 
 useEffect(() => {
@@ -60,8 +62,11 @@ useEffect(() => {
 }, []);
 
 async function handleSubmit() {
-  if (!user || !detail) return 
-    try {
+  if (!user || !detail) return
+  setIsSubmitting(true);
+  setShowSuccessMessage(false);
+
+  try {
         // 1. อัพรูปไป Vercel Blob
         const photo= await Promise.all(
     photos.map(async file => {
@@ -192,24 +197,25 @@ async function handleSubmit() {
 
         const data = await res.json()
         console.log("submit response:", data)
-        alert("ส่งข้อมูลสำเร็จ ✅");
 
-        if (liff.isInClient()) {
-          liff.closeWindow();
-        }
-         /*
-        const newTab = window.open("", "_blank")
-        newTab?.document.write(`<pre>${JSON.stringify(data, null, 2)}</pre>`)
-        */
-        
+        setShowSuccessMessage(true);
+
+        setTimeout(() => {
+          if (liff.isInClient()) {
+            liff.closeWindow();
+          } else {
+            window.location.reload();
+          }
+        }, 1200);
 
         //เด้งหน้าต่างยืนยันการแจ้งเหตุสำเร็จ (แล้วไปหน้าdataทั้งหมดไว้โชว์ว่าเก็บอะไรบ้าง)
 
     } catch (error) {
         console.error("Error:", error)
+    } finally {
+        setIsSubmitting(false);
     }
 }
-
 
 if (!user || !detail) return <p>Loading...</p>;
   
@@ -239,14 +245,36 @@ if (!user || !detail) return <p>Loading...</p>;
           additional: detail.additional
         }}/>
         <EvidenceCard/>
+        {(isSubmitting || showSuccessMessage) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
+            <div className={`w-full max-w-sm rounded-3xl border px-5 py-4 text-sm shadow-[0_20px_45px_-20px_rgba(0,0,0,0.25)] backdrop-blur-sm ${showSuccessMessage ? 'border-emerald-200 bg-emerald-50/95 text-emerald-900' : 'border-amber-300 bg-amber-50/95 text-amber-950'}`}>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center gap-2 font-medium text-center">
+                  <span>{isSubmitting ? '⌛ กำลังโหลดข้อมูล โปรดรอสักครู่...' : '✅ ส่งข้อมูลสำเร็จแล้ว'}</span>
+                </div>
+                <p className={`text-center text-xs ${showSuccessMessage ? 'text-emerald-700' : 'text-amber-700'}`}>
+                  {isSubmitting ? 'ระบบกำลังประมวลผลและอัปโหลดข้อมูลของคุณ' : 'กำลังปิดหน้าต่างอัตโนมัติ'}
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${showSuccessMessage ? 'bg-emerald-700' : 'bg-amber-700'}`} style={{ animationDelay: '0ms' }} />
+                  <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${showSuccessMessage ? 'bg-emerald-700' : 'bg-amber-700'}`} style={{ animationDelay: '120ms' }} />
+                  <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${showSuccessMessage ? 'bg-emerald-700' : 'bg-amber-700'}`} style={{ animationDelay: '240ms' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* ปุ่มยืนยัน*/}
         <div className='flex items-center justify-center w-full mb-4'>
           <button 
+            type="button"
+            disabled={!photos.length || isSubmitting}
             onClick={handleSubmit}
-            className='bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-xl shadow-[#FF8A65]/35 hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'> 
+            className={`bg-nt text-[#725C00] rounded-full px-6 py-3 mt-6 font-bold w-100 h-14 shadow-xl shadow-[#FF8A65]/35 transition duration-300 ease-in-out flex items-center justify-center space-x-2 ${(!photos.length || isSubmitting) ? 'cursor-not-allowed opacity-60' : 'hover:cursor-pointer hover:bg-nt/70'}`}>
             <div className='flex items-center justify-center text-xl'>
-              <span className='mr-2 px-3
-              '>ยืนยันการแจ้งเหตุ</span>
+              <span className='mr-2 px-3'>
+                {isSubmitting ? 'กำลังส่ง...' : 'ยืนยันการแจ้งเหตุ'}
+              </span>
               <span className='text-xl'>
                 <MdSend />
               </span>
