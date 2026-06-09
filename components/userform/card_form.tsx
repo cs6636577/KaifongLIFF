@@ -5,7 +5,6 @@ import { IoIosArrowForward, IoMdArrowRoundForward } from "react-icons/io";
 import { prefixOptions } from '../../data/prefix';
 import { useState, useEffect } from 'react';
 import SearchableDropdown from './serchabledropdown';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation' 
 
 interface FormErrors {
@@ -146,10 +145,12 @@ export default function card_form() {
             // console.log("phone" + phone)
 
             const cleanPhone = phone.replace(/-/g, "");
+            const selectedLabel = prefixOptions.find(opt => opt.value === selected)?.label;
+            console.log("Selected Prefix:", selectedLabel);
             const res = await fetch('/api/form/reporter', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prefix: selected, name: name, surname: surname, phone: cleanPhone }),
+            body: JSON.stringify({ prefix: selectedLabel, name: name, surname: surname, phone: cleanPhone }),
             })
 
             if (res.ok) {
@@ -224,14 +225,14 @@ export default function card_form() {
                   id="next-button" 
                   className='bg-nt text-black rounded-full px-6 py-3 mt-6 font-bold w-100 h-18 shadow-md hover:cursor-pointer hover:bg-nt/70 transition duration-300 ease-in-out flex items-center justify-center space-x-2'
               > 
-              <Link href="/userform/Complaint_Details">
+             
                   <div className='flex items-center justify-center text-xl'>
                     <span className='mr-2'>ถัดไป</span>
                     <span className='text-xl'>
                       <IoMdArrowRoundForward  />
                     </span>
                   </div>
-            </Link>
+            
               </button>
           </div>
       </form>
