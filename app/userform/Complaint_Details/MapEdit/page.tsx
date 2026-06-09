@@ -51,7 +51,8 @@ const page = () => {
     }
     console.log("พิกัด:", selectedLocation.lat, selectedLocation.lng, selectedLocation.province, selectedLocation.district);
     sessionStorage.setItem("complaintLocation", JSON.stringify(selectedLocation));
-    // พยายามดึงค่าความแม่นยำของตำแหน่งจากอุปกรณ์ (หากผู้ใช้อนุญาตให้เข้าถึงตำแหน่ง)
+    // พยายามดึงค่าความแม่นยำของตำแหน่งจากอุปกรณ์ (หากผู้ใช้อนุญาตให้เข้าถึงตำแหน่ง) 
+    //accuracy ไม่ใช่แล้ว 
     let detectedAccuracy: number | null = null;
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       try {
