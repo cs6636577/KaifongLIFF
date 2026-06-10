@@ -67,16 +67,19 @@ KaifongLIFF/
 │   │   └── details/              #     Step 3: สรุปข้อมูลก่อนส่ง
 │   │
 │   ├── track-complaint/          #   → ติดตามเรื่องร้องเรียน
-│   │   ├── page.tsx              #     รายการเรื่องร้องเรียนทั้งหมด
-│   │   ├── complaint/[id]/       #     ดูรายละเอียด + สถานะ
-│   │   └── details/[id]/         #     ดูข้อมูลเรื่องร้องเรียน (Evidence)
+│   │   ├── complaint/            #     ดูรายละเอียด + สถานะ คำร้องเรียนทั้งหมด
+│   │   └── details/[id]/         #     ดูข้อมูลเรื่องร้องเรียน (Evidence) ตาม id ที่กด card คำร้องเรียน
 │   │
 │   └── api/                      #   → Backend API Routes
-│       ├── complaint/            #     POST — ส่งเรื่องร้องเรียน + อัปโหลดรูป
-│       ├── form/                 #     POST — บันทึกข้อมูลผู้แจ้งลง session
+│       ├── complaint/            #     GET — ดึงข้อมูลเรื่องร้องเรียนทั้งหมด 
+             ├──[id]/             #     GET — ดึงข้อมูลเรื่องร้องเรียนเฉพาะส่วน
+│       ├── form/                 
+             ├──complaint         #     POST — ข้อมูลส่วนรายละเอียดเรื่องร้องทุกข์ลง session
+             ├──reporter          #     POST — ข้อมูลส่วนรายละเอียดผู้แจ้งลง session
+             ├──submit            #     POST — ส่วนบันทึกข้อมูลฟอร์มทั้งหมดไปยัง Database
 │       ├── static-map/           #     GET  — Proxy รูป Google Static Map
-│       ├── upload/               #     GET  — สร้าง upload token (Vercel Blob)
-│       └── user/                 #     GET  — ดึงข้อมูลผู้ใช้จาก session
+│       └── upload/               #     GET  — สร้าง upload token (Vercel Blob)
+│       
 │
 ├── components/                   # 🧩 Reusable Components
 │   ├── navbar.tsx                #   → Navbar ด้านบน
@@ -115,7 +118,7 @@ KaifongLIFF/
 │   ├── session.ts                #   → ดึง user ID ปัจจุบัน
 │   └── mockDB/                   #   → Mock database logic
 │       ├── requests.types.ts     #     TypeScript interfaces ทั้งหมด
-│       ├── caseUtils.ts          #     สร้างเลขเรื่อง, ดึงข้อมูลเรื่อง
+│       ├── caseUtils.ts          #     formatเลขเรื่อง, คำนวณเวลาของสถานะ
 │       └── status.ts             #     Mapping สถานะ → สี, %, label
 │
 └── data/                         # 📊 Static Data
