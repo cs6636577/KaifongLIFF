@@ -5,7 +5,7 @@ interface SearchBarProps {
   onChange: (value: string) => void;
   placeholder?: string;
 }
-
+//ฟังก์ชันช่องค้นหาคำร้องตามหมายเลขคำร้องที่แสดง (REQ-00x/xx)
 export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
   return (
     <div className="relative">

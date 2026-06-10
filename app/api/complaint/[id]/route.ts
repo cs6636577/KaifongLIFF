@@ -1,8 +1,9 @@
 import data from "@/data/mock_data_may2026.json";
 import { calcResolvedDuration, calcPendingDuration,getComplaintNumber } from "@/lib/mockDB/caseUtils";
-import { STATUS_ID_MAP } from "@/lib/mockDB/status";
-import type { ServiceRequest,Status } from "@/lib/mockDB/requests.types";
+import type { ServiceRequest,Status, UserPayload } from "@/lib/mockDB/requests.types";
 
+//ฟังก์ชันหลักนี้คือส่วนที่จะมาแสดงในหน้า track-complaint/detail โดยจะดึงข้อมูลเรื่องร้องเรียนที่ส่ง id มาใน params มาแสดง
+//คำอธิบายส่วนใหญ่คล้ายกับ GET ใน route.ts ปกติที่ไม่มี id สามารถดูรายละเอียดบางอันที่เหมือนกันในนั้นได้เลย
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -12,47 +13,55 @@ export async function GET(
   if (!item) return Response.json({ error: "not found" }, { status: 404 });
 
   const status: Status = getStatusCode(item.current_status_id);
-  const isResolved   = status === "resolved";
-
-
-  const result: Partial<ServiceRequest> & { address?: string; description?: string } = {
+  const isResolved   = status === "resolved" 
+  const user = getUser(item.user_id) ;
+ 
+  const result: Partial<ServiceRequest> &  Partial<UserPayload> = {
     id:          item.complaint_id,
     complaintNo: getComplaintNumber(item.complaint_no),
     title:       item.title ?? "",
-    location:    item.location_text,
-    district:    item.district,
-    province:    item.province,
-    updatedAt:        new Date(item.created_at).toLocaleDateString("th-TH", {
-                   day: "numeric", month: "short", year: "numeric",
-                 }),
-
+    //รายละเอียด user ของแต่ละ complaint ที่ user เขียนลง form 
+    
+    title_name: user.titleName,
+    first_name: user.firstName,
+    last_name: user.lastName,
+    phone_number: user.phone,
+ 
     // รายละเอียดคำร้อง
     category:    getCategory(item.category_id),
     subcategory: getSubcategory(item.subcategory_id),
-    address:     item.location_text,
-    description: item.detail,
+    location:    item.location_text,
+    detail: item.detail,
+    additional: item.additional_detail ?? "",
 
     // fake image metadata for frontend evidence display
     images: getComplaintImages(item.complaint_id),
 
-    // fields ที่ StatusCard ใช้
+    // fields ที่ส่วนแสดงรายละเอียดสถานะในส่วนล่างใช้
     status,
     actionNote:  isResolved
-                        ? calcResolvedDuration(item.complaint_id) : getLatestActionNote(item.complaint_id), 
-    detail: item.detail,
-    additional: item.additional_detail ?? "",
+                        ? calcResolvedDuration(item.created_at, item.resolved_at) : getLatestActionNote(item.complaint_id), 
     detailMeta: isResolved
                       ? ""
                       : status === "pending"
                       ?  "\u00A0\u00A0\u00A0·\u00A0\u00A0" + calcPendingDuration(item.created_at)
                       : `\n${calcPendingDuration(item.created_at)}`,
-
-    icon: "bolt",
+    
   };
 
   return Response.json(result);
 }
-
+function getUser(id: string) {
+  //ที่ใช้แบบนี้เพราะบางฟอร์ม user กรอกข้อมูลไม่เหมือนกัน แต่ตารางแบบใหม่ จะมี ข้อมุล ต่างๆในนี้ ยุแล้วใน ตาราง user ไม่ต้อง split จาก displayname 
+  const u = data.meta.reference_ids.citizen_users.find(c => c.user_id === id)
+  const [firstName, lastName] = u?.display_name?.split(" ") ?? ["", ""]
+  return {
+    titleName: "", //ในตารางอัปเดตมีส่วนนี้ "คิดว่าน่าจะ" ใช้ หรือจะไม่ใช้ก็ได้
+    firstName,
+    lastName,
+    phone:     u?.phone,
+  }
+}
 function getCategory(id: string): string {
   return data.meta.reference_ids.categories.find((c) => c.category_id === id)?.name ?? "-";
 }
@@ -66,7 +75,7 @@ function getComplaintImages(complaintId: string) {
   //ในนี้แค่เขียนฟังก์ชันสมมติขึ้นมาเพื่อให้ได้โครงสร้างข้อมูลที่ frontend ต้องการเท่านั้น ไม่ได้ดึงจาก db จริงๆ
   const fileName1 = `${complaintId}-1.jpg`;
   const fileName2 = `${complaintId}-2.jpg`;
-
+  //ดึงข้อมูลสมมติมาเฉยๆ ตอนนี้
   return [
     {
       url: `https://jb95rtzbpi708swr.public.blob.vercel-storage.com/%E0%B8%82%E0%B8%A2%E0%B8%B02-GcHdIVGK6wQvLV6Y4eRUPvkSR4JIQG.jpg`,
