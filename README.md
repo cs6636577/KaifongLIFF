@@ -71,12 +71,12 @@ KaifongLIFF/
 │   │   └── details/[id]/         #     ดูข้อมูลเรื่องร้องเรียน (Evidence) ตาม id ที่กด card คำร้องเรียน
 │   │
 │   └── api/                      #   → Backend API Routes
-│       ├── complaint/            #     GET — ดึงข้อมูลเรื่องร้องเรียนทั้งหมดเพื่อส่งไปยังหน้าติดตามคำร้อง 
-             ├──[id]/             #     GET — ดึงข้อมูลเรื่องร้องเรียนที่เป็นรายละเอียดคำร้อง
+|       ├── complaint/            #     GET — ดึงรายการคำร้องทั้งหมดของผู้ใช้ปัจจุบัน เพื่อแสดงหน้าติดตามคำร้อง
+|       │   └── [id]/             #     GET — ดึงรายละเอียดคำร้องตาม complaint_id เพื่อแสดงหน้ารายละเอียดคำร้อง
 │       ├── form/                 
-             ├──complaint         #     POST — ข้อมูลส่วนรายละเอียดเรื่องร้องทุกข์ลง session
-             ├──reporter          #     POST — ข้อมูลส่วนรายละเอียดผู้แจ้งลง session
-             ├──submit            #     POST — ส่วนบันทึกข้อมูลฟอร์มทั้งหมดไปยัง Database
+|            ├──complaint         #     POST — ข้อมูลส่วนรายละเอียดเรื่องร้องทุกข์ลง session
+|            ├──reporter          #     POST — ข้อมูลส่วนรายละเอียดผู้แจ้งลง session
+|            ├──submit            #     POST — ส่วนบันทึกข้อมูลฟอร์มทั้งหมดไปยัง Database
 │       ├── static-map/           #     GET  — Proxy รูป Google Static Map
 │       └── upload/               #     GET  — สร้าง upload token (Vercel Blob)
 │       
