@@ -71,8 +71,8 @@ KaifongLIFF/
 │   │   └── details/[id]/         #     ดูข้อมูลเรื่องร้องเรียน (Evidence) ตาม id ที่กด card คำร้องเรียน
 │   │
 │   └── api/                      #   → Backend API Routes
-│       ├── complaint/            #     GET — ดึงข้อมูลเรื่องร้องเรียนทั้งหมด 
-             ├──[id]/             #     GET — ดึงข้อมูลเรื่องร้องเรียนเฉพาะส่วน
+│       ├── complaint/            #     GET — ดึงข้อมูลเรื่องร้องเรียนทั้งหมดเพื่อส่งไปยังหน้าติดตามคำร้อง 
+             ├──[id]/             #     GET — ดึงข้อมูลเรื่องร้องเรียนที่เป็นรายละเอียดคำร้อง
 │       ├── form/                 
              ├──complaint         #     POST — ข้อมูลส่วนรายละเอียดเรื่องร้องทุกข์ลง session
              ├──reporter          #     POST — ข้อมูลส่วนรายละเอียดผู้แจ้งลง session
@@ -202,7 +202,7 @@ npm start
 │  • กรอก เลขบัตรประชาชน       │
 │  • กด [ถัดไป]               │
 └─────────────┬───────────────┘
-              │  POST /api/form (บันทึกลง session)
+              │  POST /api/form/complaint และ POST /api/form/reporter (บันทึกลง session)
               ▼
 ┌─────────────────────────────┐
 │  Step 2: รายละเอียดเรื่อง    │  /userform/Complaint_Details
@@ -215,7 +215,7 @@ npm start
 │  • ยินยอม PDPA              │
 │  • กด [ส่งเรื่อง]           │
 └─────────────┬───────────────┘
-              │  POST /api/complaint (ส่งข้อมูล + อัปโหลดรูป)
+              │  POST /api/form/submit (ส่งข้อมูล + อัปโหลดรูป)
               ▼
 ┌─────────────────────────────┐
 │  Step 3: ยืนยันสำเร็จ       │  /userform/details
@@ -233,7 +233,7 @@ npm start
         │
         ▼
 ┌─────────────────────────────┐
-│  รายการเรื่องร้องเรียน       │  /track-complaint
+│  รายการเรื่องร้องเรียน       │  /track-complaint/complaint
 │  ─────────────────────────  │
 │  • ค้นหาเรื่อง               │
 │  • กรองตามสถานะ (แท็บ)       │
@@ -246,7 +246,7 @@ npm start
 └─────────────┬───────────────┘
               ▼
 ┌─────────────────────────────┐
-│  รายละเอียดเรื่อง           │  /track-complaint/complaint/[id]
+│  รายละเอียดเรื่อง           │  /track-complaint/details/[id]
 │  ─────────────────────────  │
 │  • สถานะปัจจุบัน + Progress  │
 │  • Timeline ขั้นตอน          │
@@ -270,9 +270,11 @@ npm start
 
 | Method | Endpoint | คำอธิบาย | Input | Output |
 |---|---|---|---|---|
-| `POST` | `/api/form` | บันทึกข้อมูลผู้แจ้งลง session | `FormData` (prefix, name, phone, idCard) | `{ success: true }` |
-| `POST` | `/api/complaint` | ส่งเรื่องร้องเรียน + อัปโหลดรูปไป Vercel Blob | `FormData` (topic, detail, lat, lng, address, photos[]) | `{ caseNumber, photoUrls }` |
-| `GET` | `/api/user` | ดึงข้อมูลผู้ใช้จาก session | — | `{ user: {...} }` |
+| `POST` | `/api/form/reporter` | บันทึกข้อมูลผู้แจ้งลง session | `FormData` (prefix, name, phone, idCard) | `{ success: true }` |
+| `POST` | `/api/form/complaint` | - รับข้อมูลคำร้องจากฟอร์ม<br>- บันทึกข้อมูลชั่วคราวลง Cookie<br>- เก็บจำนวนรูปภาพที่แนบมา | `{ title, category_id, subcategory_id, detail, location, photos[] }` | `{ ok }` |
+| `POST` | `/api/form/submit` | - รับข้อมูลคำร้องจากฟอร์ม<br>- Upsert ข้อมูลผู้ใช้จาก `line_user_id`<br>- บันทึกคำร้องและไฟล์แนบ<br>- สร้าง Workflow Log เริ่มต้นของคำร้อง | `{ complaint, files[], workflow, user }` | `{ ok, data }` |
+| `GET` | `/api/complaint` | - ดึงรายการคำร้องของผู้ใช้ปัจจุบัน<br>- เรียงจากใหม่ไปเก่า<br>- แปลงข้อมูลสำหรับหน้า Track Complaint<br>- สรุปจำนวนคำร้องแต่ละสถานะ | - | `{ user, counts, requests[] }` |
+| `GET` | `/api/complaint/[id]` | - ดึงรายละเอียดคำร้องตาม `complaint_id`<br>- แสดงข้อมูลผู้ร้องและรายละเอียดคำร้อง<br>- ดึงรูปหลักฐานประกอบคำร้อง<br>- แปลงสถานะและข้อมูลสำหรับหน้า Detail | - | `{ id, complaintNo, userInfo, complaintInfo, images, status }` |
 | `GET` | `/api/upload` | สร้าง client upload token (Vercel Blob) | — | `{ token, url }` |
 | `GET` | `/api/static-map` | ดึงรูป Static Map จาก Google (Proxy ซ่อน API Key) | `?lat=...&lng=...&zoom=...&size=...` | รูปภาพ (image/png) |
 
@@ -428,3 +430,6 @@ function MyComponent() {
 - [ ] เพิ่ม unit tests
 - [ ] เพิ่ม error handling ที่ครอบคลุมขึ้น
 - [ ] รองรับ offline mode
+
+## หมายเหตุ
+- การอธิบายโค้ดโดยระเอียดสามารถดูได้ที่ comment code ที่ตัวโปรเจคจาก main ล่าสุด
