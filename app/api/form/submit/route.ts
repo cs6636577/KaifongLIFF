@@ -1,4 +1,4 @@
-// app/api/complaints/submit/route.ts
+// app/api/form/submit/route.ts
 import { NextRequest, NextResponse } from "next/server"
 //ตอนกด submit จะลงข้อมุลที่ได้จากฟอร์ม เข้าระบบ
 export async function POST(req: NextRequest) {
