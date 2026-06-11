@@ -100,7 +100,7 @@ KaifongLIFF/
 │   │   └── step_progress_*.tsx   #     ตัวแสดง Progress ของแต่ละ Step
 │   │
 │   └── complaint/                #   → Components สำหรับติดตามเรื่อง
-│       ├── Header.tsx            #     Header + ปุ่มกลับ
+│       ├── Header.tsx            #     แถบต้อนรับผู้ใช้
 │       ├── SearchBar.tsx         #     ค้นหาเรื่องร้องเรียน
 │       ├── StatusTabs.tsx        #     แท็บกรองตามสถานะ
 │       ├── RequestCard.tsx       #     การ์ดแสดงรายการเรื่อง
