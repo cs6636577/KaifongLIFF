@@ -55,7 +55,6 @@ function Details() {
         </div>
 
         <UserCard
-          /*titlename={request?.title_name ?? ""} ยังไม่แน่ใจว่าจะดึงมาใช้ไหม ถ้าใช้ก็เอาเลย*/
           name={request?.first_name ?? ""}
           lastname={request?.last_name ?? ""}
           phone={request?.phone_number?.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3") ?? ""}

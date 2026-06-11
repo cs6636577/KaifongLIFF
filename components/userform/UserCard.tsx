@@ -1,10 +1,9 @@
 type UserCardProps = {
-  titlename?: string; //ไม่แน่ใจว่าจะใช้ไหม
   name: string;
   lastname: string;
   phone: string;
 };
-function UserCard({name,lastname,phone,titlename}:UserCardProps){
+function UserCard({name,lastname,phone}:UserCardProps){
 
     return (
        <div className=" rounded-xl  bg-white p-3 shadow-sm">
@@ -20,7 +19,7 @@ function UserCard({name,lastname,phone,titlename}:UserCardProps){
            <div className="m-3">
                 <span className="text-sm font-bold text-[#4D4632]/60">ชื่อ-นามสกุล</span>
                 <span className="px-2 text-[10px] text-[#4D4632]/60">Full Name</span>
-                <p className="text-md text-[#1A1A2E] font-semibold">{titlename? titlename+" " : ""}{name}{" "}{lastname}</p>  
+                <p className="text-md text-[#1A1A2E] font-semibold">{name}{" "}{lastname}</p>  
            </div>
 
            <div className="m-3">
