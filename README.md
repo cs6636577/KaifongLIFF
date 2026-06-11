@@ -420,11 +420,7 @@ function MyComponent() {
 | ไฟล์ | หน้าที่ |
 |---|---|
 | `requests.types.ts` | TypeScript interfaces — `RequestItem`, `CreateComplaintPayload`, etc. |
-| `caseUtils.ts` | calcResolvedDuration() — คำนวณระยะเวลาที่ใช้แก้ไขคำร้องจนเสร็จสิ้น
-calcPendingDuration() — คำนวณระยะเวลาที่คำร้องยังรอดำเนินการ
-getGroup() — จัดกลุ่มคำร้องเป็นสัปดาห์นี้หรือก่อนหน้านี้
-formatDuration() — แปลงระยะเวลาเป็นข้อความที่อ่านง่าย
-getComplaintNumber() — แปลงเลขคำร้องเป็นรูปแบบ REQ-XXXX/YY |
+| `caseUtils.ts` | calcResolvedDuration() — คำนวณระยะเวลาที่ใช้แก้ไขคำร้องจนเสร็จสิ้น, calcPendingDuration() — คำนวณระยะเวลาที่คำร้องยังรอดำเนินการ, getGroup() — จัดกลุ่มคำร้องเป็นสัปดาห์นี้หรือก่อนหน้านี้, formatDuration() — แปลงระยะเวลาเป็นข้อความที่อ่านง่าย, getComplaintNumber() — แปลงเลขคำร้องเป็นรูปแบบ REQ-XXXX/YY |
 | `status.ts` | Mapping สถานะ → ชื่อไทย, สี, เปอร์เซ็นต์ (รอดำเนินการ=10%, กำลังดำเนินการ=50%, เสร็จสิ้น=100%) |
 
 ---
