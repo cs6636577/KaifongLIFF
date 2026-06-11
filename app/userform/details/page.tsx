@@ -210,7 +210,13 @@ export default function Details() {
     }
   }
 
-  if (!user || !detail) return <p>Loading...</p>;
+  if (!user || !detail) 
+    return (
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#725C00]/20 border-t-[#725C00]" />
+      <p className="text-sm font-medium text-[#725C00]">กำลังโหลด...</p>
+    </div>
+  );
 
   return (
     <div className={`${sarabun.className} mobile-viewport`}>
