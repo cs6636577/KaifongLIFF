@@ -429,7 +429,6 @@ function MyComponent() {
 - [ ] ระบบ authentication จริง (แทน hardcode user ID)
 - [ ] เพิ่ม unit tests
 - [ ] เพิ่ม error handling ที่ครอบคลุมขึ้น
-- [ ] รองรับ offline mode
 
 ## หมายเหตุ
 - การอธิบายโค้ดโดยระเอียดสามารถดูได้ที่ comment code ที่ตัวโปรเจคจาก main ล่าสุด
