@@ -429,7 +429,6 @@ function MyComponent() {
 
 - [ ] เชื่อมฐานข้อมูลจริง (แทน mock data)
 - [ ] ระบบ authentication จริง (แทน hardcode user ID)
-- [ ] เพิ่ม unit tests
 - [ ] เพิ่ม error handling ที่ครอบคลุมขึ้น
 
 ## หมายเหตุ
