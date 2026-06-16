@@ -116,6 +116,7 @@ KaifongLIFF/
 │
 ├── lib/                          # 📚 Utilities & Data Logic
 │   ├── session.ts                #   → ดึง user ID ปัจจุบัน
+|   ├── compressImage.ts          #   → เอาไว้บีบอัดไฟล์ที่ฝั่ง client
 │   └── mockDB/                   #   → Mock database logic
 │       ├── requests.types.ts     #     TypeScript interfaces ทั้งหมด
 │       ├── caseUtils.ts          #     formatเลขเรื่อง, คำนวณเวลาของสถานะ
