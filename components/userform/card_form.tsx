@@ -92,6 +92,12 @@ export default function card_form({ isSubmitDisabled = true }: CardFormProps) {
         return onlyDigitsRegex.test(digits);
     };
 
+    const isForeignPhone = (phoneNumber: string) => {
+        const digits = phoneNumber.replace(/\D/g, "");
+        const onlyDigitsRegex = /^(0)[1-9]\d{8}$/; 
+        return onlyDigitsRegex.test(digits);
+    }
+
     // Validate all fields
     const validateForm = () => {
         const newErrors: FormErrors = {
@@ -112,21 +118,23 @@ export default function card_form({ isSubmitDisabled = true }: CardFormProps) {
         if (!name.trim() || name.trim().length === 0) {
             newErrors.name = "*กรุณากรอกชื่อ";
         } else if(!isNameValid(name)){
-            newErrors.name = "รูปแบบไม่ถูกต้อง";
+            newErrors.name = "รูปแบบไม่ถูกต้อง กรุณาใส่ชื่อภาษาไทย";
         }
 
         // Validate surname
         if (!surname.trim() || surname.trim().length === 0) {
             newErrors.surname = "*กรุณากรอกนามสกุล";
         } else if(!isNameValid(surname)){
-            newErrors.surname = "รูปแบบไม่ถูกต้อง";
+            newErrors.surname = "รูปแบบไม่ถูกต้อง กรุณาใส่ชื่อภาษาไทย";
         }
 
         // Validate phone
         if (!phone.trim() || phone.trim().length === 0) {
             newErrors.phone = "*กรุณากรอกเบอร์โทรศัพท์";
-        } else if (!isPhoneValid(phone)) {
+        } else if (!isPhoneValid(phone) && !isForeignPhone(phone)) {
             newErrors.phone = "รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง";
+        } else if (!isPhoneValid(phone) && isForeignPhone(phone)){
+            newErrors.phone = "กรุณากรอกเบอร์ไทย";
         }
 
         setErrors(newErrors);
