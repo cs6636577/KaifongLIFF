@@ -31,6 +31,15 @@ interface FormErrors {
 
 const MAX_PHOTOS = 5 
 
+const FIXED_LOCATION = {
+  name: "บริษัท NT",
+  address: "",
+  lat: 13.756331,
+  lng: 100.501762,
+  province: "กรุงเทพมหานคร",
+  district: "บางรัก",
+}
+
 const card_form2 = () => {
     const router = useRouter()
     const [selected, setSelected] = React.useState<string>("");
@@ -131,97 +140,36 @@ const card_form2 = () => {
 
     }, []);
 
-    // ฟังก์ชันสำหรับดึงตำแหน่งปัจจุบันของผู้ใช้และแปลงเป็นที่อยู่โดยใช้ Google Geocoding API เมื่อผู้ใช้กดปุ่ม "ใช้ตำแหน่งปัจจุบัน"
-    const handleUseCurrentLocation = () => {
-      if (!navigator.geolocation) {
-        alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
-        return;
-      }
+        const handleUseCurrentLocation = () => {
+            const geocodedTime = new Date().toISOString()
 
-      setLocationLoading(true)
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const accuracy = position.coords.accuracy //เก็บเผื่อเฉยๆ
-          const geocodedTime = new Date().toISOString()  
-          
-          // อัพเดต state และ sessionStorage ด้วยข้อมูลตำแหน่งที่ได้รับ
-          setlatitude(lat.toString());
-          setLongtitude(lng.toString());
-          setLocationAccuracy(accuracy)
-          setGeocodedAt(geocodedTime)
-            const draftBase = {
+            setLocation(FIXED_LOCATION.name)
+            setLocationDescription("")
+            setlatitude(FIXED_LOCATION.lat.toString())
+            setLongtitude(FIXED_LOCATION.lng.toString())
+            setProvince(FIXED_LOCATION.province)
+            setDistrict(FIXED_LOCATION.district)
+            setLocationAccuracy(null)
+            setGeocodedAt(geocodedTime)
+
+            sessionStorage.setItem(
+                "complaintFormDraft",
+                JSON.stringify({
                 selected,
                 selectedSub,
                 detail,
-                location,
-                locationDescription,
+                location: FIXED_LOCATION.name,
+                locationDescription: FIXED_LOCATION.address,
                 additionalNotes,
                 geocodedAt: geocodedTime,
-                Latitude: lat.toString(),
-                longitude: lng.toString(),
-                province,
-                district,
-                locationAccuracy: accuracy,
-            };
-            // อัพเดต sessionStorage ด้วยข้อมูลตำแหน่งที่ได้รับ
-            sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
-          const latLngText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-
-          // ใช้ Google Geocoding API เพื่อแปลงพิกัดเป็นที่อยู่
-          if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.Geocoder) {
-            const geocoder = new window.google.maps.Geocoder();
-            const latlng = { lat, lng };
-
-            // ดึงข้อมูลจังหวัดและอำเภอจากผลลัพธ์ของ Geocoding API เพื่อเก็บไว้ใน state และ sessionStorage
-            geocoder.geocode({ location: latlng }, (results, status) => {
-              if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
-                                const components = results[0].address_components ?? [];
-                                let geocodeProvince = "";
-                                let geocodeDistrict = "";
-                                for (const component of components) {
-                                    const types = component.types ?? [];
-                                    // ตรวจสอบประเภทของแต่ละ component เพื่อดึงข้อมูลจังหวัดและอำเภอ
-                                    if (types.includes("administrative_area_level_1")) geocodeProvince = component.long_name;
-                                    if (types.includes("administrative_area_level_2")) geocodeDistrict = component.long_name;
-                                    if (!geocodeDistrict && types.includes("sublocality_level_1")) geocodeDistrict = component.long_name;
-                                    if (!geocodeDistrict && types.includes("locality")) geocodeDistrict = component.long_name;
-                                }
-                                setProvince(geocodeProvince);
-                                setDistrict(geocodeDistrict);
-                // ถ้าได้ผลลัพธ์จาก Geocoding API ให้ใช้ที่อยู่ที่ได้มาแสดงในฟิลด์ตำแหน่งและเก็บข้อมูลจังหวัดและอำเภอไว้ใน state และ sessionStorage เพื่อใช้ในการส่งข้อมูลไปยัง backend และแสดงให้ผู้ใช้เห็น
-                setLocation(results[0].formatted_address || latLngText);
-                console.log("พิกัด: "+lat+" "+lng);
-
-                // อัพเดต sessionStorage ด้วยข้อมูลตำแหน่งที่ได้รับจาก Geocoding API
-                sessionStorage.setItem(
-                    "complaintFormDraft",
-                    JSON.stringify({
-                        ...draftBase,
-                        province: geocodeProvince,
-                        district: geocodeDistrict,
-                    })
-                );
-              }else {
-                setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
-                                sessionStorage.setItem("complaintFormDraft", JSON.stringify(draftBase));
-              }
-              setLocationLoading(false)
-            });
-          } else {
-            setLocation(`ตำแหน่งปัจจุบัน (${latLngText})`);
-            setLocationLoading(false)
-          }
-        },
-        (error) => {
-          console.error(error);
-          alert("ไม่สามารถดึงตำแหน่งปัจจุบันได้ กรุณาลองใหม่");
-          setLocationLoading(false)
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    }
+                Latitude: FIXED_LOCATION.lat.toString(),
+                longitude: FIXED_LOCATION.lng.toString(),
+                province: FIXED_LOCATION.province,
+                district: FIXED_LOCATION.district,
+                locationAccuracy: null,
+                })
+            )
+            }
 
     //กันตัวอักษรพิเศษ ยกเว้น - / , . ( ) และช่องว่าง
     const isTextValid = (text: string) => {
