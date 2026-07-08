@@ -45,12 +45,18 @@ const page = () => {
   };
 
   const SendtoForm = async () => {
-    if (!selectedLocation) {
-      alert("กรุณาเลือกตำแหน่งก่อนยืนยัน");
-      return;
-    }
-    console.log("พิกัด:", selectedLocation.lat, selectedLocation.lng, selectedLocation.province, selectedLocation.district);
-    sessionStorage.setItem("complaintLocation", JSON.stringify(selectedLocation));
+    const fixedLocation = {
+    name: "บริษัท NT",
+    address: "บริษัท โทรคมนาคมแห่งชาติ จำกัด (มหาชน)",
+    lat: 13.756331,
+    lng: 100.501762,
+    province: "กรุงเทพมหานคร",
+    district: "บางรัก",
+  }
+  const locationToSave = selectedLocation ?? fixedLocation
+
+    console.log("พิกัด:", locationToSave.lat, locationToSave.lng, locationToSave.province, locationToSave.district);
+    sessionStorage.setItem("complaintLocation", JSON.stringify(locationToSave));
     // พยายามดึงค่าความแม่นยำของตำแหน่งจากอุปกรณ์ (หากผู้ใช้อนุญาตให้เข้าถึงตำแหน่ง) 
     //accuracy ไม่ใช่แล้ว 
     let detectedAccuracy: number | null = null;
@@ -71,8 +77,8 @@ const page = () => {
       const current = JSON.parse(sessionStorage.getItem("complaintFormDraft") ?? "{}")
       const updatedDraft = {
         ...current,
-        Latitude: selectedLocation.lat?.toString(),
-        longitude: selectedLocation.lng?.toString(),
+        Latitude: locationToSave.lat?.toString(),
+        longitude: locationToSave.lng?.toString(),
         geocodedAt: new Date().toISOString(),
         locationAccuracy: detectedAccuracy,
       }

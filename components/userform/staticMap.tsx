@@ -6,15 +6,17 @@ const StaticMap: React.FC<{ className?: string; center?: string; zoom?: string; 
   zoom = '14',
   size = '600x400',
 }) => {
-  const imageUrl = `/api/static-map?center=${encodeURIComponent(center)}&zoom=${encodeURIComponent(
-    zoom,
-  )}&size=${encodeURIComponent(size)}`;
 
   return (
-    <div className={className}>
-      <img src={imageUrl} alt="Google Maps Static View" style={{ width: '100%', maxWidth: '600px' }} />
+  <div className={className}>
+    <div className="h-[360px] rounded-2xl bg-gray-100 flex flex-col items-center justify-center">
+      <p className="mt-3 font-bold">บริษัท NT</p>
+      <p className="text-sm text-gray-500">
+        บริษัท โทรคมนาคมแห่งชาติ จำกัด (มหาชน)
+      </p>
     </div>
-  );
+  </div>
+);
 };
 
 export default StaticMap;
