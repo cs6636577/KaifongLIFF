@@ -32,7 +32,7 @@ interface FormErrors {
 const MAX_PHOTOS = 5 
 
 const FIXED_LOCATION = {
-  name: "บริษัท NT",
+  name: "99 ถนน แจ้งวัฒนะ ทุ่งสองห้อง, หลักสี่, กรุงเทพมหานคร",
   address: "",
   lat: 13.756331,
   lng: 100.501762,
